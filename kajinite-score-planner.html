@@ -559,7 +559,7 @@ function renderActive(){
       </div>
       ${itemGridHTML('pickActive', i, s)}
       <label class="toggle" style="margin-top:4px;">
-        <input type="checkbox" ${s.doit!==false?'checked':''} onchange="setActiveDoit(${i}, this.checked)"> 今ターン完成させる
+        <input type="checkbox" ${s.doit!==false?'checked':''} onchange="setActiveDoit(${i}, this.checked)"> 優先的に完成させたい
       </label>
     </div>
   `).join('');
@@ -691,53 +691,66 @@ function evalSubset(triple, subset, supply, remainingStockIdx, rankBonus){
   const r = scoreForSubset(triple, subset, rankBonus);
   return { subset, result:r, discardIdx };
 }
-// アクティブ枠のトグルで固定された「完成させる枠」
-function fixedSubset(){
+// アクティブ枠のトグルで選んだ「優先的に完成させたい枠」(上限)
+function preferredSubset(){
   return [0,1,2].filter(i => state.active[i].doit !== false);
 }
+// preferredの中でも実現できる範囲だけを試す(空集合〜preferred全体の部分集合)
+function subsetsWithin(allowedIdx){
+  const ALL = [[],[0],[1],[2],[0,1],[0,2],[1,2],[0,1,2]];
+  return ALL.filter(s => s.every(i=>allowedIdx.includes(i)));
+}
 
-function bestForSupply(supply, subset, rankBonus){
+function bestForSupply(supply, preferred, rankBonus){
   const triples = generateCandidateTriples();
+  const subsets = subsetsWithin(preferred).filter(s=>s.length>0);
   let best = null;
   triples.forEach(triple=>{
     const remainingStockIdx = remainingStockIdxFor(triple);
-    const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
-    if(!ev) return;
-    const holdValue = [0,1,2].filter(i=>!subset.includes(i)).reduce((a,i)=>a+ev.result.raw[i],0);
-    const better = !best
-      || ev.result.total > best.result.total
-      || (ev.result.total===best.result.total && ev.discardIdx.length < best.discardIdx.length)
-      || (ev.result.total===best.result.total && ev.discardIdx.length===best.discardIdx.length && holdValue > best.holdValue);
-    if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, holdValue };
+    subsets.forEach(subset=>{
+      const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
+      if(!ev) return;
+      const holdValue = [0,1,2].filter(i=>!subset.includes(i)).reduce((a,i)=>a+ev.result.raw[i],0);
+      const better = !best
+        || ev.result.total > best.result.total
+        || (ev.result.total===best.result.total && subset.length > best.subset.length)
+        || (ev.result.total===best.result.total && subset.length===best.subset.length && ev.discardIdx.length < best.discardIdx.length)
+        || (ev.result.total===best.result.total && subset.length===best.subset.length && ev.discardIdx.length===best.discardIdx.length && holdValue > best.holdValue);
+      if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, holdValue };
+    });
   });
   return best;
 }
-function bestForSupplyTarget(supply, subset, rankBonus, current, target){
+function bestForSupplyTarget(supply, preferred, rankBonus, current, target){
   const triples = generateCandidateTriples();
+  const subsets = subsetsWithin(preferred).filter(s=>s.length>0);
   let best = null;
   triples.forEach(triple=>{
     const remainingStockIdx = remainingStockIdxFor(triple);
-    const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
-    if(!ev) return;
-    const newTotal = current + ev.result.total;
-    const diff = Math.abs(newTotal-target);
-    const better = !best
-      || diff < best.diff
-      || (diff===best.diff && ev.discardIdx.length < best.discardIdx.length)
-      || (diff===best.diff && ev.discardIdx.length===best.discardIdx.length && ev.result.total > best.result.total);
-    if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, newTotal, diff };
+    subsets.forEach(subset=>{
+      const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
+      if(!ev) return;
+      const newTotal = current + ev.result.total;
+      const diff = Math.abs(newTotal-target);
+      const better = !best
+        || diff < best.diff
+        || (diff===best.diff && ev.discardIdx.length < best.discardIdx.length)
+        || (diff===best.diff && ev.discardIdx.length===best.discardIdx.length && ev.result.total > best.result.total);
+      if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, newTotal, diff };
+    });
   });
   return best;
 }
 
 function calcMax(){
   const rankBonus = Number(document.getElementById('rank').value);
-  const subset = fixedSubset();
-  if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
+  // 何もチェックしていない場合は「制限なし」= 全3枠を自由に探索対象にする
+  const preferredRaw = preferredSubset();
+  const preferred = preferredRaw.length>0 ? preferredRaw : [0,1,2];
 
   if(state.ignoreSupply){
-    const best = bestForSupply(UNLIMITED_SUPPLY, subset, rankBonus);
-    if(!best){ alert('指定した「完成させる」枠を実現できる組み合わせが見つかりません。'); return; }
+    const best = bestForSupply(UNLIMITED_SUPPLY, preferred, rankBonus);
+    if(!best){ alert('優先指定した枠のいずれかも、実現できる組み合わせが見つかりません。'); return; }
     candidates = [{...best, patternIdx:null, patternName:'理論値(鉱石は気にしない)'}];
     pickedIndex = 0;
     showResult();
@@ -747,10 +760,10 @@ function calcMax(){
   const results = [];
   state.patterns.forEach((p,idx)=>{
     const supply = computeSupplyForPattern(idx);
-    const best = bestForSupply(supply, subset, rankBonus);
+    const best = bestForSupply(supply, preferred, rankBonus);
     if(best) results.push({...best, patternIdx:idx, patternName:p.name});
   });
-  if(results.length===0){ alert('どの練習パターンを選んでも、指定した「完成させる」枠をまかなえません。パターンの色構成やストックを見直してください。'); return; }
+  if(results.length===0){ alert('どの練習パターンを選んでも、優先指定した枠を1つも完成させられません。パターンの色構成やストックを見直してください。'); return; }
   results.sort((a,b)=> b.result.total - a.result.total || a.discardIdx.length - b.discardIdx.length || b.holdValue - a.holdValue);
   candidates = results;
   pickedIndex = 0;
@@ -762,12 +775,13 @@ function calcTarget(){
   if(!target && target!==0){ alert('目標スコアを入力してください'); return; }
   const current = Number(document.getElementById('currentScore').value)||0;
   const rankBonus = Number(document.getElementById('rank').value);
-  const subset = fixedSubset();
-  if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
+  // 何もチェックしていない場合は「制限なし」= 全3枠を自由に探索対象にする
+  const preferredRaw = preferredSubset();
+  const preferred = preferredRaw.length>0 ? preferredRaw : [0,1,2];
 
   if(state.ignoreSupply){
-    const best = bestForSupplyTarget(UNLIMITED_SUPPLY, subset, rankBonus, current, target);
-    if(!best){ alert('指定した「完成させる」枠を実現できる組み合わせが見つかりません。'); return; }
+    const best = bestForSupplyTarget(UNLIMITED_SUPPLY, preferred, rankBonus, current, target);
+    if(!best){ alert('優先指定した枠のいずれかも、実現できる組み合わせが見つかりません。'); return; }
     candidates = [{...best, patternIdx:null, patternName:'理論値(鉱石は気にしない)'}];
     pickedIndex = 0;
     showResult();
@@ -777,10 +791,10 @@ function calcTarget(){
   const results = [];
   state.patterns.forEach((p,idx)=>{
     const supply = computeSupplyForPattern(idx);
-    const best = bestForSupplyTarget(supply, subset, rankBonus, current, target);
+    const best = bestForSupplyTarget(supply, preferred, rankBonus, current, target);
     if(best) results.push({...best, patternIdx:idx, patternName:p.name});
   });
-  if(results.length===0){ alert('どの練習パターンを選んでも、指定した「完成させる」枠をまかなえません。パターンの色構成やストックを見直してください。'); return; }
+  if(results.length===0){ alert('どの練習パターンを選んでも、優先指定した枠を1つも完成させられません。パターンの色構成やストックを見直してください。'); return; }
   results.sort((a,b)=> a.diff - b.diff || a.discardIdx.length - b.discardIdx.length || b.result.total - a.result.total);
   candidates = results;
   pickedIndex = 0;
