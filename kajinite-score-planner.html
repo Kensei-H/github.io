@@ -543,18 +543,29 @@ function combinationsOfSize(arr, k){
 // 供給だけでは足りない場合に、triple外のストックを破棄して鉱石を補えるか判定。
 // 破棄で得た鉱石も同じ「全レシピに配られる」ルールに従うため、少ない破棄枚数で
 // 複数レシピが同時に達成可能になることがある。破棄枚数が最小になる組み合わせを探す。
+function discardValue(idx){
+  const s = state.stock[idx];
+  if(!s) return 0;
+  return s.type==='scarecrow' ? 0 : (BASE[s.type]||0);
+}
 function feasibleWithDiscard(triple, subsetIdx, supply, remainingStockIdx){
   for(let k=0; k<=remainingStockIdx.length; k++){
     const combos = combinationsOfSize(remainingStockIdx, k);
-    for(const combo of combos){
+    let bestCombo = null;
+    let bestValue = Infinity;
+    combos.forEach(combo=>{
       const boosted = {...supply};
       combo.forEach(idx=>{
         const col = state.stock[idx].color;
         if(['青','赤','緑','黄'].includes(col)) boosted[col] = (boosted[col]||0) + 1;
       });
       if(subsetIdx.every(i => itemFeasible(triple[i], boosted))){
-        return { feasible:true, discardIdx: combo, usedDiscard: combo.length>0 };
+        const val = combo.reduce((a,idx)=>a+discardValue(idx), 0);
+        if(val < bestValue){ bestValue = val; bestCombo = combo; }
       }
+    });
+    if(bestCombo){
+      return { feasible:true, discardIdx: bestCombo, usedDiscard: bestCombo.length>0 };
     }
   }
   return { feasible:false };
@@ -755,6 +766,20 @@ function isTripleAchievable(triple){
   return true;
 }
 
+// 交換は、そのアクティブ枠の"元の中身"と色または種類のどちらかが一致していないと
+// 成立しない(両方違うレシピへは交換できない)。
+function isColorOrTypeCompatible(triple){
+  for(let pos=0; pos<3; pos++){
+    const it = triple[pos];
+    const orig = state.active[pos];
+    if(it.origin==='active' && it.origIndex===pos) continue; // そのまま:対象外
+    const sameColor = it.color===orig.color;
+    const sameType = it.type===orig.type;
+    if(!sameColor && !sameType) return false;
+  }
+  return true;
+}
+
 // 到達可能なtripleについて、実行すべき交換操作を順番通りに組み立てる
 function computeOperationSteps(triple){
   const changed = [0,1,2].filter(pos => !(triple[pos].origin==='active' && triple[pos].origIndex===pos));
@@ -800,7 +825,7 @@ function generateCandidateTriples(){
     // 交換の起点となる実ストックが無いので、今の並びを維持する1通りのみ
     return [[0,1,2].map(i=>({...state.active[i], origin:'active', origIndex:i}))];
   }
-  return permute3(pool()).filter(isTripleAchievable);
+  return permute3(pool()).filter(isTripleAchievable).filter(isColorOrTypeCompatible);
 }
 function rawValue(triple){
   // pass1
