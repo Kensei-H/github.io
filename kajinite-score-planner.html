@@ -121,6 +121,8 @@
   .unreach-tag{color:var(--paper-dim);font-size:10px;}
   .hold-tag{color:var(--ember-300);font-size:10px;}
   .discard-note{color:var(--gold-300);font-size:10px;font-weight:700;}
+  .pattern-note{border-bottom:1px dashed var(--line);padding-bottom:8px;margin-bottom:4px;}
+  .pattern-note b{color:var(--gold-300);}
 
   .pattern-card{
     border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;
@@ -271,17 +273,13 @@
 
   <div class="panel">
     <div class="panel-title">今回の練習で入手できる色</div>
-    <div class="hint-text">練習ごとに出せる色をタップで積み上げます(1回タップ=1個)。実際に使う練習パターンだけ「今回使う」をONにすると、ONのパターンの合計が計算に使われます。</div>
+    <div class="hint-text">練習は6パターンあり、実際に選べるのはそのうち1つだけです。各パターンで出せる色をタップで積み上げて登録しておくと、計算時にどのパターンを選べば最大値・目標値に近づくかを自動で比較します。</div>
     <div id="patternsList"></div>
-    <div class="supply-total">
-      <div class="supply-total-label">今回の合計</div>
-      <div id="supplyTotalSquares" class="squares-row"></div>
-      <div id="bonusOreNote" class="hint-text" style="margin-top:4px;"></div>
-    </div>
+    <div id="bonusOreNote" class="hint-text" style="margin-top:4px;"></div>
     <label class="toggle" style="margin-top:10px;">
       <input type="checkbox" id="noDiscard" onchange="onNoDiscardChange()"> ストックは破棄しない(個数だけで達成できる組み合わせのみ計算)
     </label>
-    <div class="hint-text">All(色不問)の要求分は、対応色の余りから自動で充当されます。計算は個数だけで足りない場合、使わないストックの破棄(1枚→対応色1個)も自動で検討し、「要破棄」として候補に表示します(上のチェックで無効化できます)。</div>
+    <div class="hint-text">All(色不問)の要求分は、対応色の余りから自動で充当されます。ストック破棄で得た鉱石はどのパターンを選んでも共通で上乗せされます。計算は個数だけで足りない場合、使わないストックの破棄(1枚→対応色1個)も自動で検討し、「要破棄」として候補に表示します(上のチェックで無効化できます)。</div>
   </div>
 
   <div class="panel">
@@ -326,6 +324,8 @@ const BASE = { ring:1, charm:2, bangle:3, necklace:5, gold:10 };
 const NAME = { ring:'指輪', charm:'チャーム', bangle:'腕輪', necklace:'首飾り', gold:'金レシピ', scarecrow:'カカシ' };
 const COLORS = ['赤','青','黄','緑'];
 
+const PRACTICE_NAMES = ['持久力','筋力','瞬発力','命中','知能','メンタル'];
+
 let state = {
   currentScore: 0,
   rank: 1,
@@ -336,8 +336,7 @@ let state = {
   ],
   stock: [],
   patterns: Array.from({length:6}, (_,i)=>({
-    name: `パターン${i+1}`,
-    active: false,
+    name: PRACTICE_NAMES[i],
     counts: {青:0, 赤:0, 緑:0, 黄:0, 無色:0}
   })),
   bonusOre: {青:0, 赤:0, 緑:0, 黄:0},
@@ -389,12 +388,11 @@ function squaresHTML(counts){
   return html || '<span class="squares-empty">まだ未入力</span>';
 }
 
-function computeSupplyFromPatterns(){
+// 指定した1パターンだけを使った場合の供給量(+ストック破棄分は常に上乗せ)
+function computeSupplyForPattern(idx){
   const total = {青:0, 赤:0, 緑:0, 黄:0, 無色:0};
-  state.patterns.forEach(p=>{
-    if(!p.active) return;
-    PATTERN_COLORS.forEach(c=>{ total[c] += p.counts[c] || 0; });
-  });
+  const p = state.patterns[idx];
+  PATTERN_COLORS.forEach(c=>{ total[c] += p.counts[c] || 0; });
   ['青','赤','緑','黄'].forEach(c=>{ total[c] += state.bonusOre[c] || 0; });
   return total;
 }
@@ -402,11 +400,9 @@ function computeSupplyFromPatterns(){
 function renderPatterns(){
   const el = document.getElementById('patternsList');
   el.innerHTML = state.patterns.map((p,i)=>`
-    <div class="pattern-card ${p.active?'on':''}">
+    <div class="pattern-card">
       <div class="pattern-head">
-        <label class="toggle">
-          <input type="checkbox" ${p.active?'checked':''} onchange="togglePatternActive(${i}, this.checked)"> ${p.name}・今回使う
-        </label>
+        <div class="cur-pick">${p.name}</div>
         <button class="btn-mini" onclick="resetPattern(${i})">リセット</button>
       </div>
       <div class="pattern-buttons">
@@ -415,7 +411,7 @@ function renderPatterns(){
       <div class="squares-row">${squaresHTML(p.counts)}</div>
     </div>
   `).join('');
-  renderSupplyTotal();
+  renderBonusOreNote();
 }
 function tapPatternColor(i, c){
   state.patterns[i].counts[c] = (state.patterns[i].counts[c] || 0) + 1;
@@ -427,19 +423,12 @@ function resetPattern(i){
   renderPatterns();
   persistState();
 }
-function togglePatternActive(i, val){
-  state.patterns[i].active = val;
-  renderPatterns();
-  persistState();
-}
-function renderSupplyTotal(){
-  const total = computeSupplyFromPatterns();
-  document.getElementById('supplyTotalSquares').innerHTML = squaresHTML(total);
+function renderBonusOreNote(){
   const bonusTotal = Object.values(state.bonusOre).reduce((a,b)=>a+b,0);
   const bonusEl = document.getElementById('bonusOreNote');
   if(bonusEl){
     bonusEl.innerHTML = bonusTotal>0
-      ? `うちストック破棄分: ${squaresHTML(state.bonusOre)} <button class="btn-mini" onclick="resetBonusOre()">クリア</button>`
+      ? `ストック破棄で得た鉱石(どのパターンにも共通で加算): ${squaresHTML(state.bonusOre)} <button class="btn-mini" onclick="resetBonusOre()">クリア</button>`
       : '';
   }
 }
@@ -633,6 +622,10 @@ function pickStock(i, type, color){
 }
 
 // ---- calculation engine ----
+// ストックが1枚でもあれば、それを踏み台にした連鎖交換で、アクティブの中身を
+// 別のアクティブ枠へ実質的に移すことができる(どこか1枠は必ずストック由来の
+// 中身になり、どこか1枠の元の中身がストックに追い出される形で実現する)。
+// ストックが0枚の場合のみ、交換の起点がなく一切動かせない。
 function pool(){
   return [
     ...state.active.map((s,i)=>({...s, origin:'active', origIndex:i})),
@@ -651,6 +644,13 @@ function permute3(items){
     }
   }
   return res;
+}
+function generateCandidateTriples(){
+  if(state.stock.length===0){
+    // 交換の起点となる実ストックが無いので、今の並びを維持する1通りのみ
+    return [[0,1,2].map(i=>({...state.active[i], origin:'active', origIndex:i}))];
+  }
+  return permute3(pool());
 }
 function rawValue(triple){
   // pass1
@@ -696,32 +696,63 @@ function fixedSubset(){
   return [0,1,2].filter(i => state.active[i].doit !== false);
 }
 
-function calcMax(){
-  const items = pool();
-  const rankBonus = Number(document.getElementById('rank').value);
-  const supply = state.ignoreSupply ? UNLIMITED_SUPPLY : computeSupplyFromPatterns();
-  const subset = fixedSubset();
-  if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
-  const triples = permute3(items);
-  let scored = [];
+function bestForSupply(supply, subset, rankBonus){
+  const triples = generateCandidateTriples();
+  let best = null;
   triples.forEach(triple=>{
     const remainingStockIdx = remainingStockIdxFor(triple);
     const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
     if(!ev) return;
     const holdValue = [0,1,2].filter(i=>!subset.includes(i)).reduce((a,i)=>a+ev.result.raw[i],0);
-    scored.push({ triple, subset, result:ev.result, holdValue, discardIdx:ev.discardIdx });
+    const better = !best
+      || ev.result.total > best.result.total
+      || (ev.result.total===best.result.total && ev.discardIdx.length < best.discardIdx.length)
+      || (ev.result.total===best.result.total && ev.discardIdx.length===best.discardIdx.length && holdValue > best.holdValue);
+    if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, holdValue };
   });
-  scored.sort((a,b)=> b.result.total - a.result.total || a.discardIdx.length - b.discardIdx.length || b.holdValue - a.holdValue);
-  const seen = new Set(); const top = [];
-  for(const s of scored){
-    const key = s.result.total+'|'+s.discardIdx.slice().sort().join(',')+'|'+s.triple.map(t=>t.type+t.color).join(',');
-    if(seen.has(key)) continue;
-    seen.add(key);
-    top.push(s);
-    if(top.length>=4) break;
+  return best;
+}
+function bestForSupplyTarget(supply, subset, rankBonus, current, target){
+  const triples = generateCandidateTriples();
+  let best = null;
+  triples.forEach(triple=>{
+    const remainingStockIdx = remainingStockIdxFor(triple);
+    const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
+    if(!ev) return;
+    const newTotal = current + ev.result.total;
+    const diff = Math.abs(newTotal-target);
+    const better = !best
+      || diff < best.diff
+      || (diff===best.diff && ev.discardIdx.length < best.discardIdx.length)
+      || (diff===best.diff && ev.discardIdx.length===best.discardIdx.length && ev.result.total > best.result.total);
+    if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, newTotal, diff };
+  });
+  return best;
+}
+
+function calcMax(){
+  const rankBonus = Number(document.getElementById('rank').value);
+  const subset = fixedSubset();
+  if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
+
+  if(state.ignoreSupply){
+    const best = bestForSupply(UNLIMITED_SUPPLY, subset, rankBonus);
+    if(!best){ alert('指定した「完成させる」枠を実現できる組み合わせが見つかりません。'); return; }
+    candidates = [{...best, patternIdx:null, patternName:'理論値(鉱石は気にしない)'}];
+    pickedIndex = 0;
+    showResult();
+    return;
   }
-  if(top.length===0){ alert('指定した「完成させる」枠を、入手可能な色の個数(+ストック破棄)ではまかなえません。個数・トグル・ストックの設定を確認してください。'); return; }
-  candidates = top;
+
+  const results = [];
+  state.patterns.forEach((p,idx)=>{
+    const supply = computeSupplyForPattern(idx);
+    const best = bestForSupply(supply, subset, rankBonus);
+    if(best) results.push({...best, patternIdx:idx, patternName:p.name});
+  });
+  if(results.length===0){ alert('どの練習パターンを選んでも、指定した「完成させる」枠をまかなえません。パターンの色構成やストックを見直してください。'); return; }
+  results.sort((a,b)=> b.result.total - a.result.total || a.discardIdx.length - b.discardIdx.length || b.holdValue - a.holdValue);
+  candidates = results;
   pickedIndex = 0;
   showResult();
 }
@@ -730,31 +761,28 @@ function calcTarget(){
   const target = Number(document.getElementById('targetScore').value);
   if(!target && target!==0){ alert('目標スコアを入力してください'); return; }
   const current = Number(document.getElementById('currentScore').value)||0;
-  const items = pool();
   const rankBonus = Number(document.getElementById('rank').value);
-  const supply = state.ignoreSupply ? UNLIMITED_SUPPLY : computeSupplyFromPatterns();
   const subset = fixedSubset();
   if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
-  const triples = permute3(items);
-  let scored = [];
-  triples.forEach(triple=>{
-    const remainingStockIdx = remainingStockIdxFor(triple);
-    const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
-    if(!ev) return;
-    const newTotal = current + ev.result.total;
-    scored.push({ triple, subset, result:ev.result, newTotal, discardIdx:ev.discardIdx, diff: Math.abs(newTotal-target) });
-  });
-  scored.sort((a,b)=> a.diff - b.diff || a.discardIdx.length - b.discardIdx.length || b.result.total - a.result.total);
-  const seen = new Set(); const top = [];
-  for(const s of scored){
-    const key = s.newTotal+'|'+s.discardIdx.slice().sort().join(',')+'|'+s.triple.map(t=>t.type+t.color).join(',');
-    if(seen.has(key)) continue;
-    seen.add(key);
-    top.push(s);
-    if(top.length>=4) break;
+
+  if(state.ignoreSupply){
+    const best = bestForSupplyTarget(UNLIMITED_SUPPLY, subset, rankBonus, current, target);
+    if(!best){ alert('指定した「完成させる」枠を実現できる組み合わせが見つかりません。'); return; }
+    candidates = [{...best, patternIdx:null, patternName:'理論値(鉱石は気にしない)'}];
+    pickedIndex = 0;
+    showResult();
+    return;
   }
-  if(top.length===0){ alert('指定した「完成させる」枠を、入手可能な色の個数(+ストック破棄)ではまかなえません。個数・トグル・ストックの設定を確認してください。'); return; }
-  candidates = top;
+
+  const results = [];
+  state.patterns.forEach((p,idx)=>{
+    const supply = computeSupplyForPattern(idx);
+    const best = bestForSupplyTarget(supply, subset, rankBonus, current, target);
+    if(best) results.push({...best, patternIdx:idx, patternName:p.name});
+  });
+  if(results.length===0){ alert('どの練習パターンを選んでも、指定した「完成させる」枠をまかなえません。パターンの色構成やストックを見直してください。'); return; }
+  results.sort((a,b)=> a.diff - b.diff || a.discardIdx.length - b.discardIdx.length || b.result.total - a.result.total);
+  candidates = results;
   pickedIndex = 0;
   showResult();
 }
@@ -785,7 +813,7 @@ function showResult(){
   if(candidates.length>1){
     area.innerHTML = '<div class="candidates">' + candidates.map((c,i)=>`
       <div class="cand ${i===pickedIndex?'picked':''}" onclick="pickCandidate(${i})">
-        <div class="ctop"><span>候補${i+1}</span><b>${current} → ${current+c.result.total}</b></div>
+        <div class="ctop"><span>${i===0?'★ ':''}${c.patternName}</span><b>${current} → ${current+c.result.total}</b></div>
         <div class="cdetail">${c.triple.map((it,p)=> (c.subset.includes(p)?'':'(保留)') + NAME[it.type]+'/'+it.color ).join(' ・ ')}</div>
         ${c.discardIdx && c.discardIdx.length>0 ? `<div class="cdetail discard-note">要破棄: ${discardLabel(c.discardIdx)}</div>` : ''}
       </div>
@@ -807,6 +835,7 @@ function renderPicked(){
   document.getElementById('newTotalOut').textContent = current+' → '+(current+c.result.total)+' 点';
 
   let bd = '';
+  bd += `<div class="bline pattern-note"><span>使う練習</span><b>${c.patternName}</b></div>`;
   if(c.discardIdx && c.discardIdx.length>0){
     bd += `<div class="bline discard-note"><span>この組み合わせには破棄が必要</span><b>${discardLabel(c.discardIdx)}</b></div>`;
   }
@@ -844,8 +873,10 @@ async function loadState(){
       state = saved;
       if(!state.patterns || state.patterns.length!==6){
         state.patterns = Array.from({length:6}, (_,i)=>({
-          name: `パターン${i+1}`, active:false, counts:{青:0,赤:0,緑:0,黄:0,無色:0}
+          name: PRACTICE_NAMES[i], counts:{青:0,赤:0,緑:0,黄:0,無色:0}
         }));
+      } else {
+        state.patterns.forEach((p,i)=>{ p.name = PRACTICE_NAMES[i]; delete p.active; });
       }
       if(!state.bonusOre) state.bonusOre = {青:0,赤:0,緑:0,黄:0};
       if(typeof state.noDiscard !== 'boolean') state.noDiscard = false;
