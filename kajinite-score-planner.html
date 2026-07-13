@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鍛冶スコア ターンプランナー</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
+
+  :root{
+    --iron-900:#17140f; --iron-800:#221d16; --iron-700:#332b20;
+    --ember-600:#c9531f; --ember-500:#e8672b; --ember-300:#f6a05a;
+    --gold-500:#c99a3b; --gold-300:#e7c976;
+    --paper:#efe6d3; --paper-dim:#c9bda3; --line:#4a4132;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(232,103,43,0.10), transparent 45%),
+      radial-gradient(circle at 90% 15%, rgba(201,154,59,0.08), transparent 40%),
+      var(--iron-900);
+    color:var(--paper); font-family:'Zen Kaku Gothic New', sans-serif;
+    min-height:100vh; padding:20px 14px 60px;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+  header{margin-bottom:22px;text-align:center;}
+  .anvil-mark{
+    width:34px;height:34px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--gold-500);border-radius:50%;color:var(--gold-300);font-size:16px;
+  }
+  h1{font-family:'Shippori Mincho', serif;font-weight:800;font-size:22px;letter-spacing:.04em;margin:0 0 4px;color:var(--paper);}
+  .subtitle{font-size:12px;color:var(--paper-dim);letter-spacing:.08em;}
+
+  .panel{
+    background:linear-gradient(180deg, var(--iron-800), var(--iron-700));
+    border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px; position:relative;
+  }
+  .panel::before{
+    content:""; position:absolute; top:0; left:16px; right:16px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(231,201,118,0.35), transparent);
+  }
+  .panel-title{
+    font-size:11px; letter-spacing:.14em; color:var(--gold-300); text-transform:uppercase;
+    margin:0 0 12px; display:flex; align-items:center; gap:8px;
+  }
+  .panel-title::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  .row{display:flex;gap:10px;margin-bottom:10px;}
+  .field{flex:1;}
+  label{display:block;font-size:11px;color:var(--paper-dim);margin-bottom:5px;}
+  select, input[type=number], input[type=text]{
+    width:100%; background:var(--iron-900); border:1px solid var(--line); color:var(--paper);
+    padding:9px 10px; border-radius:8px; font-size:16px; font-family:inherit; appearance:none;
+  }
+  select:disabled{opacity:.85; color:var(--gold-300); border-color:var(--gold-500);}
+  .toggle{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--paper-dim);cursor:pointer;user-select:none;}
+  .toggle input{width:15px;height:15px;accent-color:var(--ember-500);flex-shrink:0;}
+  select:focus, input:focus{outline:2px solid var(--ember-500);outline-offset:1px;}
+
+  .slot{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:rgba(0,0,0,0.15);}
+  .slot.active1{border-color:var(--gold-500);background:rgba(201,154,59,0.07);}
+  .slot-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .slot-name{font-size:12px;font-weight:700;color:var(--paper);display:flex;align-items:center;gap:6px;}
+  .badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--gold-500);color:var(--iron-900);font-weight:700;}
+
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:9px;font-weight:700;letter-spacing:.03em;}
+  .btn-primary{
+    width:100%; background:linear-gradient(180deg, var(--ember-500), var(--ember-600)); color:#fff8ef;
+    padding:13px; font-size:14px; box-shadow:0 3px 0 #8f3c15;
+  }
+  .btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 #8f3c15;}
+  .btn-gold{
+    width:100%; background:linear-gradient(180deg, var(--gold-300), var(--gold-500)); color:#241c0d;
+    padding:13px; font-size:14px; box-shadow:0 3px 0 #7a5d1f; margin-top:8px;
+  }
+  .btn-gold:active{transform:translateY(2px);box-shadow:0 1px 0 #7a5d1f;}
+  .btn-secondary{
+    width:100%; background:transparent; border:1px solid var(--line); color:var(--paper-dim);
+    padding:10px; font-size:12px; margin-top:8px;
+  }
+  .btn-mini{background:var(--iron-900);border:1px solid var(--line);color:var(--paper-dim);padding:5px 10px;font-size:11px;}
+  .btn-add{background:var(--iron-900);border:1px dashed var(--gold-500);color:var(--gold-300);padding:9px;font-size:12px;width:100%;}
+
+  .ss-panel{padding:10px 16px;}
+  .ss-toggle{margin-top:0;border-color:var(--gold-500);color:var(--gold-300);}
+  .ss-body{margin-top:10px;}
+  #ssInput{
+    width:100%;font-size:12px;color:var(--paper-dim);
+    background:var(--iron-900);border:1px solid var(--line);border-radius:8px;padding:8px;
+  }
+  .ss-thumb{
+    width:100%;max-height:260px;object-fit:contain;border-radius:8px;border:1px solid var(--line);
+    margin-top:8px;cursor:zoom-in;background:var(--iron-900);
+  }
+  .ss-full-overlay{
+    display:none;position:fixed;inset:0;background:rgba(10,8,5,0.92);z-index:1000;
+    align-items:center;justify-content:center;padding:20px;overflow:auto;
+  }
+  .ss-full-overlay.show{display:flex;}
+  .ss-full-overlay img{max-width:100%;max-height:100%;border-radius:6px;}
+
+  .stock-item{
+    padding:10px; border:1px solid var(--line);
+    border-radius:8px; margin-bottom:8px; background:rgba(0,0,0,0.15);
+  }
+  .stock-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;}
+  .stock-title{display:flex;align-items:center;gap:8px;min-width:0;}
+  .stock-badge{flex-shrink:0;background:var(--iron-900);border:1px solid var(--gold-500);color:var(--gold-300);}
+  .stock-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+  .btn-mini.discard{color:var(--gold-300);border-color:var(--gold-500);white-space:nowrap;}
+  .stock-item .rm{
+    background:none;border:none;color:var(--paper-dim);font-size:16px;line-height:1;padding:2px 6px;
+  }
+  .empty{font-size:12px;color:var(--paper-dim);text-align:center;padding:10px 0;}
+
+  .cur-pick{font-size:12px;color:var(--gold-300);font-weight:700;}
+  .target-hint{color:var(--gold-300);font-weight:400;letter-spacing:0;text-transform:none;}
+
+  .hint-text{font-size:11px;color:var(--paper-dim);line-height:1.5;}
+  .unreach-tag{color:var(--paper-dim);font-size:10px;}
+  .hold-tag{color:var(--ember-300);font-size:10px;}
+  .discard-note{color:var(--gold-300);font-size:10px;font-weight:700;}
+
+  .pattern-card{
+    border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;
+    background:rgba(0,0,0,0.15);
+  }
+  .pattern-card.on{border-color:var(--gold-500);background:rgba(201,154,59,0.07);}
+  .pattern-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;}
+  .pattern-buttons{display:flex;gap:5px;margin-bottom:8px;}
+  .pcolor-btn{
+    flex:1;height:34px;border-radius:7px;border:1px solid var(--line);font-size:11px;font-weight:700;
+    color:#fff8ef;text-shadow:0 1px 2px rgba(0,0,0,0.5);
+  }
+  .pcolor-btn.sq-red{background:rgba(180,74,54,0.55);}
+  .pcolor-btn.sq-blue{background:rgba(74,120,170,0.55);}
+  .pcolor-btn.sq-yellow{background:rgba(201,162,39,0.55);}
+  .pcolor-btn.sq-green{background:rgba(90,140,80,0.55);}
+  .pcolor-btn.sq-none{background:var(--iron-900);color:var(--paper-dim);text-shadow:none;}
+
+  .squares-row{display:flex;flex-wrap:wrap;gap:3px;min-height:18px;align-items:center;}
+  .square{width:16px;height:16px;border-radius:4px;display:inline-block;}
+  .square.sq-red{background:#c9573c;}
+  .square.sq-blue{background:#4a78aa;}
+  .square.sq-yellow{background:#d9b449;}
+  .square.sq-green{background:#5a8c50;}
+  .square.sq-none{background:var(--paper-dim);}
+  .squares-empty{font-size:11px;color:var(--paper-dim);}
+
+  .supply-total{
+    border-top:1px dashed var(--line);padding-top:10px;margin-top:4px;
+  }
+  .supply-total-label{font-size:11px;color:var(--gold-300);margin-bottom:6px;font-weight:700;}
+
+  .rgrid{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+  .rgrid-row{display:flex;align-items:center;gap:3px;}
+  .rgrid-label{
+    width:38px;flex:0 0 38px;font-size:10px;color:var(--paper-dim);text-align:right;padding-right:4px;
+  }
+  .rgrid-label.c-red{color:#f0a58e;}
+  .rgrid-label.c-blue{color:#9dc3e8;}
+  .rgrid-label.c-yellow{color:#f0d27a;}
+  .rgrid-label.c-green{color:#a9d19f;}
+  .rgrid-colhead{flex:1;min-width:0;font-size:10px;text-align:center;color:var(--paper-dim);}
+  .rgrid-cell{
+    flex:1;min-width:0;height:32px;border-radius:6px;border:1px solid var(--line);cursor:pointer;
+    background-color:var(--iron-900);padding:0;
+  }
+  .rgrid-cell.c-blue{background:rgba(74,120,170,0.35);}
+  .rgrid-cell.c-red{background:rgba(180,74,54,0.35);}
+  .rgrid-cell.c-green{background:rgba(90,140,80,0.35);}
+  .rgrid-cell.c-yellow{background:rgba(201,162,39,0.35);}
+  .rgrid-cell.sel{border:2px solid var(--gold-300);box-shadow:0 0 0 1px var(--gold-500) inset;}
+
+  .igrid-special{display:flex;gap:6px;}
+  .ispecial{
+    flex:1;padding:8px;font-size:11px;border-radius:7px;border:1px solid var(--line);
+    background:var(--iron-900);color:var(--paper-dim);
+  }
+  .ispecial.gold{color:var(--gold-300);}
+  .ispecial.sel{border-color:var(--gold-300);background:rgba(201,154,59,0.15);color:var(--gold-300);font-weight:700;}
+
+  .result{display:none;}
+  .result.show{display:block;}
+  .score-hero{text-align:center;padding:14px 0 8px;}
+  .score-hero .delta{font-family:'Shippori Mincho', serif;font-size:34px;color:var(--gold-300);font-weight:800;}
+  .score-hero .label{font-size:11px;color:var(--paper-dim);letter-spacing:.1em;}
+  .score-hero .newtotal{font-size:13px;color:var(--paper);margin-top:6px;}
+
+  .breakdown{border-top:1px dashed var(--line);padding-top:10px;margin-top:6px;}
+  .bline{display:flex;justify-content:space-between;font-size:12px;color:var(--paper-dim);padding:3px 0;}
+  .bline b{color:var(--paper);font-weight:600;}
+  .bline .src{font-size:10px;color:var(--ember-300);margin-left:4px;}
+
+  .flags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+  .flag{font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid var(--line);color:var(--paper-dim);}
+  .flag.hit{border-color:var(--gold-500);color:var(--gold-300);background:rgba(201,154,59,0.1);}
+  .flag.hit.big{border-color:var(--ember-500);color:var(--ember-300);background:rgba(232,103,43,0.12);}
+
+  .candidates{margin-top:10px;}
+  .cand{
+    border:1px solid var(--line); border-radius:9px; padding:10px; margin-bottom:8px; cursor:pointer;
+  }
+  .cand:hover, .cand.picked{border-color:var(--gold-500);background:rgba(201,154,59,0.08);}
+  .cand .ctop{display:flex;justify-content:space-between;font-size:12px;color:var(--paper);margin-bottom:4px;}
+  .cand .cdetail{font-size:11px;color:var(--paper-dim);}
+
+  .history{max-height:220px;overflow-y:auto;}
+  .hitem{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:8px 0;border-bottom:1px solid var(--line);}
+  .hitem:last-child{border-bottom:none;}
+  .hitem .meta{color:var(--paper-dim);font-size:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="anvil-mark">⚒</div>
+    <h1>鍛冶スコア ターンプランナー</h1>
+    <div class="subtitle">カジナイトアカデミー — 完成判断の計算補助</div>
+  </header>
+
+  <div class="panel ss-panel">
+    <button class="btn-secondary ss-toggle" id="ssToggleBtn" onclick="toggleScreenshotPanel()">📷 スクショを見る</button>
+    <div id="ssPanel" class="ss-body" style="display:none;">
+      <input type="file" accept="image/*" id="ssInput" onchange="handleScreenshotSelect(event)">
+      <div id="ssPreviewWrap" style="display:none;">
+        <img id="ssPreviewImg" class="ss-thumb" onclick="openScreenshotFull()">
+        <div class="hint-text">タップで全画面表示(ピンチで拡大できます)</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ssFullOverlay" class="ss-full-overlay" onclick="closeScreenshotFull()">
+    <img id="ssFullImg">
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">現在の状態</div>
+    <div class="row">
+      <div class="field">
+        <label>現在の鍛冶スコア</label>
+        <input type="number" id="currentScore" placeholder="0" inputmode="numeric" onchange="updateRank()">
+      </div>
+      <div class="field">
+        <label>段位(スコアから自動判定)</label>
+        <select id="rank" disabled>
+          <option value="1">見習い(+1)</option>
+          <option value="2">3級鍛冶師(+2)</option>
+          <option value="3">2級鍛冶師(+3)</option>
+          <option value="4">1級鍛冶師(+4)</option>
+        </select>
+      </div>
+    </div>
+    <label class="toggle" style="margin-top:2px;">
+      <input type="checkbox" id="force1kyu" onchange="updateRank()"> 1級鍛冶師に到達済み(試験合格) — 手動指定
+    </label>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">アクティブ枠(現在の並び)</div>
+    <div id="activeSlots"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">ストック</div>
+    <div id="stockList"></div>
+    <button class="btn-add" onclick="addStock()">+ ストックにレシピを追加</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">今回の練習で入手できる色</div>
+    <div class="hint-text">練習ごとに出せる色をタップで積み上げます(1回タップ=1個)。実際に使う練習パターンだけ「今回使う」をONにすると、ONのパターンの合計が計算に使われます。</div>
+    <div id="patternsList"></div>
+    <div class="supply-total">
+      <div class="supply-total-label">今回の合計</div>
+      <div id="supplyTotalSquares" class="squares-row"></div>
+      <div id="bonusOreNote" class="hint-text" style="margin-top:4px;"></div>
+    </div>
+    <label class="toggle" style="margin-top:10px;">
+      <input type="checkbox" id="noDiscard" onchange="onNoDiscardChange()"> ストックは破棄しない(個数だけで達成できる組み合わせのみ計算)
+    </label>
+    <div class="hint-text">All(色不問)の要求分は、対応色の余りから自動で充当されます。計算は個数だけで足りない場合、使わないストックの破棄(1枚→対応色1個)も自動で検討し、「要破棄」として候補に表示します(上のチェックで無効化できます)。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">計算</div>
+    <label class="toggle" style="margin-bottom:10px;">
+      <input type="checkbox" id="ignoreSupply" onchange="onIgnoreSupplyChange()"> 鉱石の個数を気にせず理論値で計算(パターンは使わない)
+    </label>
+    <button class="btn-primary" onclick="calcMax()">最大値になる組み合わせを計算</button>
+    <div class="row" style="margin-top:10px;">
+      <div class="field">
+        <label>目標スコア(合計) <span id="targetHint" class="target-hint"></span></label>
+        <input type="number" id="targetScore" placeholder="例: 300" inputmode="numeric" oninput="this.dataset.touched='1'">
+        <button class="btn-mini" style="margin-top:6px;" onclick="document.getElementById('targetScore').dataset.touched=''; updateTargetDefault();">直近のゾロ目に戻す</button>
+      </div>
+    </div>
+    <button class="btn-gold" onclick="calcTarget()">目標値に近い組み合わせを計算</button>
+  </div>
+
+  <div class="panel result" id="resultPanel">
+    <div class="panel-title">計算結果</div>
+    <div id="candidatesArea"></div>
+    <div class="score-hero">
+      <div class="label">選択中の加算</div>
+      <div class="delta" id="deltaOut">+0</div>
+      <div class="newtotal" id="newTotalOut"></div>
+    </div>
+    <div class="breakdown" id="breakdownOut"></div>
+    <div class="flags" id="flagsOut"></div>
+    <button class="btn-secondary" onclick="commitTurn()">この結果を採用してスコア・枠を更新</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">ターン履歴</div>
+    <div class="history" id="historyList"><div class="empty">まだ記録がありません</div></div>
+    <button class="btn-mini" onclick="clearHistory()" style="margin-top:10px;">履歴をクリア</button>
+  </div>
+
+</div>
+
+<script>
+const BASE = { ring:1, charm:2, bangle:3, necklace:5, gold:10 };
+const NAME = { ring:'指輪', charm:'チャーム', bangle:'腕輪', necklace:'首飾り', gold:'金レシピ', scarecrow:'カカシ' };
+const COLORS = ['赤','青','黄','緑'];
+
+let state = {
+  currentScore: 0,
+  rank: 1,
+  active: [
+    {id:'a0', type:'ring', color:'青', doit:true},
+    {id:'a1', type:'ring', color:'青', doit:true},
+    {id:'a2', type:'ring', color:'青', doit:true}
+  ],
+  stock: [],
+  patterns: Array.from({length:6}, (_,i)=>({
+    name: `パターン${i+1}`,
+    active: false,
+    counts: {青:0, 赤:0, 緑:0, 黄:0, 無色:0}
+  })),
+  bonusOre: {青:0, 赤:0, 緑:0, 黄:0},
+  noDiscard: false,
+  ignoreSupply: false
+};
+let stockCounter = 0;
+
+let ssDataUrl = null;
+function toggleScreenshotPanel(){
+  const panel = document.getElementById('ssPanel');
+  const btn = document.getElementById('ssToggleBtn');
+  const opening = panel.style.display === 'none';
+  panel.style.display = opening ? 'block' : 'none';
+  btn.textContent = opening ? '📷 スクショを隠す' : '📷 スクショを見る';
+}
+function handleScreenshotSelect(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    ssDataUrl = ev.target.result;
+    document.getElementById('ssPreviewImg').src = ssDataUrl;
+    document.getElementById('ssPreviewWrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function openScreenshotFull(){
+  if(!ssDataUrl) return;
+  document.getElementById('ssFullImg').src = ssDataUrl;
+  document.getElementById('ssFullOverlay').classList.add('show');
+}
+function closeScreenshotFull(){
+  document.getElementById('ssFullOverlay').classList.remove('show');
+}
+let candidates = [];
+let pickedIndex = 0;
+
+const PATTERN_COLORS = ['赤','青','黄','緑','無色'];
+const UNLIMITED_SUPPLY = {青:99, 赤:99, 緑:99, 黄:99, 無色:99};
+const SQUARE_CLASS = {'赤':'sq-red','青':'sq-blue','黄':'sq-yellow','緑':'sq-green','無色':'sq-none'};
+
+function squaresHTML(counts){
+  let html = '';
+  PATTERN_COLORS.forEach(c=>{
+    const n = counts[c] || 0;
+    for(let i=0;i<n;i++) html += `<span class="square ${SQUARE_CLASS[c]}"></span>`;
+  });
+  return html || '<span class="squares-empty">まだ未入力</span>';
+}
+
+function computeSupplyFromPatterns(){
+  const total = {青:0, 赤:0, 緑:0, 黄:0, 無色:0};
+  state.patterns.forEach(p=>{
+    if(!p.active) return;
+    PATTERN_COLORS.forEach(c=>{ total[c] += p.counts[c] || 0; });
+  });
+  ['青','赤','緑','黄'].forEach(c=>{ total[c] += state.bonusOre[c] || 0; });
+  return total;
+}
+
+function renderPatterns(){
+  const el = document.getElementById('patternsList');
+  el.innerHTML = state.patterns.map((p,i)=>`
+    <div class="pattern-card ${p.active?'on':''}">
+      <div class="pattern-head">
+        <label class="toggle">
+          <input type="checkbox" ${p.active?'checked':''} onchange="togglePatternActive(${i}, this.checked)"> ${p.name}・今回使う
+        </label>
+        <button class="btn-mini" onclick="resetPattern(${i})">リセット</button>
+      </div>
+      <div class="pattern-buttons">
+        ${PATTERN_COLORS.map(c=>`<button class="pcolor-btn ${SQUARE_CLASS[c]}" onclick="tapPatternColor(${i}, '${c}')">${c}</button>`).join('')}
+      </div>
+      <div class="squares-row">${squaresHTML(p.counts)}</div>
+    </div>
+  `).join('');
+  renderSupplyTotal();
+}
+function tapPatternColor(i, c){
+  state.patterns[i].counts[c] = (state.patterns[i].counts[c] || 0) + 1;
+  renderPatterns();
+  persistState();
+}
+function resetPattern(i){
+  PATTERN_COLORS.forEach(c=>{ state.patterns[i].counts[c] = 0; });
+  renderPatterns();
+  persistState();
+}
+function togglePatternActive(i, val){
+  state.patterns[i].active = val;
+  renderPatterns();
+  persistState();
+}
+function renderSupplyTotal(){
+  const total = computeSupplyFromPatterns();
+  document.getElementById('supplyTotalSquares').innerHTML = squaresHTML(total);
+  const bonusTotal = Object.values(state.bonusOre).reduce((a,b)=>a+b,0);
+  const bonusEl = document.getElementById('bonusOreNote');
+  if(bonusEl){
+    bonusEl.innerHTML = bonusTotal>0
+      ? `うちストック破棄分: ${squaresHTML(state.bonusOre)} <button class="btn-mini" onclick="resetBonusOre()">クリア</button>`
+      : '';
+  }
+}
+function resetBonusOre(){
+  state.bonusOre = {青:0, 赤:0, 緑:0, 黄:0};
+  renderPatterns();
+  persistState();
+}
+
+// 各アイテムの必要鉱石(対応色本体 / 三すくみの他色 / All=色不問)
+function requirement(item){
+  const c = item.color;
+  if(item.type==='gold') return { own:'黄', ownUnits:1, sec:null, secUnits:0, all:0 };
+  if(item.type==='scarecrow') return c==='黄'
+    ? { own:null, ownUnits:0, sec:null, secUnits:0, all:1 }
+    : { own:c, ownUnits:1, sec:null, secUnits:0, all:0 };
+  if(item.type==='ring') return c==='黄'
+    ? { own:null, ownUnits:0, sec:null, secUnits:0, all:2 }
+    : { own:c, ownUnits:1, sec:null, secUnits:0, all:1 };
+  if(item.type==='charm') return c==='黄'
+    ? { own:'黄', ownUnits:1, sec:null, secUnits:0, all:2 }
+    : { own:c, ownUnits:2, sec:null, secUnits:0, all:1 };
+  if(item.type==='necklace') return c==='黄'
+    ? { own:'黄', ownUnits:3, sec:null, secUnits:0, all:2 }
+    : { own:c, ownUnits:4, sec:null, secUnits:0, all:1 };
+  if(item.type==='bangle'){
+    if(c==='黄') return { own:'黄', ownUnits:2, sec:null, secUnits:0, all:2 };
+    const sec = {'赤':'青','緑':'赤','青':'緑'}[c];
+    return { own:c, ownUnits:2, sec, secUnits:1, all:1 };
+  }
+  return { own:null, ownUnits:0, sec:null, secUnits:0, all:0 };
+}
+
+// subsetIdxで完成させる全アイテムを、共有の供給量(supply)だけで同時にまかなえるか判定
+function subsetFeasible(triple, subsetIdx, supply){
+  const fixed = {青:0, 赤:0, 緑:0, 黄:0};
+  let allDemand = 0;
+  subsetIdx.forEach(i=>{
+    const req = requirement(triple[i]);
+    if(req.own) fixed[req.own] += req.ownUnits;
+    if(req.sec) fixed[req.sec] += req.secUnits;
+    allDemand += req.all;
+  });
+  for(const c of ['青','赤','緑','黄']){
+    if(fixed[c] > (supply[c] ?? 0)) return false;
+  }
+  let leftover = 0;
+  for(const c of ['青','赤','緑','黄']) leftover += Math.max(0, (supply[c] ?? 0) - fixed[c]);
+  leftover += (supply['無色'] ?? 0);
+  return leftover >= allDemand;
+}
+
+// 供給(supply)だけでは足りない場合に、triple外のストックを破棄して鉱石を補えるか判定
+// 戻り値: {feasible, discardIdx:[使用したstockインデックス], usedDiscard:boolean}
+function feasibleWithDiscard(triple, subsetIdx, supply, remainingStockIdx){
+  const fixed = {青:0, 赤:0, 緑:0, 黄:0};
+  let allDemand = 0;
+  subsetIdx.forEach(i=>{
+    const req = requirement(triple[i]);
+    if(req.own) fixed[req.own] += req.ownUnits;
+    if(req.sec) fixed[req.sec] += req.secUnits;
+    allDemand += req.all;
+  });
+  const discardIdx = [];
+  const usedStock = new Set();
+  // 1) 色ごとの不足分を、その色のストックを破棄して埋める
+  for(const c of ['青','赤','緑','黄']){
+    let need = fixed[c] - (supply[c] ?? 0);
+    for(const idx of remainingStockIdx){
+      if(need<=0) break;
+      if(usedStock.has(idx)) continue;
+      if(state.stock[idx].color===c){
+        usedStock.add(idx); discardIdx.push(idx); need--;
+      }
+    }
+    if(need>0) return { feasible:false };
+  }
+  // 2) All(色不問)分を、供給の余りと破棄分の余りでまかなえるか
+  let leftover = 0;
+  for(const c of ['青','赤','緑','黄']){
+    const got = (supply[c] ?? 0) + discardIdx.filter(idx=>state.stock[idx].color===c).length;
+    leftover += Math.max(0, got - fixed[c]);
+  }
+  leftover += (supply['無色'] ?? 0);
+  let allNeed = allDemand - leftover;
+  for(const idx of remainingStockIdx){
+    if(allNeed<=0) break;
+    if(usedStock.has(idx)) continue;
+    const col = state.stock[idx].color;
+    if(['青','赤','緑','黄'].includes(col)){
+      usedStock.add(idx); discardIdx.push(idx); allNeed--;
+    }
+  }
+  if(allNeed>0) return { feasible:false };
+  return { feasible:true, discardIdx, usedDiscard: discardIdx.length>0 };
+}
+
+const TYPE_ROWS = [['scarecrow','カカシ'],['ring','指輪'],['charm','チャーム'],['bangle','腕輪'],['necklace','首飾り']];
+const COLOR_CLASS = {'青':'c-blue','赤':'c-red','緑':'c-green','黄':'c-yellow'};
+
+function itemGridHTML(handler, i, cur){
+  let html = '<div class="rgrid">';
+  html += '<div class="rgrid-row"><div class="rgrid-label"></div>' +
+    TYPE_ROWS.map(([type,label])=>`<div class="rgrid-colhead">${label}</div>`).join('') + '</div>';
+  COLORS.forEach(c=>{
+    html += `<div class="rgrid-row"><div class="rgrid-label ${COLOR_CLASS[c]}">${c}</div>`;
+    TYPE_ROWS.forEach(([type,label])=>{
+      const sel = (cur.type===type && cur.color===c) ? 'sel' : '';
+      html += `<button class="rgrid-cell ${COLOR_CLASS[c]} ${sel}" onclick="${handler}(${i},'${type}','${c}')" aria-label="${label} ${c}"></button>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  const goldSel = cur.type==='gold' ? 'sel' : '';
+  html += `<div class="igrid-special">
+    <button class="ispecial gold ${goldSel}" onclick="${handler}(${i},'gold','金')">金レシピ(10点・色は金固定)</button>
+  </div>`;
+  return html;
+}
+
+function renderActive(){
+  const el = document.getElementById('activeSlots');
+  el.innerHTML = state.active.map((s,i)=>`
+    <div class="slot ${i===0?'active1':''}">
+      <div class="slot-head">
+        <div class="slot-name">アクティブ${i+1} ${i===0?'<span class="badge">2倍</span>':''}</div>
+        <div class="cur-pick">${s.type==='scarecrow' ? 'カカシ' : NAME[s.type]+'・'+s.color}</div>
+      </div>
+      ${itemGridHTML('pickActive', i, s)}
+      <label class="toggle" style="margin-top:4px;">
+        <input type="checkbox" ${s.doit!==false?'checked':''} onchange="setActiveDoit(${i}, this.checked)"> 今ターン完成させる
+      </label>
+    </div>
+  `).join('');
+}
+function pickActive(i, type, color){
+  state.active[i].type = type;
+  state.active[i].color = type==='gold' ? '金' : color;
+  renderActive(); persistState();
+}
+function setActiveDoit(i, val){
+  state.active[i].doit = val;
+  persistState();
+}
+
+function renderStock(){
+  const el = document.getElementById('stockList');
+  if(state.stock.length===0){
+    el.innerHTML = '<div class="empty">ストックは空です</div>';
+    return;
+  }
+  el.innerHTML = state.stock.map((s,i)=>`
+    <div class="stock-item">
+      <div class="stock-head">
+        <div class="stock-title">
+          <span class="badge stock-badge">ストック${i+1}</span>
+          <div class="cur-pick">${s.type==='scarecrow' ? 'カカシ' : NAME[s.type]+'・'+s.color}</div>
+        </div>
+        <div class="stock-actions">
+          <button class="btn-mini discard" onclick="discardStock(${i})">破棄→${s.color==='金'?'鉱石なし':s.color+'鉱石+1'}</button>
+          <button class="rm" onclick="removeStock(${i})">×</button>
+        </div>
+      </div>
+      ${itemGridHTML('pickStock', i, s)}
+    </div>
+  `).join('');
+}
+function addStock(){
+  const nextCount = state.stock.length + 1;
+  if(nextCount >= 7){
+    const ok = confirm(`${nextCount}枠目ですが、よろしいですか？(通常のストック上限は6枠です)`);
+    if(!ok) return;
+  }
+  state.stock.push({id:'s'+(stockCounter++), type:'ring', color:'青'});
+  renderStock(); persistState();
+}
+function removeStock(i){ state.stock.splice(i,1); renderStock(); persistState(); }
+function discardStock(i){
+  const item = state.stock[i];
+  const c = item.color;
+  state.stock.splice(i,1);
+  if(['青','赤','緑','黄'].includes(c)){
+    state.bonusOre[c] = (state.bonusOre[c] || 0) + 1;
+  }
+  renderStock(); renderPatterns(); persistState();
+}
+function pickStock(i, type, color){
+  state.stock[i].type = type;
+  state.stock[i].color = type==='gold' ? '金' : color;
+  renderStock(); persistState();
+}
+
+// ---- calculation engine ----
+function pool(){
+  return [
+    ...state.active.map((s,i)=>({...s, origin:'active', origIndex:i})),
+    ...state.stock.map((s,i)=>({...s, origin:'stock', origIndex:i}))
+  ];
+}
+function permute3(items){
+  const res = [];
+  for(let i=0;i<items.length;i++){
+    for(let j=0;j<items.length;j++){
+      if(j===i) continue;
+      for(let k=0;k<items.length;k++){
+        if(k===i||k===j) continue;
+        res.push([items[i], items[j], items[k]]);
+      }
+    }
+  }
+  return res;
+}
+function rawValue(triple){
+  // pass1
+  const raw = triple.map((it,pos)=> it.type==='scarecrow' ? null : BASE[it.type] * (pos===0?2:1));
+  // pass2 resolve scarecrow
+  return raw.map((v,i)=>{
+    if(v!==null) return v;
+    const up = i>0 ? (raw[i-1]||0) : 0;
+    const down = i<2 ? (raw[i+1]||0) : 0;
+    return up+down;
+  });
+}
+function scoreForSubset(triple, subsetIdx, rankBonus){
+  const raw = rawValue(triple);
+  const completed = subsetIdx.map(i=>({item:triple[i], score:raw[i]}));
+  const base = completed.reduce((a,c)=>a+c.score,0);
+  const colorCount = {}; completed.forEach(c=>{ if(c.item.color && c.item.color!=='-') colorCount[c.item.color]=(colorCount[c.item.color]||0)+1; });
+  const typeCount = {}; completed.forEach(c=>{ typeCount[c.item.type]=(typeCount[c.item.type]||0)+1; });
+  const colorHit = Object.values(colorCount).some(n=>n>=2);
+  const typeHit = Object.values(typeCount).some(n=>n>=2);
+  const colorBonus = colorHit ? rankBonus : 0;
+  const typeBonus = typeHit ? rankBonus : 0;
+  return { total: base+colorBonus+typeBonus, base, colorBonus, typeBonus, completed, raw };
+}
+function remainingStockIdxFor(triple){
+  const used = new Set(triple.filter(it=>it.origin==='stock').map(it=>it.origIndex));
+  return state.stock.map((_,idx)=>idx).filter(idx=>!used.has(idx));
+}
+// 供給だけ、ダメなら周辺ストックの破棄も検討して評価する(state.noDiscardがtrueなら破棄は探索しない)
+function evalSubset(triple, subset, supply, remainingStockIdx, rankBonus){
+  let discardIdx = [];
+  if(!subsetFeasible(triple, subset, supply)){
+    if(state.noDiscard) return null;
+    const res = feasibleWithDiscard(triple, subset, supply, remainingStockIdx);
+    if(!res.feasible) return null;
+    discardIdx = res.discardIdx;
+  }
+  const r = scoreForSubset(triple, subset, rankBonus);
+  return { subset, result:r, discardIdx };
+}
+// アクティブ枠のトグルで固定された「完成させる枠」
+function fixedSubset(){
+  return [0,1,2].filter(i => state.active[i].doit !== false);
+}
+
+function calcMax(){
+  const items = pool();
+  const rankBonus = Number(document.getElementById('rank').value);
+  const supply = state.ignoreSupply ? UNLIMITED_SUPPLY : computeSupplyFromPatterns();
+  const subset = fixedSubset();
+  if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
+  const triples = permute3(items);
+  let scored = [];
+  triples.forEach(triple=>{
+    const remainingStockIdx = remainingStockIdxFor(triple);
+    const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
+    if(!ev) return;
+    const holdValue = [0,1,2].filter(i=>!subset.includes(i)).reduce((a,i)=>a+ev.result.raw[i],0);
+    scored.push({ triple, subset, result:ev.result, holdValue, discardIdx:ev.discardIdx });
+  });
+  scored.sort((a,b)=> b.result.total - a.result.total || a.discardIdx.length - b.discardIdx.length || b.holdValue - a.holdValue);
+  const seen = new Set(); const top = [];
+  for(const s of scored){
+    const key = s.result.total+'|'+s.discardIdx.slice().sort().join(',')+'|'+s.triple.map(t=>t.type+t.color).join(',');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    top.push(s);
+    if(top.length>=4) break;
+  }
+  if(top.length===0){ alert('指定した「完成させる」枠を、入手可能な色の個数(+ストック破棄)ではまかなえません。個数・トグル・ストックの設定を確認してください。'); return; }
+  candidates = top;
+  pickedIndex = 0;
+  showResult();
+}
+
+function calcTarget(){
+  const target = Number(document.getElementById('targetScore').value);
+  if(!target && target!==0){ alert('目標スコアを入力してください'); return; }
+  const current = Number(document.getElementById('currentScore').value)||0;
+  const items = pool();
+  const rankBonus = Number(document.getElementById('rank').value);
+  const supply = state.ignoreSupply ? UNLIMITED_SUPPLY : computeSupplyFromPatterns();
+  const subset = fixedSubset();
+  if(subset.length===0){ alert('少なくとも1つのアクティブ枠で「今ターン完成させる」をONにしてください。'); return; }
+  const triples = permute3(items);
+  let scored = [];
+  triples.forEach(triple=>{
+    const remainingStockIdx = remainingStockIdxFor(triple);
+    const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
+    if(!ev) return;
+    const newTotal = current + ev.result.total;
+    scored.push({ triple, subset, result:ev.result, newTotal, discardIdx:ev.discardIdx, diff: Math.abs(newTotal-target) });
+  });
+  scored.sort((a,b)=> a.diff - b.diff || a.discardIdx.length - b.discardIdx.length || b.result.total - a.result.total);
+  const seen = new Set(); const top = [];
+  for(const s of scored){
+    const key = s.newTotal+'|'+s.discardIdx.slice().sort().join(',')+'|'+s.triple.map(t=>t.type+t.color).join(',');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    top.push(s);
+    if(top.length>=4) break;
+  }
+  if(top.length===0){ alert('指定した「完成させる」枠を、入手可能な色の個数(+ストック破棄)ではまかなえません。個数・トグル・ストックの設定を確認してください。'); return; }
+  candidates = top;
+  pickedIndex = 0;
+  showResult();
+}
+
+function itemLabel(it, pos){
+  const posTag = pos===0 ? ' ・アクティブ1(2倍)' : '';
+  let srcTag = '';
+  if(it.origin==='stock'){
+    srcTag = ` [ストック${it.origIndex+1}と交換]`;
+  } else if(it.origin==='active'){
+    srcTag = it.origIndex===pos ? ' [アクティブ'+(pos+1)+'のまま]' : ` [アクティブ${it.origIndex+1}から移動]`;
+  }
+  return `${NAME[it.type]}/${it.color}${posTag}${srcTag}`;
+}
+
+function discardLabel(discardIdx){
+  if(!discardIdx || discardIdx.length===0) return '';
+  const names = discardIdx.map(idx=>{
+    const s = state.stock[idx];
+    return s ? `ストック${idx+1}(${NAME[s.type]}/${s.color})` : `ストック${idx+1}`;
+  });
+  return names.join('・');
+}
+
+function showResult(){
+  const current = Number(document.getElementById('currentScore').value)||0;
+  const area = document.getElementById('candidatesArea');
+  if(candidates.length>1){
+    area.innerHTML = '<div class="candidates">' + candidates.map((c,i)=>`
+      <div class="cand ${i===pickedIndex?'picked':''}" onclick="pickCandidate(${i})">
+        <div class="ctop"><span>候補${i+1}</span><b>${current} → ${current+c.result.total}</b></div>
+        <div class="cdetail">${c.triple.map((it,p)=> (c.subset.includes(p)?'':'(保留)') + NAME[it.type]+'/'+it.color ).join(' ・ ')}</div>
+        ${c.discardIdx && c.discardIdx.length>0 ? `<div class="cdetail discard-note">要破棄: ${discardLabel(c.discardIdx)}</div>` : ''}
+      </div>
+    `).join('') + '</div>';
+  } else {
+    area.innerHTML = '';
+  }
+  renderPicked();
+  document.getElementById('resultPanel').classList.add('show');
+}
+
+function pickCandidate(i){ pickedIndex = i; showResult(); }
+
+function renderPicked(){
+  const current = Number(document.getElementById('currentScore').value)||0;
+  const c = candidates[pickedIndex];
+  if(!c) return;
+  document.getElementById('deltaOut').textContent = '+'+c.result.total;
+  document.getElementById('newTotalOut').textContent = current+' → '+(current+c.result.total)+' 点';
+
+  let bd = '';
+  if(c.discardIdx && c.discardIdx.length>0){
+    bd += `<div class="bline discard-note"><span>この組み合わせには破棄が必要</span><b>${discardLabel(c.discardIdx)}</b></div>`;
+  }
+  c.triple.forEach((it,pos)=>{
+    const done = c.subset.includes(pos);
+    const tag = done ? '' : '<span class="hold-tag">(保留・設置のみ)</span>';
+    bd += `<div class="bline"><span>${itemLabel(it,pos)} ${tag}</span><b>${done? '+'+c.result.raw[pos] : '−'}</b></div>`;
+  });
+  if(c.result.colorBonus>0) bd += `<div class="bline"><span>同色ボーナス</span><b>+${c.result.colorBonus}</b></div>`;
+  if(c.result.typeBonus>0) bd += `<div class="bline"><span>同系統ボーナス</span><b>+${c.result.typeBonus}</b></div>`;
+  document.getElementById('breakdownOut').innerHTML = bd;
+
+  const newTotal = current + c.result.total;
+  const flags = [];
+  const s = String(newTotal);
+  const last2 = s.length>=2 ? s.slice(-2) : s;
+  const last3 = s.length>=3 ? s.slice(-3) : null;
+  if(last3 && last3[0]===last3[1] && last3[1]===last3[2]){
+    flags.push({label:'3桁ゾロ目 → 金レシピ確定', hit:true, big:true});
+  } else if(newTotal>0 && newTotal%100===0){
+    flags.push({label:'100の倍数 → 金レシピ高確率', hit:true, big:true});
+  }
+  if(last2.length===2 && last2[0]===last2[1]){
+    flags.push({label:'下二桁ゾロ目 → カカシ確定', hit:true, big:false});
+  }
+  if(flags.length===0){ flags.push({label:'ゾロ目・100の倍数には該当なし', hit:false, big:false}); }
+  document.getElementById('flagsOut').innerHTML = flags.map(f=>`<div class="flag ${f.hit?'hit':''} ${f.big?'big':''}">${f.label}</div>`).join('');
+}
+
+async function loadState(){
+  try{
+    const res = await window.storage.get('kajinite-state', false);
+    if(res){
+      const saved = JSON.parse(res.value);
+      state = saved;
+      if(!state.patterns || state.patterns.length!==6){
+        state.patterns = Array.from({length:6}, (_,i)=>({
+          name: `パターン${i+1}`, active:false, counts:{青:0,赤:0,緑:0,黄:0,無色:0}
+        }));
+      }
+      if(!state.bonusOre) state.bonusOre = {青:0,赤:0,緑:0,黄:0};
+      if(typeof state.noDiscard !== 'boolean') state.noDiscard = false;
+      if(typeof state.ignoreSupply !== 'boolean') state.ignoreSupply = false;
+      state.active.forEach(s=>{ if(typeof s.doit !== 'boolean') s.doit = true; });
+    }
+  }catch(e){}
+}
+function onNoDiscardChange(){
+  state.noDiscard = document.getElementById('noDiscard').checked;
+  persistState();
+}
+function onIgnoreSupplyChange(){
+  state.ignoreSupply = document.getElementById('ignoreSupply').checked;
+  persistState();
+}
+async function persistState(){
+  state.currentScore = Number(document.getElementById('currentScore').value)||0;
+  state.rank = Number(document.getElementById('rank').value)||1;
+  state.force1kyu = document.getElementById('force1kyu').checked;
+  try{ await window.storage.set('kajinite-state', JSON.stringify(state), false); }catch(e){}
+}
+
+async function loadHistory(){
+  try{
+    const res = await window.storage.get('kajinite-history', false);
+    return res ? JSON.parse(res.value) : [];
+  }catch(e){ return []; }
+}
+async function saveHistory(list){
+  try{ await window.storage.set('kajinite-history', JSON.stringify(list), false); }catch(e){}
+}
+async function renderHistory(){
+  const list = await loadHistory();
+  const el = document.getElementById('historyList');
+  if(list.length===0){ el.innerHTML = '<div class="empty">まだ記録がありません</div>'; return; }
+  el.innerHTML = list.slice().reverse().map(h=>{
+    const items = h.triple.map((it,p)=> h.subset.includes(p) ? NAME[it.type] : null).filter(Boolean).join('・') || '完成なし';
+    return `<div class="hitem"><div><div>${h.before} → <b>${h.after}</b></div><div class="meta">${items}</div></div><div class="meta">+${h.result.total}</div></div>`;
+  }).join('');
+}
+
+async function commitTurn(){
+  const c = candidates[pickedIndex];
+  if(!c) return;
+  const current = Number(document.getElementById('currentScore').value)||0;
+  const after = current + c.result.total;
+
+  // build new stock: original items not used in triple・破棄対象でもないものだけ残す
+  const usedKeys = new Set(c.triple.map(it => it.origin+':'+it.origIndex));
+  const discardSet = new Set(c.discardIdx || []);
+  let newStock = [];
+  state.stock.forEach((s,i)=>{ if(!usedKeys.has('stock:'+i) && !discardSet.has(i)) newStock.push(s); });
+  state.active.forEach((s,i)=>{ if(!usedKeys.has('active:'+i)) newStock.push({id:'d'+i+Date.now(), type:s.type, color:s.color}); });
+
+  // build new active: for each position, if completed -> pending random draw; else -> that item content
+  const newActive = c.triple.map((it,pos)=> c.subset.includes(pos)
+    ? {id:'a'+pos, type:'ring', color:'青', doit:true} // placeholder for random refill, edit after seeing game result
+    : {id:'a'+pos, type:it.type, color:it.color, doit:true}
+  );
+
+  state.active = newActive;
+  state.stock = newStock;
+  state.currentScore = after;
+  document.getElementById('currentScore').value = after;
+  updateRank();
+
+  renderActive(); renderStock();
+  await persistState();
+
+  const hist = await loadHistory();
+  hist.push({ before: current, after, result: c.result, triple: c.triple, subset: c.subset });
+  await saveHistory(hist);
+  await renderHistory();
+
+  document.getElementById('resultPanel').classList.remove('show');
+  candidates = [];
+}
+
+function clearHistory(){ saveHistory([]).then(renderHistory); }
+
+function autoRankFromScore(score){
+  if(score>=150) return 3;
+  if(score>=50) return 2;
+  return 1;
+}
+function nearestZoro(current){
+  for(let v=current+1; v<=current+1000; v++){
+    const s = String(v);
+    if(s.length<3) continue;
+    const last3 = s.slice(-3);
+    if(last3[0]===last3[1] && last3[1]===last3[2]){
+      return { value:v, label:'3桁ゾロ目・金レシピ確定' };
+    }
+  }
+  return null;
+}
+function updateTargetDefault(){
+  const current = Number(document.getElementById('currentScore').value)||0;
+  const z = nearestZoro(current);
+  const targetInput = document.getElementById('targetScore');
+  const hint = document.getElementById('targetHint');
+  if(!z) return;
+  hint.textContent = `(直近のゾロ目 ${z.value}・${z.label})`;
+  if(!targetInput.dataset.touched){
+    targetInput.value = z.value;
+  }
+}
+function updateRank(){
+  const score = Number(document.getElementById('currentScore').value)||0;
+  const force1kyu = document.getElementById('force1kyu').checked;
+  const rank = force1kyu ? 4 : autoRankFromScore(score);
+  document.getElementById('rank').value = rank;
+  updateTargetDefault();
+  persistState();
+}
+
+async function init(){
+  await loadState();
+  document.getElementById('currentScore').value = state.currentScore || '';
+  document.getElementById('force1kyu').checked = !!state.force1kyu;
+  document.getElementById('noDiscard').checked = !!state.noDiscard;
+  document.getElementById('ignoreSupply').checked = !!state.ignoreSupply;
+  updateRank();
+  renderActive(); renderStock(); renderPatterns(); renderHistory();
+}
+init();
+</script>
+
+</body>
+</html>
