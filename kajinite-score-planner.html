@@ -195,6 +195,16 @@
   .slot-change{display:flex;flex-direction:column;gap:2px;border-bottom:1px solid var(--line);padding:6px 0;}
   .slot-change-row{display:flex;justify-content:space-between;align-items:baseline;}
   .slot-change-head{font-size:10px;color:var(--gold-300);font-weight:700;letter-spacing:.04em;}
+
+  .progress-box{
+    margin-top:8px;padding:8px;border-radius:8px;border:1px solid var(--line);
+    background:rgba(0,0,0,0.15);
+  }
+  .progress-title{font-size:10px;color:var(--gold-300);font-weight:700;margin-bottom:6px;}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;}
+  .progress-label{font-size:11px;color:var(--paper-dim);}
+  .progress-ctrl{display:flex;align-items:center;gap:6px;}
+  .progress-val{font-size:12px;color:var(--paper);min-width:34px;text-align:center;}
   .steps-title{
     font-size:11px;color:var(--gold-300);font-weight:700;letter-spacing:.04em;
     margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);
@@ -343,9 +353,9 @@ let state = {
   currentScore: 0,
   rank: 1,
   active: [
-    {id:'a0', type:'ring', color:'青', doit:true},
-    {id:'a1', type:'ring', color:'青', doit:true},
-    {id:'a2', type:'ring', color:'青', doit:true}
+    {id:'a0', type:'ring', color:'青', doit:true, filledOwn:0, filledSec:0, filledAll:0},
+    {id:'a1', type:'ring', color:'青', doit:true, filledOwn:0, filledSec:0, filledAll:0},
+    {id:'a2', type:'ring', color:'青', doit:true, filledOwn:0, filledSec:0, filledAll:0}
   ],
   stock: [],
   patterns: Array.from({length:6}, (_,i)=>({
@@ -475,68 +485,79 @@ function requirement(item){
   return { own:null, ownUnits:0, sec:null, secUnits:0, all:0 };
 }
 
-// subsetIdxで完成させる全アイテムを、共有の供給量(supply)だけで同時にまかなえるか判定
-function subsetFeasible(triple, subsetIdx, supply){
-  const fixed = {青:0, 赤:0, 緑:0, 黄:0};
-  let allDemand = 0;
-  subsetIdx.forEach(i=>{
-    const req = requirement(triple[i]);
-    if(req.own) fixed[req.own] += req.ownUnits;
-    if(req.sec) fixed[req.sec] += req.secUnits;
-    allDemand += req.all;
-  });
-  for(const c of ['青','赤','緑','黄']){
-    if(fixed[c] > (supply[c] ?? 0)) return false;
+// 鉱石は1個獲得すると、それを必要とする全アクティブレシピに同時に1個ずつ配られる
+// (レシピ同士は取り合いにならない)。そのため各レシピの達成判定は独立に行う。
+// ・対応色は、その色の獲得回数がownUnits以上あるか
+// ・三すくみの他色(腕輪)も同様に、その色の獲得回数が1以上あるか
+// ・All分は、今ターンの獲得回数の合計(色を問わず)が、そのレシピの必要総数
+//   (対応色+他色+All)以上あるかで判定する(余りがAllに自動充当されるイメージ)
+// アクティブに元からあるレシピは、そのスロットに記録された進捗(既に集めた鉱石)の
+// 分だけ、必要量が割り引かれる。ストックから来たレシピや別枠に移動したレシピも、
+// 元のアクティブ枠(origIndex)の進捗をそのまま引き継ぐ(ストックへ出た場合のみ
+// 進捗はリセットされる=commitTurnで新しいストック行に進捗を持ち込まない)。
+function effectiveRequirement(item){
+  const req = requirement(item);
+  let filledOwn=0, filledSec=0, filledAll=0;
+  if(item.origin==='active'){
+    const src = state.active[item.origIndex];
+    filledOwn = src.filledOwn||0;
+    filledSec = src.filledSec||0;
+    filledAll = src.filledAll||0;
   }
-  let leftover = 0;
-  for(const c of ['青','赤','緑','黄']) leftover += Math.max(0, (supply[c] ?? 0) - fixed[c]);
-  leftover += (supply['無色'] ?? 0);
-  return leftover >= allDemand;
+  return {
+    own: req.own,
+    ownUnits: Math.max(0, req.ownUnits - filledOwn),
+    sec: req.sec,
+    secUnits: Math.max(0, req.secUnits - filledSec),
+    all: Math.max(0, req.all - filledAll)
+  };
+}
+function itemFeasible(item, supply){
+  const req = effectiveRequirement(item);
+  const totalDraws = ['青','赤','緑','黄','無色'].reduce((a,c)=>a+(supply[c]||0), 0);
+  if(req.own && (supply[req.own]||0) < req.ownUnits) return false;
+  if(req.sec && (supply[req.sec]||0) < req.secUnits) return false;
+  const ownTotal = req.ownUnits + req.secUnits + req.all;
+  return totalDraws >= ownTotal;
 }
 
-// 供給(supply)だけでは足りない場合に、triple外のストックを破棄して鉱石を補えるか判定
-// 戻り値: {feasible, discardIdx:[使用したstockインデックス], usedDiscard:boolean}
+// subsetIdxの全アイテムが、それぞれ独立に(供給を取り合うことなく)完成可能か判定
+function subsetFeasible(triple, subsetIdx, supply){
+  return subsetIdx.every(i => itemFeasible(triple[i], supply));
+}
+
+function combinationsOfSize(arr, k){
+  const results = [];
+  function helper(start, chosen){
+    if(chosen.length===k){ results.push(chosen.slice()); return; }
+    for(let i=start;i<arr.length;i++){
+      chosen.push(arr[i]);
+      helper(i+1, chosen);
+      chosen.pop();
+    }
+  }
+  helper(0, []);
+  return results;
+}
+
+// 供給だけでは足りない場合に、triple外のストックを破棄して鉱石を補えるか判定。
+// 破棄で得た鉱石も同じ「全レシピに配られる」ルールに従うため、少ない破棄枚数で
+// 複数レシピが同時に達成可能になることがある。破棄枚数が最小になる組み合わせを探す。
 function feasibleWithDiscard(triple, subsetIdx, supply, remainingStockIdx){
-  const fixed = {青:0, 赤:0, 緑:0, 黄:0};
-  let allDemand = 0;
-  subsetIdx.forEach(i=>{
-    const req = requirement(triple[i]);
-    if(req.own) fixed[req.own] += req.ownUnits;
-    if(req.sec) fixed[req.sec] += req.secUnits;
-    allDemand += req.all;
-  });
-  const discardIdx = [];
-  const usedStock = new Set();
-  // 1) 色ごとの不足分を、その色のストックを破棄して埋める
-  for(const c of ['青','赤','緑','黄']){
-    let need = fixed[c] - (supply[c] ?? 0);
-    for(const idx of remainingStockIdx){
-      if(need<=0) break;
-      if(usedStock.has(idx)) continue;
-      if(state.stock[idx].color===c){
-        usedStock.add(idx); discardIdx.push(idx); need--;
+  for(let k=0; k<=remainingStockIdx.length; k++){
+    const combos = combinationsOfSize(remainingStockIdx, k);
+    for(const combo of combos){
+      const boosted = {...supply};
+      combo.forEach(idx=>{
+        const col = state.stock[idx].color;
+        if(['青','赤','緑','黄'].includes(col)) boosted[col] = (boosted[col]||0) + 1;
+      });
+      if(subsetIdx.every(i => itemFeasible(triple[i], boosted))){
+        return { feasible:true, discardIdx: combo, usedDiscard: combo.length>0 };
       }
     }
-    if(need>0) return { feasible:false };
   }
-  // 2) All(色不問)分を、供給の余りと破棄分の余りでまかなえるか
-  let leftover = 0;
-  for(const c of ['青','赤','緑','黄']){
-    const got = (supply[c] ?? 0) + discardIdx.filter(idx=>state.stock[idx].color===c).length;
-    leftover += Math.max(0, got - fixed[c]);
-  }
-  leftover += (supply['無色'] ?? 0);
-  let allNeed = allDemand - leftover;
-  for(const idx of remainingStockIdx){
-    if(allNeed<=0) break;
-    if(usedStock.has(idx)) continue;
-    const col = state.stock[idx].color;
-    if(['青','赤','緑','黄'].includes(col)){
-      usedStock.add(idx); discardIdx.push(idx); allNeed--;
-    }
-  }
-  if(allNeed>0) return { feasible:false };
-  return { feasible:true, discardIdx, usedDiscard: discardIdx.length>0 };
+  return { feasible:false };
 }
 
 const TYPE_ROWS = [['scarecrow','カカシ'],['ring','指輪'],['charm','チャーム'],['bangle','腕輪'],['necklace','首飾り']];
@@ -562,6 +583,48 @@ function itemGridHTML(handler, i, cur){
   return html;
 }
 
+function progressHTML(i, item){
+  const req = requirement(item);
+  let html = '<div class="progress-box">';
+  html += '<div class="progress-title">進捗(既に集めた鉱石)</div>';
+  if(req.own && req.ownUnits>0){
+    const filled = Math.min(state.active[i].filledOwn||0, req.ownUnits);
+    html += progressRow(i, 'Own', `対応色(${item.color})`, filled, req.ownUnits);
+  }
+  if(req.sec && req.secUnits>0){
+    const filled = Math.min(state.active[i].filledSec||0, req.secUnits);
+    html += progressRow(i, 'Sec', `他色(${req.sec})`, filled, req.secUnits);
+  }
+  if(req.all>0){
+    const filled = Math.min(state.active[i].filledAll||0, req.all);
+    html += progressRow(i, 'All', 'All(色不問)', filled, req.all);
+  }
+  if(!(req.own&&req.ownUnits>0) && !(req.sec&&req.secUnits>0) && !(req.all>0)){
+    html += '<div class="hint-text">このレシピは鉱石不要です</div>';
+  }
+  html += '</div>';
+  return html;
+}
+function progressRow(i, field, label, filled, max){
+  return `<div class="progress-row">
+    <span class="progress-label">${label}</span>
+    <div class="progress-ctrl">
+      <button class="btn-mini" onclick="adjustProgress(${i},'${field}',-1)">-</button>
+      <span class="progress-val">${filled}/${max}</span>
+      <button class="btn-mini" onclick="adjustProgress(${i},'${field}',1)">+</button>
+    </div>
+  </div>`;
+}
+function adjustProgress(i, field, delta){
+  const item = state.active[i];
+  const req = requirement(item);
+  const key = 'filled'+field;
+  const max = field==='Own' ? req.ownUnits : field==='Sec' ? req.secUnits : req.all;
+  item[key] = Math.max(0, Math.min(max, (item[key]||0)+delta));
+  renderActive();
+  persistState();
+}
+
 function renderActive(){
   const el = document.getElementById('activeSlots');
   el.innerHTML = state.active.map((s,i)=>`
@@ -574,12 +637,20 @@ function renderActive(){
       <label class="toggle" style="margin-top:4px;">
         <input type="checkbox" ${s.doit!==false?'checked':''} onchange="setActiveDoit(${i}, this.checked)"> 優先的に完成させたい
       </label>
+      ${progressHTML(i, s)}
     </div>
   `).join('');
 }
 function pickActive(i, type, color){
+  const changed = state.active[i].type!==type || state.active[i].color!==(type==='gold'?'金':color);
   state.active[i].type = type;
   state.active[i].color = type==='gold' ? '金' : color;
+  if(changed){
+    // 違うレシピに変わったら進捗はリセット(別の鉱石なので引き継げない)
+    state.active[i].filledOwn = 0;
+    state.active[i].filledSec = 0;
+    state.active[i].filledAll = 0;
+  }
   renderActive(); persistState();
 }
 function setActiveDoit(i, val){
@@ -988,7 +1059,12 @@ async function loadState(){
       if(!state.bonusOre) state.bonusOre = {青:0,赤:0,緑:0,黄:0};
       if(typeof state.noDiscard !== 'boolean') state.noDiscard = false;
       if(typeof state.ignoreSupply !== 'boolean') state.ignoreSupply = false;
-      state.active.forEach(s=>{ if(typeof s.doit !== 'boolean') s.doit = true; });
+      state.active.forEach(s=>{
+        if(typeof s.doit !== 'boolean') s.doit = true;
+        if(typeof s.filledOwn !== 'number') s.filledOwn = 0;
+        if(typeof s.filledSec !== 'number') s.filledSec = 0;
+        if(typeof s.filledAll !== 'number') s.filledAll = 0;
+      });
     }
   }catch(e){}
 }
@@ -1039,10 +1115,14 @@ async function commitTurn(){
   state.stock.forEach((s,i)=>{ if(!usedKeys.has('stock:'+i) && !discardSet.has(i)) newStock.push(s); });
   state.active.forEach((s,i)=>{ if(!usedKeys.has('active:'+i)) newStock.push({id:'d'+i+Date.now(), type:s.type, color:s.color}); });
 
-  // build new active: for each position, if completed -> pending random draw; else -> that item content
+  // build new active: for each position, if completed -> pending random draw(進捗0);
+  // else -> そのアイテムのまま設置(元がアクティブ由来なら進捗を引き継ぐ)
   const newActive = c.triple.map((it,pos)=> c.subset.includes(pos)
-    ? {id:'a'+pos, type:'ring', color:'青', doit:true} // placeholder for random refill, edit after seeing game result
-    : {id:'a'+pos, type:it.type, color:it.color, doit:true}
+    ? {id:'a'+pos, type:'ring', color:'青', doit:true, filledOwn:0, filledSec:0, filledAll:0} // placeholder for random refill, edit after seeing game result
+    : {id:'a'+pos, type:it.type, color:it.color, doit:true,
+       filledOwn: it.origin==='active' ? (state.active[it.origIndex].filledOwn||0) : 0,
+       filledSec: it.origin==='active' ? (state.active[it.origIndex].filledSec||0) : 0,
+       filledAll: it.origin==='active' ? (state.active[it.origIndex].filledAll||0) : 0}
   );
 
   state.active = newActive;
