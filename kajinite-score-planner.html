@@ -192,6 +192,18 @@
 
   .breakdown{border-top:1px dashed var(--line);padding-top:10px;margin-top:6px;}
   .bline{display:flex;justify-content:space-between;font-size:12px;color:var(--paper-dim);padding:3px 0;}
+  .slot-change{display:flex;flex-direction:column;gap:2px;border-bottom:1px solid var(--line);padding:6px 0;}
+  .slot-change-row{display:flex;justify-content:space-between;align-items:baseline;}
+  .slot-change-head{font-size:10px;color:var(--gold-300);font-weight:700;letter-spacing:.04em;}
+  .steps-title{
+    font-size:11px;color:var(--gold-300);font-weight:700;letter-spacing:.04em;
+    margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);
+  }
+  .steps-list{margin-top:6px;}
+  .step-line{
+    font-size:12px;color:var(--paper);padding:5px 8px;margin-bottom:4px;
+    background:rgba(0,0,0,0.15);border-radius:6px;border-left:2px solid var(--gold-500);
+  }
   .bline b{color:var(--paper);font-weight:600;}
   .bline .src{font-size:10px;color:var(--ember-300);margin-left:4px;}
 
@@ -262,6 +274,7 @@
 
   <div class="panel">
     <div class="panel-title">アクティブ枠(現在の並び)</div>
+    <div class="hint-text">「優先的に完成させたい」は全部チェックなしでもOK。その場合は特に希望なしとして、3枠すべての組み合わせから自由に最大値・目標値を探します。</div>
     <div id="activeSlots"></div>
   </div>
 
@@ -645,12 +658,78 @@ function permute3(items){
   }
   return res;
 }
+// あるtripleが実際に1ターンの交換操作で到達可能か判定する。
+// 「アクティブpos の中身が、別のアクティブorigIndexの元の中身」という依存が
+// 循環している場合(例: pos1←pos2の元, pos2←pos1の元)は、どちらを先に
+// 交換しても成立しないため、実現不可能として弾く。
+function isTripleAchievable(triple){
+  for(let pos=0; pos<3; pos++){
+    const it = triple[pos];
+    if(it.origin==='active' && it.origIndex===pos) continue; // そのまま:問題なし
+    const visited = new Set();
+    let cur = pos;
+    while(true){
+      if(visited.has(cur)) return false; // 循環を検出
+      visited.add(cur);
+      const curIt = triple[cur];
+      if(curIt.origin==='stock') break; // 実ストックまで辿れたので有効な起点
+      if(curIt.origin==='active'){
+        if(curIt.origIndex===cur) break; // 自分自身(そのまま)に到達
+        cur = curIt.origIndex;
+        continue;
+      }
+      break;
+    }
+  }
+  return true;
+}
+
+// 到達可能なtripleについて、実行すべき交換操作を順番通りに組み立てる
+function computeOperationSteps(triple){
+  const changed = [0,1,2].filter(pos => !(triple[pos].origin==='active' && triple[pos].origIndex===pos));
+  const steps = [];
+  const done = new Set();
+  changed.filter(pos=>triple[pos].origin==='stock').forEach(pos=>{
+    steps.push({pos, kind:'stock', stockIdx: triple[pos].origIndex});
+    done.add(pos);
+  });
+  let remaining = changed.filter(pos=>!done.has(pos));
+  let guard = 0;
+  while(remaining.length>0 && guard++<10){
+    const idx = remaining.findIndex(pos=> done.has(triple[pos].origIndex));
+    if(idx===-1) break; // 理論上は起きないはず(循環は事前に除外済み)
+    const pos = remaining[idx];
+    steps.push({pos, kind:'active', fromPos: triple[pos].origIndex});
+    done.add(pos);
+    remaining.splice(idx,1);
+  }
+  return steps;
+}
+function operationStepsHTML(triple){
+  const steps = computeOperationSteps(triple);
+  if(steps.length===0){
+    return '<div class="hint-text">交換は不要です(今の並びのまま完成できます)。</div>';
+  }
+  const lines = steps.map((s,i)=>{
+    if(s.kind==='stock'){
+      const st = state.stock[s.stockIdx];
+      const label = st ? `${NAME[st.type]}/${st.color}` : '(不明)';
+      return `${i+1}. アクティブ${s.pos+1} を ストック${s.stockIdx+1}(${label}) と交換`;
+    } else {
+      const fromItem = state.active[s.fromPos];
+      const label = `${NAME[fromItem.type]}/${fromItem.color}`;
+      return `${i+1}. アクティブ${s.pos+1} を アクティブ${s.fromPos+1}から出てきた${label} と交換`;
+    }
+  });
+  return '<div class="steps-list">' + lines.map(l=>`<div class="step-line">${l}</div>`).join('') + '</div>';
+}
+
 function generateCandidateTriples(){
   if(state.stock.length===0){
     // 交換の起点となる実ストックが無いので、今の並びを維持する1通りのみ
     return [[0,1,2].map(i=>({...state.active[i], origin:'active', origIndex:i}))];
   }
-  return permute3(pool());
+  return permute3(pool()).filter(isTripleAchievable);
 }
 function rawValue(triple){
   // pass1
@@ -802,14 +881,23 @@ function calcTarget(){
 }
 
 function itemLabel(it, pos){
-  const posTag = pos===0 ? ' ・アクティブ1(2倍)' : '';
+  const posTag = pos===0 ? '(アクティブ1・2倍)' : '';
+  const before = state.active[pos];
+  const beforeLabel = `${NAME[before.type]}/${before.color}`;
+  const afterLabel = `${NAME[it.type]}/${it.color}`;
+
+  const unchanged = it.origin==='active' && it.origIndex===pos;
+  if(unchanged){
+    return `${beforeLabel}${posTag ? ' '+posTag : ''}(そのまま)`;
+  }
+
   let srcTag = '';
   if(it.origin==='stock'){
-    srcTag = ` [ストック${it.origIndex+1}と交換]`;
+    srcTag = `ストック${it.origIndex+1}`;
   } else if(it.origin==='active'){
-    srcTag = it.origIndex===pos ? ' [アクティブ'+(pos+1)+'のまま]' : ` [アクティブ${it.origIndex+1}から移動]`;
+    srcTag = `アクティブ${it.origIndex+1}から`;
   }
-  return `${NAME[it.type]}/${it.color}${posTag}${srcTag}`;
+  return `${beforeLabel} → ${afterLabel}${posTag ? ' '+posTag : ''}(${srcTag})`;
 }
 
 function discardLabel(discardIdx){
@@ -856,8 +944,13 @@ function renderPicked(){
   c.triple.forEach((it,pos)=>{
     const done = c.subset.includes(pos);
     const tag = done ? '' : '<span class="hold-tag">(保留・設置のみ)</span>';
-    bd += `<div class="bline"><span>${itemLabel(it,pos)} ${tag}</span><b>${done? '+'+c.result.raw[pos] : '−'}</b></div>`;
+    bd += `<div class="slot-change">
+      <span class="slot-change-head">アクティブ${pos+1}</span>
+      <div class="slot-change-row"><span>${itemLabel(it,pos)} ${tag}</span><b>${done? '+'+c.result.raw[pos] : '−'}</b></div>
+    </div>`;
   });
+  bd += `<div class="steps-title">操作手順</div>`;
+  bd += operationStepsHTML(c.triple);
   if(c.result.colorBonus>0) bd += `<div class="bline"><span>同色ボーナス</span><b>+${c.result.colorBonus}</b></div>`;
   if(c.result.typeBonus>0) bd += `<div class="bline"><span>同系統ボーナス</span><b>+${c.result.typeBonus}</b></div>`;
   document.getElementById('breakdownOut').innerHTML = bd;
