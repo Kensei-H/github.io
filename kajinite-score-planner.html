@@ -100,6 +100,29 @@
   .ss-full-overlay.show{display:flex;}
   .ss-full-overlay img{max-width:100%;max-height:100%;border-radius:6px;}
 
+  .info-btn{
+    background:transparent;border:1px solid var(--gold-500);color:var(--gold-300);
+    font-size:10px;padding:2px 8px;border-radius:12px;margin-left:6px;vertical-align:middle;
+  }
+  .info-overlay{
+    display:none;position:fixed;inset:0;background:rgba(10,8,5,0.9);z-index:1001;
+    align-items:flex-start;justify-content:center;padding:20px;overflow:auto;
+  }
+  .info-overlay.show{display:flex;}
+  .info-box{
+    background:var(--iron-800, #2a241c);border:1px solid var(--gold-500);border-radius:12px;
+    max-width:520px;width:100%;padding:14px;
+  }
+  .info-head{
+    display:flex;justify-content:space-between;align-items:center;
+    color:var(--gold-300);font-weight:700;font-size:13px;margin-bottom:10px;
+  }
+  .info-sec{
+    color:var(--gold-300);font-size:11px;font-weight:700;letter-spacing:.05em;
+    margin-top:12px;margin-bottom:4px;border-bottom:1px dashed var(--line);padding-bottom:3px;
+  }
+  .info-line{font-size:12px;color:var(--paper);line-height:1.6;padding:2px 0;}
+
   .stock-item{
     padding:10px; border:1px solid var(--line);
     border-radius:8px; margin-bottom:8px; background:rgba(0,0,0,0.15);
@@ -164,6 +187,7 @@
   .rgrid-label.c-blue{color:#9dc3e8;}
   .rgrid-label.c-yellow{color:#f0d27a;}
   .rgrid-label.c-green{color:#a9d19f;}
+  .rgrid-label.c-gold{color:#e7cd8a;}
   .rgrid-colhead{flex:1;min-width:0;font-size:10px;text-align:center;color:var(--paper-dim);}
   .rgrid-cell{
     flex:1;min-width:0;height:32px;border-radius:6px;border:1px solid var(--line);cursor:pointer;
@@ -173,6 +197,7 @@
   .rgrid-cell.c-red{background:rgba(180,74,54,0.35);}
   .rgrid-cell.c-green{background:rgba(90,140,80,0.35);}
   .rgrid-cell.c-yellow{background:rgba(201,162,39,0.35);}
+  .rgrid-cell.c-gold{background:linear-gradient(135deg, rgba(231,205,138,0.5), rgba(166,124,46,0.5));}
   .rgrid-cell.sel{border:2px solid var(--gold-300);box-shadow:0 0 0 1px var(--gold-500) inset;}
 
   .igrid-special{display:flex;gap:6px;}
@@ -242,8 +267,45 @@
   <header>
     <div class="anvil-mark">⚒</div>
     <h1>鍛冶スコア計算ツール</h1>
-    <div class="subtitle">v1.0</div>
+    <div class="subtitle">v1.1 <button class="info-btn" onclick="toggleInfo()">ⓘ ルール</button></div>
   </header>
+
+  <div id="infoOverlay" class="info-overlay" onclick="if(event.target===this) toggleInfo()">
+    <div class="info-box">
+      <div class="info-head">
+        <span>ルール・制約まとめ</span>
+        <button class="btn-mini" onclick="toggleInfo()">閉じる</button>
+      </div>
+      <div class="info-body">
+        <div class="info-sec">スコア</div>
+        <div class="info-line">指輪1点 / チャーム2点 / 腕輪3点 / 首飾り5点 / 金レシピ(全種)10点</div>
+        <div class="info-line">カカシ:上下(隣接枠)のスコア合計。金カカシも同様</div>
+        <div class="info-line">アクティブ1で完成すると2倍</div>
+        <div class="info-line">同色2個以上同時完成で同色ボーナス、同種2個以上で同系統ボーナス(段位ごとに+1〜+4、各1回)。金同士も同色扱い</div>
+
+        <div class="info-sec">必要鉱石</div>
+        <div class="info-line">指輪:対応色1+All1 / チャーム:対応色2+All1 / 首飾り:対応色4+All1 / カカシ:対応色1</div>
+        <div class="info-line">腕輪:対応色2+三すくみ色1+All1(赤←青、緑←赤、青←緑)</div>
+        <div class="info-line">黄レシピ:指輪All2 / チャーム黄1+All2 / 腕輪黄2+All2 / 首飾り黄3+All2 / カカシAll1</div>
+        <div class="info-line">金レシピ:金鉱石は存在しない。カカシ黄1 / 指輪黄1+All1 / チャーム黄1+All2 / 腕輪黄1+All3 / 首飾り黄1+All4</div>
+
+        <div class="info-sec">鉱石の配布</div>
+        <div class="info-line">鉱石1個獲得すると、その色を必要とする全アクティブレシピに同時に1個ずつ配られる(取り合いにならない)</div>
+        <div class="info-line">1個の鉱石は「対応色の枠」か「All枠」のどちらか片方のみ。対応色優先</div>
+        <div class="info-line">練習は6種(持久力/筋力/瞬発力/命中/知能/メンタル)から毎ターン1つだけ選択</div>
+
+        <div class="info-sec">交換・ストック</div>
+        <div class="info-line">アクティブとストックは、色または種類が一致するもの同士のみ交換可能</div>
+        <div class="info-line">アクティブ同士の直接交換は不可。ただしストックを踏み台にした連鎖で実質移動できる(ストック0枚では一切動かせない)</div>
+        <div class="info-line">各アクティブ枠の交換は1ターン1回まで</div>
+        <div class="info-line">ストック破棄で対応色の鉱石1個獲得(金レシピは黄1個)</div>
+        <div class="info-line">貯めた鉱石(進捗)はアクティブに留まる限り引き継がれるが、ストックへ出ると失われる</div>
+
+        <div class="info-sec">ゾロ目</div>
+        <div class="info-line">スコア下二桁ゾロ目→カカシ確定 / 3桁ゾロ目(111,222…)→金レシピ確定 / 100の倍数→金レシピ約70%</div>
+      </div>
+    </div>
+  </div>
 
   <div class="panel ss-panel">
     <button class="btn-secondary ss-toggle" id="ssToggleBtn" onclick="toggleScreenshotPanel()">📷 スクショを見る</button>
@@ -345,7 +407,7 @@
 <script>
 const BASE = { ring:1, charm:2, bangle:3, necklace:5, gold:10 };
 const NAME = { ring:'指輪', charm:'チャーム', bangle:'腕輪', necklace:'首飾り', gold:'金レシピ', scarecrow:'カカシ' };
-const COLORS = ['赤','青','黄','緑'];
+const COLORS = ['赤','青','黄','緑','金'];
 
 const PRACTICE_NAMES = ['持久力','筋力','瞬発力','命中','知能','メンタル'];
 
@@ -368,7 +430,20 @@ let state = {
 };
 let stockCounter = 0;
 
+// 状態(アクティブ/ストック/パターン/進捗など)が変わったら、古い計算結果は無効。
+// 画面に残したままだと編集後の状態と混ざって存在しないレシピが表示されるため、
+// 変更のたびに結果パネルを閉じて候補を破棄する。
+function invalidateResults(){
+  candidates = [];
+  pickedIndex = 0;
+  const panel = document.getElementById('resultPanel');
+  if(panel) panel.classList.remove('show');
+}
+
 let ssDataUrl = null;
+function toggleInfo(){
+  document.getElementById('infoOverlay').classList.toggle('show');
+}
 function toggleScreenshotPanel(){
   const panel = document.getElementById('ssPanel');
   const btn = document.getElementById('ssToggleBtn');
@@ -438,11 +513,13 @@ function renderPatterns(){
 }
 function tapPatternColor(i, c){
   state.patterns[i].counts[c] = (state.patterns[i].counts[c] || 0) + 1;
+  invalidateResults();
   renderPatterns();
   persistState();
 }
 function resetPattern(i){
   PATTERN_COLORS.forEach(c=>{ state.patterns[i].counts[c] = 0; });
+  invalidateResults();
   renderPatterns();
   persistState();
 }
@@ -457,6 +534,7 @@ function renderBonusOreNote(){
 }
 function resetBonusOre(){
   state.bonusOre = {青:0, 赤:0, 緑:0, 黄:0};
+  invalidateResults();
   renderPatterns();
   persistState();
 }
@@ -464,7 +542,11 @@ function resetBonusOre(){
 // 各アイテムの必要鉱石(対応色本体 / 三すくみの他色 / All=色不問)
 function requirement(item){
   const c = item.color;
-  if(item.type==='gold') return { own:'黄', ownUnits:1, sec:null, secUnits:0, all:0 };
+  // 金レシピ: 金の鉱石は存在せず、黄1個+All n個で完成する
+  if(c==='金'){
+    const allByType = { scarecrow:0, ring:1, charm:2, bangle:3, necklace:4 };
+    return { own:'黄', ownUnits:1, sec:null, secUnits:0, all: allByType[item.type] ?? 0 };
+  }
   if(item.type==='scarecrow') return c==='黄'
     ? { own:null, ownUnits:0, sec:null, secUnits:0, all:1 }
     : { own:c, ownUnits:1, sec:null, secUnits:0, all:0 };
@@ -572,7 +654,7 @@ function feasibleWithDiscard(triple, subsetIdx, supply, remainingStockIdx){
 }
 
 const TYPE_ROWS = [['scarecrow','カカシ'],['ring','指輪'],['charm','チャーム'],['bangle','腕輪'],['necklace','首飾り']];
-const COLOR_CLASS = {'青':'c-blue','赤':'c-red','緑':'c-green','黄':'c-yellow'};
+const COLOR_CLASS = {'青':'c-blue','赤':'c-red','緑':'c-green','黄':'c-yellow','金':'c-gold'};
 
 function itemGridHTML(handler, i, cur){
   let html = '<div class="rgrid">';
@@ -587,10 +669,6 @@ function itemGridHTML(handler, i, cur){
     html += '</div>';
   });
   html += '</div>';
-  const goldSel = cur.type==='gold' ? 'sel' : '';
-  html += `<div class="igrid-special">
-    <button class="ispecial gold ${goldSel}" onclick="${handler}(${i},'gold','金')">金レシピ(10点・色は金固定)</button>
-  </div>`;
   return html;
 }
 
@@ -632,6 +710,7 @@ function adjustProgress(i, field, delta){
   const key = 'filled'+field;
   const max = field==='Own' ? req.ownUnits : field==='Sec' ? req.secUnits : req.all;
   item[key] = Math.max(0, Math.min(max, (item[key]||0)+delta));
+  invalidateResults();
   renderActive();
   persistState();
 }
@@ -653,19 +732,21 @@ function renderActive(){
   `).join('');
 }
 function pickActive(i, type, color){
-  const changed = state.active[i].type!==type || state.active[i].color!==(type==='gold'?'金':color);
+  const changed = state.active[i].type!==type || state.active[i].color!==color;
   state.active[i].type = type;
-  state.active[i].color = type==='gold' ? '金' : color;
+  state.active[i].color = color;
   if(changed){
     // 違うレシピに変わったら進捗はリセット(別の鉱石なので引き継げない)
     state.active[i].filledOwn = 0;
     state.active[i].filledSec = 0;
     state.active[i].filledAll = 0;
   }
+  invalidateResults();
   renderActive(); persistState();
 }
 function setActiveDoit(i, val){
   state.active[i].doit = val;
+  invalidateResults();
   persistState();
 }
 
@@ -683,7 +764,7 @@ function renderStock(){
           <div class="cur-pick">${s.type==='scarecrow' ? 'カカシ' : NAME[s.type]+'・'+s.color}</div>
         </div>
         <div class="stock-actions">
-          <button class="btn-mini discard" onclick="discardStock(${i})">破棄→${s.color==='金'?'鉱石なし':s.color+'鉱石+1'}</button>
+          <button class="btn-mini discard" onclick="discardStock(${i})">破棄→${s.color==='金'?'黄':s.color}鉱石+1</button>
           <button class="rm" onclick="removeStock(${i})">×</button>
         </div>
       </div>
@@ -698,21 +779,25 @@ function addStock(){
     if(!ok) return;
   }
   state.stock.push({id:'s'+(stockCounter++), type:'ring', color:'青'});
+  invalidateResults();
   renderStock(); persistState();
 }
-function removeStock(i){ state.stock.splice(i,1); renderStock(); persistState(); }
+function removeStock(i){ state.stock.splice(i,1); invalidateResults(); renderStock(); persistState(); }
 function discardStock(i){
   const item = state.stock[i];
-  const c = item.color;
+  // 破棄で得られるのは対応色の鉱石1個。金レシピの対応色は黄
+  const c = item.color==='金' ? '黄' : item.color;
   state.stock.splice(i,1);
   if(['青','赤','緑','黄'].includes(c)){
     state.bonusOre[c] = (state.bonusOre[c] || 0) + 1;
   }
+  invalidateResults();
   renderStock(); renderPatterns(); persistState();
 }
 function pickStock(i, type, color){
   state.stock[i].type = type;
-  state.stock[i].color = type==='gold' ? '金' : color;
+  state.stock[i].color = color;
+  invalidateResults();
   renderStock(); persistState();
 }
 
@@ -825,11 +910,33 @@ function generateCandidateTriples(){
     // 交換の起点となる実ストックが無いので、今の並びを維持する1通りのみ
     return [[0,1,2].map(i=>({...state.active[i], origin:'active', origIndex:i}))];
   }
-  return permute3(pool()).filter(isTripleAchievable).filter(isColorOrTypeCompatible);
+  const raw = permute3(pool()).filter(isTripleAchievable).filter(isColorOrTypeCompatible);
+  // 中身(色・種類・引き継ぐ進捗)が同一なら結果も同一なので、交換回数が
+  // 最少のものだけ残す。同色同種の意味のない交換はここで消える。
+  const changesOf = tr => tr.filter((it,pos)=> !(it.origin==='active' && it.origIndex===pos)).length;
+  const sigOf = tr => tr.map(it=>{
+    const prog = it.origin==='active'
+      ? `${state.active[it.origIndex].filledOwn||0},${state.active[it.origIndex].filledSec||0},${state.active[it.origIndex].filledAll||0}`
+      : '0,0,0';
+    return `${it.type}/${it.color}/${prog}`;
+  }).join('|');
+  const bestBySig = new Map();
+  raw.forEach(tr=>{
+    const sig = sigOf(tr);
+    const existing = bestBySig.get(sig);
+    if(!existing || changesOf(tr) < changesOf(existing)){
+      bestBySig.set(sig, tr);
+    }
+  });
+  return Array.from(bestBySig.values());
 }
 function rawValue(triple){
-  // pass1
-  const raw = triple.map((it,pos)=> it.type==='scarecrow' ? null : BASE[it.type] * (pos===0?2:1));
+  // pass1: 金レシピ(カカシ以外)は種類に関係なく10点。カカシは色を問わず隣接合計
+  const raw = triple.map((it,pos)=>{
+    if(it.type==='scarecrow') return null;
+    const baseVal = it.color==='金' ? 10 : BASE[it.type];
+    return baseVal * (pos===0?2:1);
+  });
   // pass2 resolve scarecrow
   return raw.map((v,i)=>{
     if(v!==null) return v;
@@ -876,30 +983,39 @@ function subsetsWithin(allowedIdx){
   return ALL.filter(s => s.every(i=>allowedIdx.includes(i)));
 }
 
-function bestForSupply(supply, preferred, rankBonus){
+function topForSupply(supply, preferred, rankBonus, topN){
   const triples = generateCandidateTriples();
   const subsets = subsetsWithin(preferred).filter(s=>s.length>0);
-  let best = null;
+  const scored = [];
   triples.forEach(triple=>{
     const remainingStockIdx = remainingStockIdxFor(triple);
     subsets.forEach(subset=>{
       const ev = evalSubset(triple, subset, supply, remainingStockIdx, rankBonus);
       if(!ev) return;
       const holdValue = [0,1,2].filter(i=>!subset.includes(i)).reduce((a,i)=>a+ev.result.raw[i],0);
-      const better = !best
-        || ev.result.total > best.result.total
-        || (ev.result.total===best.result.total && subset.length > best.subset.length)
-        || (ev.result.total===best.result.total && subset.length===best.subset.length && ev.discardIdx.length < best.discardIdx.length)
-        || (ev.result.total===best.result.total && subset.length===best.subset.length && ev.discardIdx.length===best.discardIdx.length && holdValue > best.holdValue);
-      if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, holdValue };
+      scored.push({ triple, subset, result: ev.result, discardIdx: ev.discardIdx, holdValue });
     });
   });
-  return best;
+  scored.sort((a,b)=>
+    b.result.total - a.result.total
+    || b.subset.length - a.subset.length
+    || a.discardIdx.length - b.discardIdx.length
+    || b.holdValue - a.holdValue);
+  // 同一の完成内容(スコア・完成枠・破棄)は重複として1つに絞る
+  const seen = new Set(); const top = [];
+  for(const s of scored){
+    const key = s.result.total+'|'+s.subset.join(',')+'|'+s.discardIdx.slice().sort().join(',')+'|'+s.triple.map(t=>t.type+t.color).join(',');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    top.push(s);
+    if(top.length>=topN) break;
+  }
+  return top;
 }
-function bestForSupplyTarget(supply, preferred, rankBonus, current, target){
+function topForSupplyTarget(supply, preferred, rankBonus, current, target, topN){
   const triples = generateCandidateTriples();
   const subsets = subsetsWithin(preferred).filter(s=>s.length>0);
-  let best = null;
+  const scored = [];
   triples.forEach(triple=>{
     const remainingStockIdx = remainingStockIdxFor(triple);
     subsets.forEach(subset=>{
@@ -907,14 +1023,22 @@ function bestForSupplyTarget(supply, preferred, rankBonus, current, target){
       if(!ev) return;
       const newTotal = current + ev.result.total;
       const diff = Math.abs(newTotal-target);
-      const better = !best
-        || diff < best.diff
-        || (diff===best.diff && ev.discardIdx.length < best.discardIdx.length)
-        || (diff===best.diff && ev.discardIdx.length===best.discardIdx.length && ev.result.total > best.result.total);
-      if(better) best = { triple, subset, result: ev.result, discardIdx: ev.discardIdx, newTotal, diff };
+      scored.push({ triple, subset, result: ev.result, discardIdx: ev.discardIdx, newTotal, diff });
     });
   });
-  return best;
+  scored.sort((a,b)=>
+    a.diff - b.diff
+    || a.discardIdx.length - b.discardIdx.length
+    || b.result.total - a.result.total);
+  const seen = new Set(); const top = [];
+  for(const s of scored){
+    const key = s.newTotal+'|'+s.subset.join(',')+'|'+s.discardIdx.slice().sort().join(',')+'|'+s.triple.map(t=>t.type+t.color).join(',');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    top.push(s);
+    if(top.length>=topN) break;
+  }
+  return top;
 }
 
 function calcMax(){
@@ -924,9 +1048,9 @@ function calcMax(){
   const preferred = preferredRaw.length>0 ? preferredRaw : [0,1,2];
 
   if(state.ignoreSupply){
-    const best = bestForSupply(UNLIMITED_SUPPLY, preferred, rankBonus);
-    if(!best){ alert('優先指定した枠のいずれかも、実現できる組み合わせが見つかりません。'); return; }
-    candidates = [{...best, patternIdx:null, patternName:'理論値(鉱石は気にしない)'}];
+    const top = topForSupply(UNLIMITED_SUPPLY, preferred, rankBonus, 5);
+    if(top.length===0){ alert('優先指定した枠のいずれかも、実現できる組み合わせが見つかりません。'); return; }
+    candidates = top.map((t,i)=>({...t, patternIdx:null, patternName:`理論値 案${i+1}`}));
     pickedIndex = 0;
     showResult();
     return;
@@ -935,8 +1059,8 @@ function calcMax(){
   const results = [];
   state.patterns.forEach((p,idx)=>{
     const supply = computeSupplyForPattern(idx);
-    const best = bestForSupply(supply, preferred, rankBonus);
-    if(best) results.push({...best, patternIdx:idx, patternName:p.name});
+    const top = topForSupply(supply, preferred, rankBonus, 5);
+    top.forEach((t,i)=> results.push({...t, patternIdx:idx, patternName:`${p.name} 案${i+1}`}));
   });
   if(results.length===0){ alert('どの練習パターンを選んでも、優先指定した枠を1つも完成させられません。パターンの色構成やストックを見直してください。'); return; }
   results.sort((a,b)=> b.result.total - a.result.total || a.discardIdx.length - b.discardIdx.length || b.holdValue - a.holdValue);
@@ -955,9 +1079,9 @@ function calcTarget(){
   const preferred = preferredRaw.length>0 ? preferredRaw : [0,1,2];
 
   if(state.ignoreSupply){
-    const best = bestForSupplyTarget(UNLIMITED_SUPPLY, preferred, rankBonus, current, target);
-    if(!best){ alert('優先指定した枠のいずれかも、実現できる組み合わせが見つかりません。'); return; }
-    candidates = [{...best, patternIdx:null, patternName:'理論値(鉱石は気にしない)'}];
+    const top = topForSupplyTarget(UNLIMITED_SUPPLY, preferred, rankBonus, current, target, 5);
+    if(top.length===0){ alert('優先指定した枠のいずれかも、実現できる組み合わせが見つかりません。'); return; }
+    candidates = top.map((t,i)=>({...t, patternIdx:null, patternName:`理論値 案${i+1}`}));
     pickedIndex = 0;
     showResult();
     return;
@@ -966,8 +1090,8 @@ function calcTarget(){
   const results = [];
   state.patterns.forEach((p,idx)=>{
     const supply = computeSupplyForPattern(idx);
-    const best = bestForSupplyTarget(supply, preferred, rankBonus, current, target);
-    if(best) results.push({...best, patternIdx:idx, patternName:p.name});
+    const top = topForSupplyTarget(supply, preferred, rankBonus, current, target, 5);
+    top.forEach((t,i)=> results.push({...t, patternIdx:idx, patternName:`${p.name} 案${i+1}`}));
   });
   if(results.length===0){ alert('どの練習パターンを選んでも、優先指定した枠を1つも完成させられません。パターンの色構成やストックを見直してください。'); return; }
   results.sort((a,b)=> a.diff - b.diff || a.discardIdx.length - b.discardIdx.length || b.result.total - a.result.total);
@@ -1084,6 +1208,10 @@ async function loadState(){
       if(!state.bonusOre) state.bonusOre = {青:0,赤:0,緑:0,黄:0};
       if(typeof state.noDiscard !== 'boolean') state.noDiscard = false;
       if(typeof state.ignoreSupply !== 'boolean') state.ignoreSupply = false;
+      // 旧バージョンの「金レシピ」(type:'gold')は金色の指輪(黄1+All1)として引き継ぐ
+      [...state.active, ...state.stock].forEach(s=>{
+        if(s.type==='gold'){ s.type='ring'; s.color='金'; }
+      });
       state.active.forEach(s=>{
         if(typeof s.doit !== 'boolean') s.doit = true;
         if(typeof s.filledOwn !== 'number') s.filledOwn = 0;
@@ -1095,10 +1223,12 @@ async function loadState(){
 }
 function onNoDiscardChange(){
   state.noDiscard = document.getElementById('noDiscard').checked;
+  invalidateResults();
   persistState();
 }
 function onIgnoreSupplyChange(){
   state.ignoreSupply = document.getElementById('ignoreSupply').checked;
+  invalidateResults();
   persistState();
 }
 async function persistState(){
@@ -1203,6 +1333,7 @@ function updateRank(){
   const rank = force1kyu ? 4 : autoRankFromScore(score);
   document.getElementById('rank').value = rank;
   updateTargetDefault();
+  invalidateResults();
   persistState();
 }
 
