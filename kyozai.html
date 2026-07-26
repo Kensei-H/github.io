@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>成功の原理を学ぶコース</title>
+<style>
+:root{
+  --paper:#FCFBF8;--paper-2:#F3F1EA;--ink:#1B1E21;
+  --indigo:#21456E;--indigo-2:#3D6797;--indigo-pale:#E7EDF4;
+  --vermilion:#C0453B;--marker:#F7E96B;--muted:#6A7078;--rule:#D9D5CB;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;
+  --gothic:"Hiragino Sans","Yu Gothic","YuGothic","Noto Sans JP","Meiryo",sans-serif;
+  --bar:60px;
+}
+*{box-sizing:border-box}
+html{font-size:17px;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+html[data-fs="s"]{font-size:15px}
+html[data-fs="m"]{font-size:17px}
+html[data-fs="l"]{font-size:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);line-height:2;font-feature-settings:"palt"}
+img,svg{max-width:100%}
+ruby rt{font-size:.5em;color:var(--muted);font-weight:400}
+p{margin:0 0 1.2em}
+strong{font-weight:700}
+
+/* ===== トップバー ===== */
+.topbar{
+  position:sticky;top:0;z-index:40;height:var(--bar);
+  background:var(--indigo);color:#fff;display:flex;align-items:center;gap:.8rem;
+  padding:0 1rem;box-shadow:0 1px 6px rgba(0,0,0,.15)
+}
+.hamburger{
+  width:44px;height:44px;border:none;background:transparent;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:center;gap:5px;padding:10px;border-radius:4px
+}
+.hamburger span{display:block;height:2.5px;background:#fff;border-radius:2px;transition:.3s}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.topbar-title{font-family:var(--mincho);font-size:1.05rem;letter-spacing:.12em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar-title small{display:block;font-family:var(--gothic);font-size:.62rem;letter-spacing:.24em;color:#C7D5E6;font-weight:400;line-height:1}
+/* 文字サイズ調整 */
+.fontsize{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.13);border-radius:999px;padding:3px;flex:none}
+.fontsize button{
+  border:none;background:transparent;color:#C7D5E6;cursor:pointer;font-family:var(--gothic);
+  line-height:1;border-radius:999px;padding:.35rem .5rem;display:flex;align-items:baseline;justify-content:center;transition:.2s
+}
+.fontsize button:hover{color:#fff}
+.fontsize button.on{background:#fff;color:var(--indigo);font-weight:700}
+.fontsize .fs-a{font-weight:700}
+.fontsize .s .fs-a{font-size:.8rem}
+.fontsize .m .fs-a{font-size:.98rem}
+.fontsize .l .fs-a{font-size:1.18rem}
+
+/* ===== ドロワー ===== */
+.overlay{position:fixed;inset:0;background:rgba(15,25,40,.45);opacity:0;visibility:hidden;transition:.3s;z-index:45}
+.overlay.show{opacity:1;visibility:visible}
+.drawer{
+  position:fixed;top:0;left:0;height:100%;width:min(84vw,340px);z-index:50;
+  background:var(--paper);box-shadow:2px 0 20px rgba(0,0,0,.2);
+  transform:translateX(-100%);transition:transform .32s cubic-bezier(.2,.7,.3,1);
+  overflow-y:auto;padding-bottom:2rem
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{background:var(--indigo);color:#fff;padding:1.4rem 1.5rem}
+.drawer-head h2{font-family:var(--mincho);font-size:1.15rem;margin:0;letter-spacing:.1em}
+.drawer-head p{margin:.3rem 0 0;font-size:.72rem;letter-spacing:.22em;color:#C7D5E6}
+.chaplist{list-style:none;margin:0;padding:.6rem 0}
+.chaplist li{margin:0}
+.chaplist button{
+  width:100%;text-align:left;background:none;border:none;cursor:pointer;
+  padding:1rem 1.5rem;font-family:var(--gothic);font-size:1rem;color:var(--ink);
+  border-left:4px solid transparent;line-height:1.5;display:flex;gap:.8rem;align-items:baseline
+}
+.chaplist button:hover{background:var(--indigo-pale)}
+.chaplist button .num{font-family:var(--mincho);color:var(--vermilion);font-size:.85rem;white-space:nowrap}
+.chaplist button.active{background:var(--indigo-pale);border-left-color:var(--vermilion);font-weight:700}
+.chaplist button .sub{display:block;font-size:.78rem;color:var(--muted);font-weight:400;margin-top:.15rem}
+
+/* ===== 表示切替トグル ===== */
+.viewtoggle{
+  max-width:880px;margin:1.4rem auto 0;padding:0 5vw;
+  display:flex;gap:.5rem;align-items:center
+}
+.viewtoggle .seg{display:inline-flex;background:var(--paper-2);border:1px solid var(--rule);border-radius:999px;padding:3px}
+.viewtoggle button{
+  border:none;background:transparent;cursor:pointer;font-family:var(--gothic);
+  font-size:.86rem;padding:.5rem 1.1rem;border-radius:999px;color:var(--muted);line-height:1.3;
+  transition:.2s;white-space:nowrap
+}
+.viewtoggle button.on{background:var(--indigo);color:#fff;font-weight:700}
+.viewtoggle .vt-label{font-size:.74rem;letter-spacing:.14em;color:var(--muted);margin-right:.2rem}
+
+/* ===== 原文表示 ===== */
+.rawview{display:none}
+.chapter.rawmode .figview{display:none}
+.chapter.rawmode .rawview{display:block}
+.raw-wrap{max-width:760px;margin:0 auto;padding:2.4rem 5vw 1rem}
+.raw-intro{font-size:.82rem;letter-spacing:.1em;color:var(--muted);border-left:3px solid var(--vermilion);padding-left:.8rem;margin-bottom:2rem;line-height:1.9}
+.raw-title{font-family:var(--mincho);font-size:1.5rem;color:var(--indigo);letter-spacing:.14em;text-align:center;margin:0 0 .4rem}
+.raw-rule{border-top:2px solid var(--indigo);max-width:14em;margin:0 auto 2rem}
+.raw-body{font-family:var(--mincho);font-size:1.06rem;line-height:2.15;text-align:justify}
+.raw-body p{margin:0 0 1.4em;text-indent:1em}
+
+/* ===== 本文共通 ===== */
+.wrap{max-width:880px;margin:0 auto;padding:0 5vw}
+.chapter{display:none}
+.chapter.active{display:block;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec{padding:3.2rem 0;border-top:1px solid var(--rule)}
+.sec:first-of-type{border-top:none}
+.lede{font-size:1.12rem}
+
+.eyebrow{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.18em;color:var(--vermilion);margin-bottom:.4rem}
+h2{font-family:var(--mincho);font-size:1.7rem;line-height:1.5;font-weight:700;color:var(--indigo);margin:0 0 1.4rem;letter-spacing:.04em}
+h3{font-family:var(--mincho);font-size:1.2rem;color:var(--ink);margin:2.4rem 0 .9rem;letter-spacing:.03em;padding-left:.7rem;border-left:4px solid var(--indigo)}
+.kanji-no{font-family:var(--mincho);color:var(--vermilion);font-size:.95em;margin-right:.4em}
+
+/* ヒーロー */
+.hero{background:var(--indigo-pale);border-bottom:1px solid var(--rule)}
+.hero-in{max-width:880px;margin:0 auto;padding:2.8rem 5vw 2.4rem}
+.hero .eyebrow{color:var(--indigo-2)}
+.hero h1{font-family:var(--mincho);font-weight:700;color:var(--indigo);font-size:clamp(1.9rem,7vw,3rem);letter-spacing:.3em;text-indent:.3em;margin:.2rem 0 .9rem;line-height:1.35}
+.hero .rules{border-top:3px solid var(--indigo);border-bottom:1px solid var(--indigo);height:5px;max-width:16em;margin-bottom:1.4rem}
+.hero-q{font-family:var(--mincho);font-size:clamp(1.02rem,3.4vw,1.28rem);line-height:1.9;color:var(--ink);margin:0;max-width:32em}
+.hero-a{margin:1rem 0 0;color:var(--indigo);font-weight:700}
+
+/* 目次 */
+.toc{background:var(--paper-2);border:1px solid var(--rule);border-radius:3px;padding:1.3rem 1.5rem;margin:2.4rem 0 0}
+.toc h4{font-size:.95rem;letter-spacing:.1em;margin:0 0 .7rem;color:var(--ink)}
+.toc ol{margin:0;padding-left:1.4em;line-height:1.85}
+.toc a{color:var(--indigo);text-decoration:none;border-bottom:1px solid rgba(33,69,110,.3);cursor:pointer}
+.toc a:hover{background:var(--marker);border-bottom-color:transparent}
+
+/* 蛍光ペン */
+.mk{background-image:linear-gradient(transparent 58%,var(--marker) 58%);background-repeat:no-repeat;background-size:0% 100%;transition:background-size .8s cubic-bezier(.2,.7,.3,1);padding:0 .1em;font-weight:700}
+.mk.on{background-size:100% 100%}
+
+/* 図解 */
+.fig{margin:1.8rem 0 2.2rem}
+.fig-cap{font-size:.78rem;letter-spacing:.12em;color:var(--muted);font-weight:700;margin:0 0 .8rem;padding-bottom:.35rem;border-bottom:1px dotted var(--rule)}
+.fig-note{font-size:.85rem;color:var(--muted);margin:.7rem 0 0;line-height:1.8}
+
+.chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:.6rem}
+.chain-item{flex:1 1 8.5rem;background:#fff;border:1px solid var(--indigo);border-radius:3px;padding:.9rem .8rem;text-align:center;line-height:1.6}
+.chain-item b{display:block;font-family:var(--mincho);font-size:1.05rem;color:var(--indigo)}
+.chain-item span{font-size:.8rem;color:var(--muted)}
+.chain-arrow{align-self:center;color:var(--vermilion);font-size:1.2rem;line-height:1}
+
+.pairs{width:100%;border-collapse:collapse;font-size:.95rem}
+.pairs th,.pairs td{border:1px solid var(--rule);padding:.7rem .8rem;text-align:left;line-height:1.7}
+.pairs th{background:var(--indigo-pale);color:var(--indigo);font-size:.82rem;letter-spacing:.08em;width:45%}
+.pairs tr:last-child td{background:#FFFDF0;font-weight:700}
+
+.beam{background:var(--indigo);color:#fff;text-align:center;font-family:var(--mincho);font-size:1.15rem;letter-spacing:.3em;padding:.6rem;border-radius:3px 3px 0 0}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.5rem}
+.pillar{background:#fff;border:1px solid var(--indigo);border-top:5px solid var(--indigo);padding:1rem .7rem;text-align:center}
+.pillar em{display:block;font-family:var(--mincho);font-style:normal;font-size:1.5rem;color:var(--vermilion);line-height:1;margin-bottom:.5rem}
+.pillar b{display:block;font-size:.98rem;line-height:1.5}
+.pillar span{display:block;font-size:.78rem;color:var(--muted);margin-top:.4rem;line-height:1.6}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.card{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:1rem}
+.card h4{margin:0 0 .5rem;font-size:.95rem;font-family:var(--mincho);color:var(--indigo)}
+.card p{margin:0;font-size:.9rem;line-height:1.8}
+.card.accent{border-color:var(--vermilion);background:#FFFAF9}
+.card.accent h4{color:var(--vermilion)}
+.conclusion{margin-top:.8rem;background:var(--indigo-pale);border-radius:3px;padding:.9rem 1rem;font-weight:700;color:var(--indigo);text-align:center;line-height:1.7}
+
+.circles{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center}
+.circle{flex:0 0 7.4rem;height:7.4rem;border-radius:50%;background:#fff;border:2px solid var(--indigo);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.5}
+.circle b{font-family:var(--mincho);font-size:1.05rem;color:var(--indigo)}
+.circle span{font-size:.74rem;color:var(--muted);padding:0 .5rem}
+
+.layers{display:flex;flex-direction:column;gap:.45rem}
+.layer{border:1px solid var(--indigo);border-radius:3px;padding:.85rem 1rem;line-height:1.7;display:flex;align-items:baseline;gap:.8rem}
+.layer b{font-family:var(--mincho);color:var(--indigo);white-space:nowrap}
+.layer span{font-size:.88rem;color:var(--muted)}
+.layer.l1{background:#fff}.layer.l2{background:#F4F7FB}
+.layer.l3{background:var(--indigo);border-color:var(--indigo)}
+.layer.l3 b{color:#fff}.layer.l3 span{color:#D6E2EF}
+.down{text-align:center;color:var(--vermilion);line-height:1}
+
+.timeline{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.slot{background:#fff;border:1px solid var(--indigo);border-radius:3px;padding:1rem;text-align:center}
+.slot b{display:block;font-family:var(--mincho);font-size:1.1rem;color:var(--indigo);margin:.5rem 0 .2rem}
+.slot span{font-size:.85rem;color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:.9rem 0 0}
+.days i{display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;background:#fff;border:1px solid var(--indigo-2);border-radius:2px;font-style:normal;font-size:.6rem;color:var(--indigo-2)}
+.days i.last{background:var(--marker);border-color:var(--vermilion);color:var(--ink);font-weight:700}
+
+/* ステップ番号リスト */
+.steps{counter-reset:st;list-style:none;margin:1rem 0 0;padding:0}
+.steps>li{position:relative;background:#fff;border:1px solid var(--rule);border-radius:3px;padding:1rem 1.1rem 1rem 3.2rem;margin-bottom:.6rem;line-height:1.8}
+.steps>li::before{counter-increment:st;content:"第" counter(st,cjk-decimal) "";position:absolute;left:0;top:0;bottom:0;width:2.6rem;display:flex;align-items:center;justify-content:center;background:var(--indigo);color:#fff;font-family:var(--mincho);font-size:.8rem;writing-mode:vertical-rl;letter-spacing:.1em;border-radius:3px 0 0 3px}
+.steps>li b{color:var(--indigo);font-family:var(--mincho)}
+
+.callout{background:#FFFAF9;border:1px solid var(--vermilion);border-radius:3px;padding:1.1rem 1.2rem;margin:1.4rem 0}
+.callout b{color:var(--vermilion)}
+.quote{font-family:var(--mincho);text-align:center;font-size:1.25rem;color:var(--indigo);letter-spacing:.06em;margin:1.6rem 0;line-height:1.8}
+
+.pledge{background:var(--indigo);color:#fff;border-radius:3px;padding:2rem 1.6rem;margin-top:1rem}
+.pledge h3{color:#fff;border-left-color:var(--marker);margin-top:0;font-size:1.3rem}
+.pledge ul{margin:0;padding-left:1.2em;line-height:2.1}
+.pledge li::marker{color:var(--marker)}
+.finale{border-top:2px solid var(--indigo);border-bottom:2px solid var(--indigo);margin-top:2rem;padding:1.6rem .5rem;text-align:center;font-family:var(--mincho);font-size:1.12rem;line-height:2;color:var(--indigo)}
+
+/* 章送りナビ */
+.chapnav{display:flex;justify-content:space-between;gap:1rem;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule)}
+.chapnav button{flex:1;background:#fff;border:1px solid var(--indigo);color:var(--indigo);border-radius:3px;padding:.9rem 1rem;cursor:pointer;font-family:var(--gothic);line-height:1.5;text-align:left}
+.chapnav button:hover{background:var(--indigo-pale)}
+.chapnav button:disabled{opacity:.35;cursor:default}
+.chapnav button.next{text-align:right}
+.chapnav small{display:block;font-size:.7rem;color:var(--muted);letter-spacing:.1em}
+.chapnav b{font-family:var(--mincho);font-size:1rem}
+
+footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text-align:center}
+.pagemark{font-family:var(--mincho);color:var(--muted);letter-spacing:.5em}
+
+@media (max-width:820px){
+  html{font-size:16px}
+  html[data-fs="s"]{font-size:14px}
+  html[data-fs="m"]{font-size:16px}
+  html[data-fs="l"]{font-size:19px}
+  .topbar{gap:.4rem;padding:0 .5rem}
+  .topbar-title{font-size:.95rem}
+  .fontsize button{padding:.35rem .42rem}
+  .chain{flex-direction:column}.chain-arrow{transform:rotate(90deg)}
+  .compare,.timeline{grid-template-columns:1fr}
+  .pillars{grid-template-columns:1fr}
+  .days{grid-template-columns:repeat(6,1fr)}
+}
+@media (prefers-reduced-motion:reduce){.mk{transition:none;background-size:100% 100%}.chapter.active{animation:none}}
+@media print{body{background:#fff}.topbar,.drawer,.overlay,.chapnav,.viewtoggle{display:none}.chapter.active{display:block!important}.mk{background-size:100% 100%}.sec{page-break-inside:avoid}}
+:focus-visible{outline:3px solid var(--vermilion);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<!-- トップバー -->
+<div class="topbar">
+  <button class="hamburger" id="ham" aria-label="章を選ぶ" aria-expanded="false" aria-controls="drawer">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-title" id="barTitle"><small>成功の原理を学ぶコース</small>第一章 学び方</div>
+  <div class="fontsize" id="fontsize" role="group" aria-label="文字サイズ">
+    <button class="s" data-fs="s" aria-label="文字を小さく"><span class="fs-a">あ</span></button>
+    <button class="m on" data-fs="m" aria-label="文字を標準の大きさに"><span class="fs-a">あ</span></button>
+    <button class="l" data-fs="l" aria-label="文字を大きく"><span class="fs-a">あ</span></button>
+  </div>
+</div>
+
+<!-- ドロワー -->
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer" aria-label="章の一覧">
+  <div class="drawer-head">
+    <h2>目次</h2>
+    <p>CHAPTERS</p>
+  </div>
+  <ul class="chaplist" id="chaplist">
+    <li><button data-ch="1" class="active"><span class="num">第一章</span><span>学び方<span class="sub">成功の原理と学び方のルール</span></span></button></li>
+    <li><button data-ch="2"><span class="num">第二章</span><span>成功のステップ<span class="sub">自分が変わる、六つのステップ</span></span></button></li>
+    <li><button data-ch="3"><span class="num">第三章</span><span>目標の大切さ<span class="sub">欲望を明確にし、計画を紙に書く</span></span></button></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ============ 第一章 ============ -->
+<article class="chapter active" id="ch1">
+  <header class="hero">
+    <div class="hero-in">
+      <span class="eyebrow">第一章</span>
+      <h1>学び方</h1>
+      <div class="rules"></div>
+      <p class="hero-q">世の中には成功する人がいる一方で、そうでない人がいます。<br>それは、いったいなぜなのでしょうか。</p>
+      <p class="hero-a">この章では、その原理を学びます。</p>
+    </div>
+  </header>
+
+  <div class="viewtoggle">
+    <span class="vt-label">表示</span>
+    <div class="seg">
+      <button class="vt-fig on" data-view="fig">図解でわかる版</button>
+      <button class="vt-raw" data-view="raw">原文のまま</button>
+    </div>
+  </div>
+
+  <div class="figview">
+  <div class="wrap">
+    <nav class="toc" aria-label="この章の内容">
+      <h4>この章で学ぶこと</h4>
+      <ol>
+        <li><a data-jump="c1s1">まず、自分に問いかける</a></li>
+        <li><a data-jump="c1s2">変わるのは、自分から</a></li>
+        <li><a data-jump="c1s3">近道は、成功した人から学ぶこと</a></li>
+        <li><a data-jump="c1s4">大切な三つのこと</a></li>
+        <li><a data-jump="c1s5">くり返すと、考えなくてもできるようになる</a></li>
+        <li><a data-jump="c1s6">学び方のルール</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec" id="c1s1">
+      <span class="eyebrow">はじめに</span>
+      <h2>まず、自分に問いかける</h2>
+      <p class="lede">多くの人は、「なぜ成功する人とそうでない人がいるのか」という問いを、自分に向けることさえ忘れています。学びは、その問いを自分に向けるところから始まります。</p>
+      <p>あなたはここで、二つのことを自分に聞いてみてください。</p>
+      <div class="fig">
+        <p class="fig-cap">図1　出発点になる二つの問い</p>
+        <div class="compare">
+          <div class="card"><h4>問い①</h4><p>新しい人生を自分の力で切り開こうと、本当に決心しましたか。</p></div>
+          <div class="card"><h4>問い②</h4><p>今までと同じ人生をくり返すまいと、心に<ruby>誓<rt>ちか</rt></ruby>いましたか。</p></div>
+        </div>
+        <p class="fig-note">答えを出すために、自分の過去をふり返ってみてください。それは理想の人生でしたか。自分に<ruby>誇<rt>ほこ</rt></ruby>れる人生でしたか。もしそうでないなら、今ここで決心しない限り、これからも同じ人生が続いていきます。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c1s2">
+      <span class="eyebrow">原則</span>
+      <h2>変わるのは、自分から</h2>
+      <p>あなたが望むすばらしい人生は、あなたにもつくることができます。ただし順番があります。それにはまず、<span class="mk">自分自身を変えなければならない</span>のです。自分が変わらなければ、何も変わりません。</p>
+      <p>生活を向上させたいと思うなら、先に自分自身を向上させる。これが順番です。</p>
+      <div class="fig">
+        <p class="fig-cap">図2　変わっていく順番</p>
+        <div class="chain">
+          <div class="chain-item"><b>自分</b><span>考え方と行動が変わる</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>生活</b><span>毎日のパターンが変わる</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>人生</b><span>結果が変わる</span></div>
+        </div>
+        <p class="fig-note">逆向きには進みません。生活や結果だけを変えようとしても、自分が元のままなら、やがて元にもどります。</p>
+      </div>
+      <p>この教材の内容を身につけることで、いろいろな分野で<span class="mk">成功した人々の知恵の<ruby>極意<rt>ごくい</rt></ruby></span>を自分のものにできます。それが、人生を変えるきっかけをつかむ<strong>鍵</strong>になります。</p>
+    </section>
+
+    <section class="sec" id="c1s3">
+      <span class="eyebrow">近道</span>
+      <h2>近道は、成功した人から学ぶこと</h2>
+      <p>人生には限りがあります。何もかも自分ひとりで知り、経験することはできません。だから<span class="mk">成功への近道は、成功者から学ぶこと</span>なのです。</p>
+      <div class="fig">
+        <p class="fig-cap">図3　「誰から学ぶか」の考え方</p>
+        <table class="pairs">
+          <tr><th>身につけたいこと</th><th>学ぶ相手</th></tr>
+          <tr><td>ゴルフが上手になりたい</td><td>一流のプロゴルファー</td></tr>
+          <tr><td>中国語を学びたい</td><td>中国語の先生</td></tr>
+          <tr><td>あなたが成功したい分野</td><td>その分野で成し遂げた人</td></tr>
+        </table>
+        <p class="fig-note">ここで大切なのは、<strong>成功と年齢には直接の関係がない</strong>ということです。年齢や肩書きではなく、その人が実際にどんなことを成し遂げてきたかを見てください。</p>
+      </div>
+      <p>この章に書かれているのは、あなたを<span class="mk">成功に導く原則</span>だけです。原則は流行ではありません。すばらしい人生を築くための、変わらない<ruby>真理<rt>しんり</rt></ruby>です。</p>
+    </section>
+
+    <section class="sec" id="c1s4">
+      <span class="eyebrow">この章の中心</span>
+      <h2>大切な三つのこと</h2>
+      <p>ここであなたは、とても大切な三つのことを学びます。</p>
+      <div class="fig">
+        <p class="fig-cap">図4　成功を支える三本の柱</p>
+        <div class="beam">成 功</div>
+        <div class="pillars">
+          <div class="pillar"><em>一</em><b>失敗を理解する</b><span>失敗とは何かを知る</span></div>
+          <div class="pillar"><em>二</em><b>正しい生活パターン</b><span>毎日の型をつくる</span></div>
+          <div class="pillar"><em>三</em><b>能力の開発</b><span>自分の力を伸ばす</span></div>
+        </div>
+        <p class="fig-note">三本のうち一本でも欠けると、上の板は<ruby>傾<rt>かたむ</rt></ruby>きます。順番に見ていきましょう。</p>
+      </div>
+
+      <h3><span class="kanji-no">一</span>失敗について理解する</h3>
+      <p><span class="mk">当初の目標に到達できないこと</span>、これがすなわち失敗です。</p>
+      <div class="fig">
+        <p class="fig-cap">図5　なぜ「失敗」から学ぶのか</p>
+        <div class="compare">
+          <div class="card"><h4>成功</h4><p>説明しにくく、理解しにくい。人によって形もちがう。</p></div>
+          <div class="card accent"><h4>失敗</h4><p>理解しやすい。「なぜうまくいかなかったか」ははっきり見える。</p></div>
+        </div>
+        <div class="conclusion">だから「どうすれば失敗しないか」を学びとることが、<br>成功を理解する<ruby>鍵<rt>かぎ</rt></ruby>になる</div>
+        <p class="fig-note">あなたが人生を変えようと決めてしまえば、失敗はあなたには関係のないものになります。</p>
+      </div>
+
+      <h3><span class="kanji-no">二</span>正しい生活のパターン</h3>
+      <p>成功に近づく生活パターンを築きあげることが大切です。<strong>日常生活のパターンの差が、失敗者と成功者の差</strong>です。</p>
+      <div class="fig">
+        <p class="fig-cap">図6　毎日のパターンが行き先を決める</p>
+        <svg viewBox="0 0 420 200" role="img" aria-label="毎日のパターンが正しければ成功へ、まちがっていれば失敗へ向かう分かれ道の図">
+          <line x1="20" y1="100" x2="170" y2="100" stroke="#21456E" stroke-width="6" stroke-linecap="round"/>
+          <path d="M170 100 L400 40" stroke="#21456E" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M170 100 L400 165" stroke="#6A7078" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="10 8"/>
+          <circle cx="170" cy="100" r="9" fill="#C0453B"/>
+          <text x="20" y="128" font-size="15" fill="#6A7078" font-family="sans-serif">今日</text>
+          <text x="300" y="30" font-size="18" fill="#21456E" font-family="sans-serif" font-weight="bold">成 功</text>
+          <text x="300" y="190" font-size="18" fill="#6A7078" font-family="sans-serif" font-weight="bold">失 敗</text>
+          <text x="196" y="62" font-size="14" fill="#21456E" font-family="sans-serif">正しいパターン</text>
+          <text x="196" y="150" font-size="14" fill="#6A7078" font-family="sans-serif">まちがったパターン</text>
+        </svg>
+        <p class="fig-note">パターンが正しければ必ず成功し、まちがっていれば失敗の人生で終わります。将来を変えたいなら、正しい生活パターンを築き、それに従うことです。</p>
+      </div>
+      <p>そのとき気をつけたいのは、<strong>一時的な感情や一時的な欲望にとらわれないこと</strong>。その場の気分ではなく、優れた考えで生活パターンを組み立てます。</p>
+      <p>大切なのは、優れた考えと優れた行動を、いつも努力して身につけていくこと。それを達成するために必要なのが、<span class="mk">「全力を投じ、必ずやりとおす」</span>という強い決心です。</p>
+
+      <h3><span class="kanji-no">三</span>能力の開発</h3>
+      <p>自分の能力を開発するには、基本的な三つのことが必要です。</p>
+      <div class="fig">
+        <p class="fig-cap">図7　能力を開発する三つのステップ</p>
+        <div class="chain">
+          <div class="chain-item"><b>注意力</b><span>まわりのすべてに注意をはらい、そこから知る</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>適用</b><span>知ったことを日常生活に当てはめる</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>反復</b><span>心構えと行動を何度もくり返す</span></div>
+        </div>
+        <p class="fig-note">簡単な言葉の中にも深い意味や真理があります。注意深く聞けば、それも<ruby>容易<rt>ようい</rt></ruby>に理解できるはずです。</p>
+      </div>
+      <div class="fig">
+        <p class="fig-cap">図8　注意力とは、三つの「配り」</p>
+        <div class="circles">
+          <div class="circle"><b>目配り</b><span>よく見る</span></div>
+          <div class="circle"><b>気配り</b><span>先に気づく</span></div>
+          <div class="circle"><b>心配り</b><span>相手を思う</span></div>
+        </div>
+        <p class="fig-note">この三つがそろうと、同じ毎日から受け取れる情報の量が変わります。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c1s5">
+      <span class="eyebrow">しくみ</span>
+      <h2>くり返すと、考えなくてもできるようになる</h2>
+      <p>身につけた心構えと行動を、何度もくり返し行う。これはこのコースのすべての章について言えることです。</p>
+      <div class="fig">
+        <p class="fig-cap">図9　くり返しが身にしみこむ流れ</p>
+        <div class="layers">
+          <div class="layer l1"><b>はじめ</b><span>意識して、がんばってやる</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>しばらく続けると</b><span>自然に受け入れられ、日常生活の一部になる</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>やがて</b><span>正しい決定と正しい行動が、意識しなくてもできる</span></div>
+        </div>
+        <p class="fig-note">この教えのすべてを、あなたの<ruby>潜在意識<rt>せんざいいしき</rt></ruby>の中に焼きつけてしまうこと。それが目標です。</p>
+      </div>
+      <p>行動すればするほど、正しい生活パターンに従うことが楽しくなってきます。不安は消え、新しい生活パターンは、人間の自然な欲望である<span class="mk">「楽しみ」</span>として心の中に定着していきます。</p>
+      <p>もう、あなたは決心しました。新しい生活に切り換えれば、変化に富んだ、すばらしい経験の毎日が送れます。その選択を、少しも後悔することはないはずです。</p>
+    </section>
+
+    <section class="sec" id="c1s6">
+      <span class="eyebrow">実践</span>
+      <h2>学び方のルール</h2>
+      <p>では、どうすればそれができるのか。それは極めて簡単なことです。次のルールに従って教材を使ってください。</p>
+      <div class="fig">
+        <p class="fig-cap">図10　1日のリズム ── 朝と夜、2回聞く</p>
+        <div class="timeline">
+          <div class="slot">
+            <svg viewBox="0 0 60 60" width="44" height="44" aria-hidden="true">
+              <circle cx="30" cy="34" r="12" fill="#F7E96B" stroke="#C0453B" stroke-width="2"/>
+              <g stroke="#C0453B" stroke-width="2" stroke-linecap="round"><line x1="30" y1="10" x2="30" y2="17"/><line x1="12" y1="16" x2="17" y2="21"/><line x1="48" y1="16" x2="43" y2="21"/><line x1="6" y1="34" x2="13" y2="34"/><line x1="54" y1="34" x2="47" y2="34"/></g>
+            </svg>
+            <b>朝</b><span>起きたら、まず聞く</span>
+          </div>
+          <div class="slot">
+            <svg viewBox="0 0 60 60" width="44" height="44" aria-hidden="true">
+              <path d="M38 12a18 18 0 1 0 12 30A20 20 0 0 1 38 12z" fill="#E7EDF4" stroke="#21456E" stroke-width="2"/>
+              <circle cx="16" cy="16" r="2" fill="#21456E"/><circle cx="24" cy="9" r="1.5" fill="#21456E"/>
+            </svg>
+            <b>夜</b><span>寝る前に、もう一度聞く</span>
+          </div>
+        </div>
+      </div>
+      <div class="fig">
+        <p class="fig-cap">図11　1つの章を30日間 → 次の章へ</p>
+        <div class="days" aria-label="30日間のカレンダー">
+          <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i>
+          <i>11</i><i>12</i><i>13</i><i>14</i><i>15</i><i>16</i><i>17</i><i>18</i><i>19</i><i>20</i>
+          <i>21</i><i>22</i><i>23</i><i>24</i><i>25</i><i>26</i><i>27</i><i>28</i><i>29</i><i class="last">30</i>
+        </div>
+        <p class="fig-note">同じ章を30日間続けて聞く。それができたら次の章へ進み、次の章も同じように30日間くり返します。守ることは、これだけです。</p>
+      </div>
+      <p>あなたが教材を聞く<strong>わずかな時間</strong>が、新しい生活パターンを造り上げ、あなたを成功へ導いてくれます。</p>
+      <p>ただし、<strong>内容が簡単に思えても、軽く考えてはいけません。</strong>注意深く、心の中にすべて吸収するつもりで聞いてください。1日1日を大切に、ルールを守りましょう。その1日は、取り戻すことのできない1日です。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">この章のまとめ</span>
+      <h2>さあ、はじめよう</h2>
+      <p>各章に記されているのは、成功した人々の教えだけです。その極意を身につけるよう心がけてください。</p>
+      <div class="pledge">
+        <h3>今日からの一歩</h3>
+        <ul>
+          <li>自分を変え、生き方を変えると決める</li>
+          <li>自己改善を誓い、毎日実行する</li>
+          <li><ruby>誘惑<rt>ゆうわく</rt></ruby>に心を許さず、意識して自分を向上させる</li>
+          <li>朝と夜、同じ章を30日間聞き続ける</li>
+        </ul>
+      </div>
+      <p style="margin-top:1.4rem">あなたはもう、成功への扉の鍵をあけ、一歩一歩と進みはじめたのです。</p>
+      <div class="finale">あなたは立派な人物になろうと決めたのだ。<br>多くの人々には実現できない成功が、やがてあなたのものになり、<br>人々の尊敬と信頼を、一身に集めるようになる。</div>
+
+      <nav class="chapnav">
+        <button disabled><small>前の章はありません</small></button>
+        <button class="next" data-ch="2"><small>次の章 ▶</small><b>第二章 成功のステップ</b></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 第一章 終 ー</p></footer>
+  </div>
+  </div><!-- /figview -->
+
+  <div class="rawview">
+    <div class="raw-wrap">
+      <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
+      <h3 class="raw-title">第一章　学び方</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>世の中には成功する人がいる一方、そうでない人がいるのは一体なぜでしょうか？また、そのような質問を自分にする事さえ忘れている人々があまりにも多いのではないでしょうか。これから学ぶ、このコースにより、その原理を知る事ができるのです。</p>
+        <p>まずはじめに、あなたはここで自問してみなければならない。新しい人生を自ら切り開こうと本当に決心しただろうか。今までのような人生を繰り返すまいと心に誓っただろうか。自分の人生を変える必要があるか否かは、自分自身の過去をふり返ってみれば解る事である。あなたの理想の人生であっただろうか。自分に誇れるような人生であっただろうか。もし、そうでなければ、今ここで決心しなくては、これからも今までと同じ人生を送ることになるだろう。あなたが望む素晴らしい人生をあなたもつくる事ができるのだ。それにはまず、自分自身を変えなければならない。自分を変えねば、何も変わらない。なぜならば、生活を向上させようと思うなら、まず自分自身を向上させなければならないからだ。このCDの内容を身につけることで、いろいろな分野で成功した人々の知恵の極意を身に付けることができる。そうすることにより、あなたは人生を変えるきっかけをつかむことができる。これが鍵だ。</p>
+        <p>我々の人生には限りがある。何もかも自分で知り、経験することはできない。だから、成功への近道は、成功者から学ぶことである。しかし、ここで大切なことは、成功と年齢とは直接関係がないということである。最も重要なことは、その人がどのようなことを成し遂げてきたかということにある。</p>
+        <p>例えば、ゴルフが上手になりたいと思うのであれば、一流のプロゴルファーに学ぶことである。またあなたが、中国語を学びたいと思うのならば、中国語の先生に学ぶ事で、正しく学び取る事ができる。このようにあなたが成功したい分野で成功した人、すなわち成し遂げた人から学ぶのが近道なのだ。</p>
+        <p>では、どうすれば成功することができるのだろうか。失敗の人生をこれ以上続けないためには、一体どうすればよいか。答えは簡単である。このコースを身につければ、あなたも必ず成功できる。このコースこそ、成功への秘訣をあなたに解き明かしてくれる。</p>
+        <p>この章には、あなたを成功に導く原則的なものしか記されていない。しかしこの原則こそ素晴らしい人生を築くための不変の真理である。ここであなたは大変大切な三つのことについて学ばなければならない。</p>
+        <p>第1に失敗について理解する。第2に正しい生活のパターン。第3に能力の開発。</p>
+        <p>まず、第一に当初の目標に到達できないこと、これは即ち失敗である。成功とは説明し難く、理解しにくいものだが、失敗というものは理解しやすい。だからどうすれば失敗しないかということを学びとることが、成功を理解する鍵である。あなたが人生を変えようと決めれば、失敗はあなたには、関係のないものとなる。</p>
+        <p>そして第二に、成功に近づく生活パターンを築きあげることが大切である。日常生活のパターンの差が失敗者と成功者の差である。生活のパターンが正しければ必ず成功し、それが間違っていれば必ず失敗の人生で終わるのである。だからあなたの将来を変えるには、正しい生活パターンを築き、従うことである。一時的な感情や一時的な欲望にとらわれず、優れたアイデアで正しい生活パターンを造らねばならない。</p>
+        <p>では、正しい生活パターンを形成するには、どうすればよいだろう。大切なことは、優れた考え、優れた行動を、いつも努力して身につけていくことである。それを達成するには「全力を投じ、必ずやりとおす。」という強い決心をするのである。自分の生活を、本当に変えるべく注意すること、これが最も重要なポイントである。</p>
+        <p>そして第三に、自分の能力を開発することである。能力を開発するには、基本的な三つのことが必要である。まず第一は、注意力を発揮することである。自分のまわりのすべてのことに注意をはらい、そこから、いろいろなことを知ることに心がけることだ。例えば、簡単な言葉の中にも深い意味、真理があり、注意深く聞けば、それも容易に理解できるはずである。そして第二は、注意力を発揮して自分が知ったことを日常生活に適用していくことである。この態度が基本となり、その基本に従い、決断を下し、生活パターンを正しいものに改めていくことである。第三に、身につけた心構えと行動を何度も繰り返し行うことである。</p>
+        <p>これは、このコースすべての章についても言えることである。繰り返し続けていくことにより、そのパターンは、あなたにとって自然に受け入れられるようになり、日常生活の一部となり、正しい決定、正しい行動が、あらためて意識しなくてもできるようになってくる。この教えのすべてを、あなたの潜在意識の中に焼きつけてしまわなければならない。</p>
+        <p>では、どうすればそれができるのだろうか？それは極めて簡単なことである。次に学ぶルールに従い、CDを利用しなければならない。まず第一に、CDの各章を30日間続けて聞くことである。朝起きたときにまず聞くこと。そして夜寝る前にもう一度聞くこと。</p>
+        <p>これだけのルールを守ることが非常に大切である。これだけのことをして、次の章のCDに移る。そして次の章も同じように、30日間繰り返すことだ。毎日、CDを聞くことにより、価値ある物が得られるようになり、それがあなたの正しい生活パターンを築き上げることに、大切な要素となる。毎日、CDで学んだことが、あなた自身の考え方、夢にもなってくるのだ。なんと素晴らしいことだ。いろいろな場面でも、正しい判断と行動ができるようになってくる。もちろん不安など消え去ってしまう。こうして新しい生活のパターンが身につき、行動も楽にできるようになる。行動すればするほど、正しい生活パターンに従うことが楽しくなってくる。そして新しい生活パターンは人間の自然の欲望である「楽しみ」としてしっかりと心の中に定着してくる。</p>
+        <p>もう、あなたは決心した。新しい生活に切換え、変化に富んだ、すばらしい経験の毎日が送れることを、少しも後悔しないはずだ。1日1日を大切に、ルールを守ろう、その1日とは、取り戻すことのできない1日であることを忘れずに、細心の注意をしてほしい。あなたがCDを聞くわずかな時間が新しい生活パターンを造り上げ、成功に導いてくれるのである。しかし、CDの内容を簡単だと思って軽く考えてはならない。内容を注意深く心の中にすべて吸収するように努力すべきである。</p>
+        <p>この各章には成功した人々の教えだけが記されている。この極意を身につけるべく心がけることが非常に大切である。さあ、自分を変え、生き方を変えよう。そのために自己改善を誓おう。毎日実行しよう。もうあなたは成功への扉の鍵をあけ、一歩一歩と進みはじめたのだ。誘惑に心を許さず、意識的に自分を向上させよう。あなたは立派な人物になろうと決めたのだ。多くの人々に実現できない成功が、将来あなたのものになり、人々の尊敬と信頼を、一身に集めるようになるのである。そのための極意が記されている。</p>
+      </div>
+      <footer><p class="pagemark">ー 第一章 終 ー</p></footer>
+    </div>
+  </div><!-- /rawview -->
+</article>
+
+<!-- ============ 第二章 ============ -->
+<article class="chapter" id="ch2">
+  <header class="hero">
+    <div class="hero-in">
+      <span class="eyebrow">第二章</span>
+      <h1>成功のステップ</h1>
+      <div class="rules"></div>
+      <p class="hero-q">人生を好転させる方法は、たった一つ。<br>それは、あなた自身が変わることです。</p>
+      <p class="hero-a">この章では、そのための六つのステップを学びます。</p>
+    </div>
+  </header>
+
+  <div class="viewtoggle">
+    <span class="vt-label">表示</span>
+    <div class="seg">
+      <button class="vt-fig on" data-view="fig">図解でわかる版</button>
+      <button class="vt-raw" data-view="raw">原文のまま</button>
+    </div>
+  </div>
+
+  <div class="figview">
+  <div class="wrap">
+    <nav class="toc" aria-label="この章の内容">
+      <h4>この章で学ぶこと</h4>
+      <ol>
+        <li><a data-jump="c2s1">眠っている「潜在能力」に気づく</a></li>
+        <li><a data-jump="c2s2">視野を広げ、人の話に耳を傾ける</a></li>
+        <li><a data-jump="c2s3">「もうたくさんだ」が出発点</a></li>
+        <li><a data-jump="c2s4">成長か、退化か──人は必ずどちらかへ</a></li>
+        <li><a data-jump="c2s5">人生を変える六つのステップ</a></li>
+        <li><a data-jump="c2s6">命がけで決断すると、気づく二つのこと</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec" id="c2s1">
+      <span class="eyebrow">はじめに</span>
+      <h2>眠っている「潜在能力」に気づく</h2>
+      <p class="lede">自分の人生を変えるには、まず将来を明確に定めること。そのために知っておくべき原理・原則があります。</p>
+      <p>求める将来を決め、態度と行動を変え、情熱を持ってその方向に進めば、人生は完全に変えられます。なぜなら人間は、<span class="mk">潜在能力</span>というすばらしい力を持っているからです。</p>
+      <div class="fig">
+        <p class="fig-cap">図1　多くの人が、力を使わないまま終わる</p>
+        <div class="compare">
+          <div class="card"><h4>多くの人</h4><p>潜在能力に気づかず、活用しようとしない。だから何も達成できず、真の喜びも味わえない。</p></div>
+          <div class="card accent"><h4>変えられる人</h4><p>将来を明確に定め、自分の成功・誇り・幸福を、自分のものにする。</p></div>
+        </div>
+        <p class="fig-note">チャンスを生かせる能力を持っているのは、他の誰でもなく、あなた自身です。</p>
+      </div>
+      <p>過去の経験や自分だけの考え方を、いくら延長してみても、その上に新しい人生を見い出すことは、ほとんど不可能です。</p>
+    </section>
+
+    <section class="sec" id="c2s2">
+      <span class="eyebrow">心構え</span>
+      <h2>視野を広げ、人の話に耳を傾ける</h2>
+      <p>「常識」を本当に理解していない人が多いものです。人はそれぞれ異なる環境で、経験から生まれた常識を持っています。それを考えずに、自分の常識だけで他人や物事を判断してしまう。</p>
+      <div class="fig">
+        <p class="fig-cap">図2　意見の違いは「視野の差」から生まれる</p>
+        <svg viewBox="0 0 420 150" role="img" aria-label="視野が狭いと見える範囲が狭く、視野が広いとより多くが見える様子">
+          <circle cx="105" cy="75" r="30" fill="none" stroke="#6A7078" stroke-width="2" stroke-dasharray="5 5"/>
+          <circle cx="105" cy="75" r="7" fill="#6A7078"/>
+          <text x="105" y="128" font-size="13" fill="#6A7078" font-family="sans-serif" text-anchor="middle">狭い視野</text>
+          <circle cx="300" cy="75" r="60" fill="none" stroke="#21456E" stroke-width="2.5"/>
+          <circle cx="300" cy="75" r="7" fill="#C0453B"/>
+          <text x="300" y="128" font-size="13" fill="#21456E" font-family="sans-serif" text-anchor="middle" font-weight="bold">広い視野</text>
+        </svg>
+        <p class="fig-note">人間のすばらしい能力の一つが、他人の言葉に耳を傾けられることです。経験豊富な人の意見に注意し、その優れた考えを自分の中に多く取り入れることで、視野が広がります。</p>
+      </div>
+      <div class="callout">
+        <p style="margin:0"><b>「自分の人生を変えるには、まず自分自身を変えねばならない。」</b>この考えを行動に移せば、訪れるチャンスを確実につかめます。あなたの人生を変えられるのは、あなた自身だけです。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c2s3">
+      <span class="eyebrow">転機</span>
+      <h2>「もうたくさんだ」が出発点</h2>
+      <p>ただ漠然と「成功したいな」と思うだけで、成功が何かを知らない人が多い。自分を変えようと努力しないから、どうすれば成功するか分からないのです。</p>
+      <div class="fig">
+        <p class="fig-cap">図3　「待つ人」は、いつまでも変わらない</p>
+        <table class="pairs">
+          <tr><th>むなしい期待・言い訳</th><th>本当の答え</th></tr>
+          <tr><td>宝くじ・ギャンブル・遺産相続</td><td rowspan="2" style="background:#FFFDF0;font-weight:700;vertical-align:middle;text-align:center">チャンスが来るのは<br>「あなた自身が変わる時」</td></tr>
+          <tr><td>景気・政治・税金・学歴・環境のせいにする</td></tr>
+        </table>
+        <p class="fig-note">どんなに正直で働き者でも、他人のせいにしている人は成功できません。人生を好転させる、たった一つの方法は、あなた自身が変わることです。</p>
+      </div>
+      <p>誰にでも「もうだめだ」と行き詰まりを感じる時があります。お金の悩み、進まない昇進、思わぬ出費——。しかし<span class="mk">「もう、こんな人生は嫌だ」と感じた時こそ</span>、その人の人生は大きく変わりはじめるのです。</p>
+      <div class="callout">
+        <p style="margin:0">収入が少ない、返済が遅れている、何度も失敗した——そんなことは重要ではありません。<b>重要なのは、あなたがこれから何をするか。</b>他人がどう思うかを考える必要は、まったくないのです。これが、生き方を向上させる第一のステップです。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c2s4">
+      <span class="eyebrow">原則</span>
+      <h2>成長か、退化か──人は必ずどちらかへ</h2>
+      <p>同じ出来事が二人に起きても、一人は成功し、一人は変わらない。違いは、その出来事にどう対処したかです。</p>
+      <div class="fig">
+        <p class="fig-cap">図4　人はいつも、どちらかに動いている</p>
+        <svg viewBox="0 0 420 120" role="img" aria-label="前進か後退か、上向きと下向きの二つの矢印">
+          <path d="M60 90 L360 30" stroke="#21456E" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <polygon points="360,30 344,30 352,44" fill="#21456E"/>
+          <text x="150" y="45" font-size="15" fill="#21456E" font-family="sans-serif" font-weight="bold">成長・前進</text>
+          <path d="M60 40 L360 100" stroke="#6A7078" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="9 7"/>
+          <polygon points="360,100 344,100 352,86" fill="#6A7078"/>
+          <text x="150" y="105" font-size="15" fill="#6A7078" font-family="sans-serif">退化・後退</text>
+        </svg>
+        <p class="fig-note">常に同じ状態ではいられません。今日は昨日より良いか悪いか、向上しているか、していないか。だから、自分の望みどおりに生き方を決めることが大切です。</p>
+      </div>
+      <div class="quote">決心の苦しみが大きいほど、<br>その決心を守り続けようと努力する</div>
+      <p>生き方を決める重大な決心は、大変苦しいものです。しかし<strong>決心することが一番難しい</strong>のであって、本当に決心したことを守り通すのは、案外簡単なのです。だから、決心することに全力を投じることが、成功を容易にします。</p>
+    </section>
+
+    <section class="sec" id="c2s5">
+      <span class="eyebrow">この章の中心</span>
+      <h2>人生を変える六つのステップ</h2>
+      <p>成功するには、まず「成功してみせる」という強い意欲を持つこと。そのうえで、次の六つのステップを踏んでいきます。</p>
+      <ol class="steps">
+        <li><b>きっかけをつかむ。</b>今の生活にうんざりしている——その気持ちが出発点。うんざりしているからこそ、方向を変えようと思える。</li>
+        <li><b>変えようと決心する。</b>自分の人生の方向を変えると、はっきり決める。この決心が成功への第二ステップ。</li>
+        <li><b>燃えるような意欲を持つ。</b>意欲は内側から生まれるが、本・人・家族・耳にした話など、外からの刺激で火がつくこともある。なければ、探し求める。</li>
+        <li><b>はっきりした態度をつくる。</b>「行くのか、行かないのか」を命じるのは、あなたの心構え。強い態度が、人生の方向を決める。</li>
+        <li><b>大きく行動する。</b>「少しためして、だめならやめる」ではだめ。何をするにも全力投球。100％打ち込んで、大きくやる。</li>
+        <li><b>決断する。</b>「私がやります。任せて下さい」。これが言えてこそ、信頼される責任感の強い人間になれる。</li>
+      </ol>
+      <div class="fig">
+        <p class="fig-cap">図5　六つのステップは、一本の流れ</p>
+        <div class="layers">
+          <div class="layer l1"><b>① きっかけ</b><span>うんざりした、という気持ち</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>②〜④ 内面をつくる</b><span>決心 → 意欲 → 態度</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>⑤⑥ 動き出す</b><span>大きく行動する → 決断する</span></div>
+        </div>
+        <p class="fig-note">心構え・態度が、物事を見て、理解し、身体に行動を起こさせる。だから成功への鍵は、強くはっきりした態度を造り上げることにあります。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c2s6">
+      <span class="eyebrow">まとめ</span>
+      <h2>命がけで決断すると、気づく二つのこと</h2>
+      <p>他人は「あなたにはできない」と言うかもしれません。それでも「自分でやり遂げるか、さもなければ死だ」というくらいの覚悟で決断すると、二つの素晴らしいことに気づきます。</p>
+      <div class="fig">
+        <p class="fig-cap">図6　決断が教えてくれる二つのこと</p>
+        <div class="compare">
+          <div class="card"><h4>① 挑戦のスリル</h4><p>物事に挑戦するスリルは、他に比べようもないほど素晴らしい。</p></div>
+          <div class="card"><h4>② 人はそう簡単に死なない</h4><p>命がけで決断すると、周りはあなたのやりたいようにやらせてくれる。誰も止められない。</p></div>
+        </div>
+        <p class="fig-note">命をかけて決断することで、あなたは自分の欲望を必ず実現できます。</p>
+      </div>
+      <div class="callout">
+        <p style="margin:0">欲望を実現するには<b>訓練</b>が大切です。CDを聞き、テキストを読み通す。毎日、意識的に努力し続ける。訓練の苦しさは、<b>やらなかった後の後悔のつらさに比べれば、たいしたことはありません。</b></p>
+      </div>
+      <p>「はい、私がやります」「私に任せて下さい」——こういう小さいことを、毎日意識的に積み重ねる。それが自然にできるようになれば、大きいことでも、もう大丈夫です。</p>
+      <div class="pledge">
+        <h3>あなたはもう、身につけている</h3>
+        <ul>
+          <li>自分にうんざりし、人生を変える決心をした</li>
+          <li>強い意欲と、強い態度を作り上げた</li>
+          <li>決断をもって行動することも、身についた</li>
+          <li>どんなに大きいことにも、立ち向かえる</li>
+        </ul>
+      </div>
+      <div class="finale">まず、自分の能力を信じることだ。<br>あなたは自分でも信じられない程のことができる。<br>あなたは人生を、すばらしいものにできるようになったのだ。</div>
+
+      <nav class="chapnav">
+        <button data-ch="1"><small>◀ 前の章</small><b>第一章 学び方</b></button>
+        <button class="next" data-ch="3"><small>次の章 ▶</small><b>第三章 目標の大切さ</b></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 第二章 終 ー</p></footer>
+  </div>
+  </div><!-- /figview -->
+
+  <div class="rawview">
+    <div class="raw-wrap">
+      <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
+      <h3 class="raw-title">第二章　成功のステップ</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>自分の人生を変えるには、自分の将来を明確に、定めなければなりません。その時に、知っていなければならない原理・原則があります。第二章では、まず原理・原則について知り、自分の将来をどう定めるかについて学びます。</p>
+        <p>自分の求める将来を決定し、自分の態度・行動を変え、情熱を持ち、その方向に進んで行けば、人生を完全に変えることができるのである。何故ならば、人間は潜在能力という素晴らしい能力を持っているからである。ところが多くの人々がこの能力に気が付いておらず、その結果、少しも活用しようとはしない。これでは何も達成できず、また、人生の真の喜びも味わうことができない。だから将来を明確に定め、自分自身の成功、誇り、幸福を自分のものにしなければならない。</p>
+        <p>自分の人生を変えることができるだろうか。成功できるだろうか。豊かになれるだろうかと、あなたは思うかもしれない。もっと素晴らしい人生とは、一体どんな人生であろうか。多くの人々が、自分の考え方や経験のみに目を向けて、一生を送っている。過去の経験や、自分だけの考え方をいくら延長してみても、その上に新しい人生を見い出すということは、おおよそ不可能としか言えない。</p>
+        <p>例えば、常識ということについて本当に理解していない人が多い。人それぞれに異なった環境の中で、経験から生まれた常識をもっているということを考えずに、自分の常識だけで他人や、物事を判断する人が多い。人間の素晴らしい能力の中に、他人の言葉に耳を傾けることができる、ということがある。人それぞれに意見の相違があるのは、その人々の視野の差によるのである。他人に分からない事をどこまで理解しているかということだ。自分の視野を拡げるために経験豊富な人の言葉、意見に常に注意し、耳を傾けなければならない。その人たちの優れた考えを自分の考え方の中に多く取り入れることが大切である。</p>
+        <p>「自分の人生を変えるには、まず自分自身を変えねばならない。」この考えを実際に行動に移せば、今後訪れるチャンスを間違いなくつかむことができ、その結果、あなたの人生は必ず一変する。すなわち、あなたの人生を変えることができるのは、貴方自身である。そうだ、自分のために、家族のために、チャンスを生かせる能力を持っているのはあなたのみである。あなたが本当に真剣に成功したい、本当に人生を変えたい、成功者の考え方を学びたいという意欲があり、その考えを実行するならば、必ず、あなたも人生を素晴らしい方向に変えることができる。</p>
+        <p>ただ漠然と「成功したいな。」と思っているだけで、成功が何であるかを知らない人があまりにも多い。自分を変えようと努力しないから、どうすれば成功するかが分からないのである。多くの人々が、むなしい期待に人生をかけてきた。宝くじ、ギャンブル、遺産相続、しかし、いつまでたっても良くはならない。「一体、チャンスはいつくるのだろう。いつになったら生活が楽になるのだ。」答は非常に簡単である。それは、「あなた自身が変わる時」なのである。もう一度繰り返すが、このことをよく覚えておかねばならない。人生を好転させる、たった一つの方法は、あなた自身が変わることである。</p>
+        <p>物事が自然やなりゆきで好転するのを待っている人々がいる。「雨があがればなあ。」「もう少し暖かくなればなあ。」「もっと景気が良くなればなあ。」「もっといい仕事につければなあ。」また、自分が成功できない理由を、とにかく自分以外のせいにする人もいる。政治のせいにしたり、税金のせいにしたり、学歴のせいにしたり、自分の環境のせいにしたりする人もいる。とにかく自分の収入が少ないとか成功できないのは、他人のせいだと信じている人々もいるのである。このような人はどんなに正直で、働き者であっても、成功することはできない。ましてや、その人の人生は一向によくなるはずがない。だから、いつも金銭のことが悩みの種である。給料日前になるといつも金がない。そんなときに祝事のような楽しい話題にも、出費のことばかり気にかかる。</p>
+        <p>田舎に帰省するとき、指定席が満席で、グリーン料金が支払えず、自由席で３時間、４時間と立って帰らねばならない。お金に執着心を持つのは良くないが、多くの人々にとって、お金というものはこういうものである。子供が高校を卒業するとき、父親には自分の子供を大学にやるだけの貯えがない。勤続10年の中堅社員でも、まだ、昇進の見込みすらないありさまだ。また思わぬ高額の医療費がかさみ、首がまわらない家庭もある。</p>
+        <p>誰にでも「もうだめだ。」と感じられる生活の行き詰まりを感じる時があるものである。「もう、こんな人生にはあいそがつきた。」と自分自身に言いたいものだ。借金の返済が遅れ、信用をなくす事もある。10万円の寄付をたった1,000円で済ませなければならないこともある。「もう、こんな人生は嫌だ。」と感じた時こそ、その人の人生は大きく変わりはじめるのである。自分が平凡な人間だと分かった時、また、自分の目にも、家族の目にも、自分が成功者として映らない時、「もうたくさんだ。」と思うだろう。請求書の山を目前にした時ばかりではない。どんな状況であれ、「もうたくさんだ。」と感じた時こそ、その人の人生が、変わり始めるのだ。自分の将来を大きく変える方法は、自分を変えるきっかけをつかむことだ。これが生き方を向上させる第一のステップだ。</p>
+        <p>過去にこだわらずに自分に素直に問いかけてみるのだ。「一体、この状態をどうすればいいのか。」収入が少ないとか、借金の返済が遅れているとか、何度も失敗したなど、重要な事ではないのだ。このようなことは少しも気にすることはない。重要なことは、あなたがこれからどうするかということなのである。他人がどう思うかなど考えることは、あなたにとってまったく必要ないことなのだ。また、ある人に起きた出来事は他の人にも起こる。そして一人は成功し、一人は全く変わらない。一体なぜだろう。それは起きた出来事に対して、どう対処したかによって違ってくるのだ。大切なことは「あなたがこれから何をするか。」ということだ。自分の望む生き方で、自分の人生を生きていけばよいのである。どんな生き方をしようとも恥じることはない。自分が望む生き方にプライドを持ち続けて進んで行けばよいのである。</p>
+        <p>人間というものは、いつもどちらかに動いている。成長しているか、退化しているかのどちらかである。常に同じ状態にはなれないのである。今日は昨日よりも気分が良いか、あるいは悪いかのどちらかである。自分が努力して向上しているか、向上していないか、それだけである。前進しているか、後退しているかのいずれかである。だから自分の望みどおりに生き方を決めることが大切なのである。生き方を決めるような重大決心をするときは、やはり大変苦しいものだ。決心の苦しみが大きくなればなる程、その苦しみを再び味わいたくないと思い、決心したことを、何としても守り続けようと努力する。</p>
+        <p>人間というものは、日常、決心にせまられる。決心することは生易しい事ではないから、やはり決心の苦しみに耐えなければならない。苦しみで胃が痛くなることもあるだろう。しかし、それでも決心をしなければならない。本当に決心したことを守り通すことは案外、簡単なことなのである。決心することが一番難しい事なので、決心することに全力を投じることが成功を容易にすることになるのだ。成功するためには、まず「成功してみせる」という強い意欲を持つ必要がある。自分が一体何を望んでいるかを、はっきり知らなくてはならない。あなたの人生で一番大切な要素は、あなた自身である。</p>
+        <p>例えば、あなたが今の生活にうんざりしているとする。それがきっかけなのだ。うんざりしているから、自分の人生の方向を変えようと決心するのだ。すなわち、この決心こそ、成功への第二ステップだ。第三のステップは燃えるような意欲をもつことだ。意欲というものは、あなたの内部深くから生まれてくる。しかしながら、外部よりの刺激により、また、読んだ本であり、また出会った人であり、自分の妻や家族であり、また耳にした話により欲望に火がついたという人もいる。具体的に意欲がどのように高まるかを説明するのは難しいが、もしあなたに燃えるような意欲がない場合には、意欲をさがし求めなければならない。自分の意欲を大きくするよう努力し続けなければならない。</p>
+        <p>なぜ自分の人生の方向を変えるためにそんなに努力する必要があるのか。その最大の理由は、人間として生まれてきた以上、持たされた能力を最大に発揮し、あなたが望むとおりの人生、すなわち、「生きている間にしたい事をしたい時にすること。」である。それ以外に一体何があるのだろうか。人生というものは一回きりである。生きている限り、良い事であれ悪いことであれ、何かをやり続けなければならない。その大切な人生を、多くの人々は他人に決めさせてしまっている。また偶然のままに放っておいている。なぜ自分で成功に満ちた人生を築き上げないのか。あなたの意欲でそれを造り出さなければならない。成功にとって一番大切な要素はあなた自身なのだ。</p>
+        <p>自分自身について、自分の人生の目標について、どのように思っているのか。その思っている気持ちが態度とか、心構えと呼ばれるものである。積極性のあるはっきりとした態度をつくり上げることが、人生の方向を変える第四のステップである。あなたの人生を変えるには、あなた自身を変えなければならない。これが人生の成功の出発点である。あなた自身の心構えが、あなたの人生の方向を決めるのである。あなたの考え方、感じ方も、あなたの心構えいかんによる。あなたは自分がどう感じているか、わかっているだろうか。自分で知っていることについてどう感じているだろうか。それはあなたの態度が決める。</p>
+        <p>「行くのか。」「行かないのか。」「やるのか。」「やらないのか。」このようなことを命じているのは、あなたの心構えであり、態度なのだ。成功への段階を明らかにしてくれるのも、物事を見、意識し、理解し、身体に行動を起こさせるのも、またあなたが決心するとき、あなたを導いてくれるのが、あなたの態度なのである。従って、成功への鍵は、強い、はっきりとした態度を造り上げることである。そして、あなたの態度を人生の精神的、物質的資産に造り上げる。そのような態度を持つことができれば、あなたの行動は、あなたと家族のすばらしい将来をつくり出すことになる。</p>
+        <p>そして第五のステップは、自分の欲望をよく理解し、それを実現させるための行動である。人生の方向を変えるには強い行動力が必要である。何をする場合にも大きくやることだ。「少しやってみよう。」とか「少しためしてみて、だめだったら、やめましょう。」このような意志の弱い人間ではだめだ。「自分にセールスができるかどうか、ためしに二、三軒まわってみます。」とか「この仕事が自分にできるかどうかみてみます。」こんな弱い人間ではだめだ。こんな人間は落伍者であり、一生成功することはできない。何をやるにも、すべてを打ち込んで、とにかく大きくやれ。「よ～し100％全力投球だ。」必要ならばいくらでも時間をかけて自分の人生に挑戦せよ。目先にばかりとらわれては人生は好転しない。時間がないというのなら、今こそ、もっと大きい行動力を持ち、有益な人生をつくらねばならない。</p>
+        <p>第六のステップは、決断である。決断とはこう自分に言い聞かせることだ。「私がやります。任せて下さい。」これが言えてこそ、あなたは人から信用され、信頼される、責任感の強い、積極的な人間として行動できるようになれるのだ。決断のできない人間は、くだらない弱い人間である。いつまでも、預金より借金のことしか考えられない、つまらない人間のままだ。さあ、自分に命じるのだ。「私は絶対、成し遂げてみせる。」あなたが何をするか、どこまでやりとおすか、それはあなたが決めることである。あなたの欲望を実現すべく、努力せよ。</p>
+        <p>他人は「あなたにはできない。」と言うかもしれない。しかし、あなたが実現すると決めた以上、あなたは必ずやり遂げる決心をしなければならない。自分に言い聞かせるのだ。「私は必ず成し遂げる。」と。「自分でやり遂げるか、さもなければ死だ。」と決断すると二つの素晴らしいことに気付く。まず第一は挑戦することのスリルである。物事に挑戦することのスリルは他に比べようもないくらい素晴らしいものだ。第二は、人間はそう簡単に死なないものだということに気が付く。命がけで決断すると、多くの人々はあなたのやりたいようにやらせてくれる。だれも止めることはできないものだ。命をかけて決断することによって、あなたは、自分の欲望を必ず実現することができるのだ。</p>
+        <p>あなたが欲望を実現するには訓練が大切である。あなたのすばらしい将来を目指して、自分で意識的に本当の努力をしなければならない。CDを聞き、テキストを読み通す覚悟はできているか。毎日、自分の訓練として意識的に努力し続ける覚悟はできているか。徹底してやり通せるか。訓練を課すことはやらなかった後の後悔のつらさに比べれば、あまり苦しいものではない。後で後悔する苦しみを味わわないためにも、訓練の苦しさにどこまでも耐えるだけの覚悟をしなければならない。自分の人生を変えようというのであれば、小さいことでも、身を打ち込んでやり遂げなければならない。</p>
+        <p>「はい、私がやります。」「はい、私が行きます。」「そのことは私に任せて下さい。」こういう小さいことを毎日、意識的に積み重ねるのだ。それが自然にできるようになれば、大きい事でも、もう大丈夫だ。あなたは自分にうんざりしたことも経験している。人生を変えようという決心もしている。強い意欲、強い態度も作り上げ、決断をもって行動することも、もう身についている。どんなことに出会っても、それがどんなに大きいことでも、うまく立ち向かえるようになっている。今後はどんなことにも、あなたはどう対処すればいいか、もう知っているのだ。あなたには素晴らしい能力があるのだ。あなたは自分でも信じられない程のことができるのだ。まず自分の能力を信じることだ。女性でも、あるいは子供でも悪条件の中で、想像もつかないようなことを成し遂げることができる。あなたは人生を、あなたの生き方をすばらしいものにすることができるようになったのだ。</p>
+      </div>
+      <footer><p class="pagemark">ー 第二章 終 ー</p></footer>
+    </div>
+  </div><!-- /rawview -->
+</article>
+
+<!-- ============ 第三章 ============ -->
+<article class="chapter" id="ch3">
+  <header class="hero">
+    <div class="hero-in">
+      <span class="eyebrow">第三章</span>
+      <h1>目標の大切さ</h1>
+      <div class="rules"></div>
+      <p class="hero-q">あなたが本当に何を目指すか。<br>これで、すべてが決まり、すべてがスタートします。</p>
+      <p class="hero-a">これからの人生は、すべてあなた自身にかかっています。</p>
+    </div>
+  </header>
+
+  <div class="viewtoggle">
+    <span class="vt-label">表示</span>
+    <div class="seg">
+      <button class="vt-fig on" data-view="fig">図解でわかる版</button>
+      <button class="vt-raw" data-view="raw">原文のまま</button>
+    </div>
+  </div>
+
+  <div class="figview">
+  <div class="wrap">
+    <nav class="toc" aria-label="この章の内容">
+      <h4>この章で学ぶこと</h4>
+      <ol>
+        <li><a data-jump="c3s1">目指すものが、すべてを決める</a></li>
+        <li><a data-jump="c3s2">あと何回の夏が残っているか</a></li>
+        <li><a data-jump="c3s3">まず、欲望に火をつける</a></li>
+        <li><a data-jump="c3s4">目標を実現する六つの段階</a></li>
+        <li><a data-jump="c3s5">物質的な目標と、精神的な目標</a></li>
+        <li><a data-jump="c3s6">人生は、成功への冒険</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec" id="c3s1">
+      <span class="eyebrow">はじめに</span>
+      <h2>目指すものが、すべてを決める</h2>
+      <p class="lede">人と人との人生に違いが生まれるのは、能力の差ではありません。<span class="mk">生き方の違い</span>です。すばらしい未来を実現する鍵は、自分にどんなことができるかを知ることにあります。</p>
+      <p>望む生き方を実現するには、お金のかかることも多いでしょう。それでも、できるだけ自分の望む人生を目指してください。</p>
+      <div class="fig">
+        <p class="fig-cap">図1　精神が先、経済はあとからついてくる</p>
+        <div class="chain">
+          <div class="chain-item"><b>精神面の向上</b><span>考え方・目標が定まる</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>経済面の向上</b><span>必ずついてくる</span></div>
+        </div>
+        <p class="fig-note">「お金そのもの」を考えることと、「お金の使い方」を考えることは、まったく別のことです。</p>
+      </div>
+      <p>たとえば海外旅行の夢。「自分には関係ない」と思っている人が多いですが、まずは旅行代理店にパンフレットを頼んでみる。<strong>行ける・行けないは、今は関係ありません。</strong>計画を立ててみることが、あなたに必要なのです。</p>
+    </section>
+
+    <section class="sec" id="c3s2">
+      <span class="eyebrow">気づき</span>
+      <h2>あと何回の夏が残っているか</h2>
+      <p>もっと素晴らしい人生を送りたいと思う人は多いのに、そのために行動を起こす人はとても少ない。日々の生活に妥協し、いつのまにか毎日から笑いが消えていく——そんな人は少なくありません。</p>
+      <div class="callout">
+        <p>この人たちの人生は、あと何年残っているのでしょう。30年、40年？——いいえ、そうではありません。</p>
+        <p style="margin:0"><b>残っているのは、たった30回、40回の「夏」だけ</b>です。あと30回・40回の誕生日を迎えれば、それでおしまい。これが現実です。</p>
+      </div>
+      <p>人生が変わらないのは、生き方を変えようという心構えがなく、自分の<ruby>潜在能力<rt>せんざいのうりょく</rt></ruby>に気づいていないか、「自分には何もできない」とあきらめているからです。</p>
+      <div class="fig">
+        <p class="fig-cap">図2　行動を止めているのは「心の中の壁」</p>
+        <div class="compare">
+          <div class="card accent"><h4>ブレーキになる考え</h4><p>「人から何か言われないか」と心配して、変化のない現状にとどまる。</p></div>
+          <div class="card"><h4>本当のこと</h4><p>希望するスタイルの人生を生きる権利は、あなたにある。学歴・年齢・性別は関係ない。</p></div>
+        </div>
+        <p class="fig-note">この権利は、他人が何と言おうと、あきらめる必要はありません。あなたが主張し、護るものです。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c3s3">
+      <span class="eyebrow">出発点</span>
+      <h2>まず、欲望に火をつける</h2>
+      <p>より素晴らしい生き方を自分のものにするには、まず<strong>自分が人生で何を望んでいるか</strong>をはっきり認識することです。欲しいものを具体的に決めると、それを手に入れることは、思ったほど難しくないと気づきます。</p>
+      <div class="quote">「まず頭の中にお金を入れなければ、<br>財布の中にお金は入らない」</div>
+      <p>金持ちになるには、金持ちのような考え方をすること。目先にとらわれず、自分の夢を<ruby>描<rt>えが</rt></ruby>いてみることが大切です。</p>
+      <div class="fig">
+        <p class="fig-cap">図3　「見て・触れて」欲望に火をつける</p>
+        <div class="chain">
+          <div class="chain-item"><b>見に行く</b><span>欲しい家・車が実際にある場所へ</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>触れる</b><span>シートに座り、ハンドルにさわる</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>火がつく</b><span>「これを手に入れる」と心に誓う</span></div>
+        </div>
+        <p class="fig-note">ただ「欲しいなあ」と思っているだけではだめ。実際に見て、触れて、無我夢中になる。本当に欲しいものを、具体的に決めるのです。</p>
+      </div>
+      <div class="callout">
+        <p style="margin:0">人は歩き方や言葉を覚えるのに何年もかけ、車の免許や趣味にもお金と時間をかけて練習します。ところが<b>「決心の仕方」だけは、少しも学ぼうとしません。</b>だから他人の考えに左右され、やりたいこともやれずに一生を終えてしまうのです。あなたの人生を決めるのは、あなたの考え方です。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c3s4">
+      <span class="eyebrow">この章の中心</span>
+      <h2>目標を実現する六つの段階</h2>
+      <p>ここから、人生の目標を決定し、実現するための段階を、順番に見ていきます。</p>
+      <ol class="steps">
+        <li><b>欲望を明確にする。</b>「お金が欲しいなあ」では希望的観測にすぎません。「今から1ヶ月以内に50万円稼ぐ」のように、はっきりした欲望を持ちます。</li>
+        <li><b>紙に書く。</b>欲しいものをすべて書き、目標リストをつくります。子供の夢のような大きなものでも構いません。書いてはじめて、本当に欲しいものが見えてきます。</li>
+        <li><b>大きさを決める。</b>目標が小さいと、効果も小さい。「借金を返せたらなあ」程度では、あなたを動かす力になりません。</li>
+        <li><b>性格を決める。</b>考えるだけでエキサイトし、「やるぞ」という気を起こさせるものにします。そうでないなら、目標を変えます。</li>
+        <li><b>見る・触れる。</b>家が欲しいなら見本を見に行き、建設会社に予算・工期を質問する。漠然とした夢が、具体的な行動計画になります。</li>
+        <li><b>障害克服の方法を身につける。</b>「必ず克服する」と決意すれば、結果にくよくよせず、目の前の障害の乗り越え方だけを考えられます。</li>
+      </ol>
+      <div class="fig">
+        <p class="fig-cap">図4　目標は「長期」と「短期」に分ける</p>
+        <div class="compare">
+          <div class="card"><h4>長期的目標</h4><p>1年・3年・5年・10年・20年後の目標。人生をともにする人、全員で設定する。</p></div>
+          <div class="card accent"><h4>短期的目標</h4><p>明日・今週・今月・2〜3ヶ月で達成すること。まずここに集中する。</p></div>
+        </div>
+        <div class="conclusion">短期の目標を積み重ねていくと、<br>やがて長期的目標が、突然実現する</div>
+      </div>
+      <div class="fig">
+        <p class="fig-cap">図5　日記帳で「毎日の成功」を積み重ねる</p>
+        <div class="layers">
+          <div class="layer l1"><b>朝</b><span>その日の目標リストを日記帳に書く</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>夜</b><span>実行できたかチェックする</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>寝る前</b><span>できなかったことを、翌日の計画に書き込む</span></div>
+        </div>
+        <p class="fig-note">小さなことでも、できれば成功です。毎日この積み重ねを続ければ、自分が成長していることを実感できるようになります。枕もとに日記帳を置き、思いついたことをすべて書きましょう。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c3s5">
+      <span class="eyebrow">二種類の目標</span>
+      <h2>物質的な目標と、精神的な目標</h2>
+      <p>設定した目標は、二つに分けられます。</p>
+      <div class="fig">
+        <p class="fig-cap">図6　二つの目標は切り離せない</p>
+        <div class="compare">
+          <div class="card"><h4>物質的目標</h4><p>すなわち経済的な目標。十分に練って計画をつくる。</p></div>
+          <div class="card"><h4>精神的目標</h4><p>目標を実現したときに味わう達成感。喜びと誇り。</p></div>
+        </div>
+        <div class="conclusion">人生を心から楽しみ、幸福になる——<br>これが最高の精神的目標であり、人間の究極の目的</div>
+      </div>
+      <div class="callout">
+        <p style="margin:0"><b>「お金は人を変える」は、お金を持ったことのない人の言葉です。</b>お金は人を変えません。その人の性格を、より強く表すだけです。<ruby>傲慢<rt>ごうまん</rt></ruby>な人はより傲慢に、寛大な人はより寛大になる。だから多くの金持ちが、橋をかけ、学校や病院を造って地域に貢献しています。お金は正しく使えば、その人の生き方をより生かすものになります。</p>
+      </div>
+      <p>思うだけで生活が良くなるなら、すべての人が成功しているはずです。欲望を燃やし、目標や計画を紙に書き出し、それを実行することによって、人生ははじめて大きく変わります。</p>
+      <div class="quote">計画を立てられない人間は、<br>失敗するための計画を立てているのと同じだ</div>
+      <p>政治家が、組合が、銀行が——と、人まかせで待っていてはいけません。<strong>あなた自身が、一番頼りになる。</strong>それを忘れないでください。</p>
+    </section>
+
+    <section class="sec" id="c3s6">
+      <span class="eyebrow">まとめ</span>
+      <h2>人生は、成功への冒険</h2>
+      <p>目標実現への鍵は、<span class="mk">「求める」</span>という言葉です。実現を決意し、意欲を燃やし、徹底的に求める。求めるとは、欲しいものを手に入れるための良い計画を造ることです。</p>
+      <div class="quote">求めよ、さらば与えられん</div>
+      <div class="fig">
+        <p class="fig-cap">図7　求め方には二つある</p>
+        <div class="compare">
+          <div class="card"><h4>① 具体的に求める</h4><p>広さ・高さ・量・期間・サイズまではっきりさせる。設計図があってこそ、家は建つ。</p></div>
+          <div class="card"><h4>② 信念を持って求める</h4><p>計画は大人のように、信じるときは子供のように。必ず手に入ると固く信じる。</p></div>
+        </div>
+        <p class="fig-note">この「子供の信念」と「大人の計画性」を合わせると、どんな目標にも到達できます。</p>
+      </div>
+
+      <h3>すべて手に入らなくても、敗北者ではない</h3>
+      <p>目標リストのすべてが手に入るとは限りません。手に入らないと分かると全部あきらめてしまう人が多いですが、それもだめです。人生を野球にたとえてみましょう。</p>
+      <div class="fig">
+        <p class="fig-cap">図8　最高の打者でも、10回に6回はアウト</p>
+        <svg viewBox="0 0 420 90" role="img" aria-label="10打席のうち4本がヒット、6本がアウトを表す図">
+          <g>
+            <rect x="10" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="50" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="90" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="130" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="170" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="210" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="250" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="290" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="330" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="370" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+          </g>
+          <text x="10" y="20" font-size="13" fill="#21456E" font-family="sans-serif" font-weight="bold">ヒット 4</text>
+          <text x="300" y="20" font-size="13" fill="#6A7078" font-family="sans-serif">アウト 6</text>
+          <text x="10" y="82" font-size="12" fill="#6A7078" font-family="sans-serif">最高打率 4割 ＝ それでも史上最高の打者</text>
+        </svg>
+        <p class="fig-note">目標がすべて手に入らなくても、あなたは決して敗北者ではありません。信念を持ち続けて進むことが大切です。</p>
+      </div>
+
+      <div class="fig">
+        <p class="fig-cap">図9　冒険にいどむ、二つの大切なこと</p>
+        <div class="compare">
+          <div class="card"><h4>① ゲームに参加する</h4><p>暑い夏でも雨でも、毎日バッターボックスに立ちバットを振る。毎日、明日の目標リストを持つ。</p></div>
+          <div class="card"><h4>② いつも勝てると信じる</h4><p>勝てると信じなければ、一度も勝てない。成功者は「自分にはできる」と信じている。</p></div>
+        </div>
+        <div class="conclusion">負けることは罪ではない。<br>試みないことこそ、罪である</div>
+      </div>
+      <p>過去は関係ありません。それが分かると、あなたの人生は必ず成功へ導けます。まず短期的な目標に集中すること。それが、心に描いている長期的目標の実現へと通じていきます。</p>
+
+      <div class="pledge">
+        <h3>今日から始める</h3>
+        <ul>
+          <li>欲しいものを具体的に決め、紙に書き出す</li>
+          <li>目標は大きく、エキサイトするものにする</li>
+          <li>長期と短期に分け、まず短期に集中する</li>
+          <li>日記帳で毎日の目標をチェックする</li>
+          <li>明日からではなく、今日から始める</li>
+        </ul>
+      </div>
+      <p style="margin-top:1.4rem">職場でも家庭でも、それぞれが目標リストを持ち、毎日話し合い、達成していく。子供でも、目標を持ち、それを達成できます。</p>
+      <div class="finale">あなたにとって、本当の幸せを心の中に感じ、<br>生活の中に、落ち着きと満足感を、<br>取りもどすことができるようになる。</div>
+
+      <nav class="chapnav">
+        <button data-ch="2"><small>◀ 前の章</small><b>第二章 成功のステップ</b></button>
+        <button class="next" disabled><small>次の章は準備中です</small></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 第三章 終 ー</p></footer>
+  </div>
+  </div><!-- /figview -->
+
+  <div class="rawview">
+    <div class="raw-wrap">
+      <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
+      <h3 class="raw-title">第三章　目標の大切さ</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>あなたが、本当に何を目指すか、これで、すべてが決まりすべてがスタートするのです。これからの人生は、すべてあなた自身にかかっているのです。あなたの生活を向上させ、あなたが望む人生を送ることができるチャンスが現代にはあるのです。だから、あなたが目指すものが、きわめて重要になってくるのです。</p>
+        <p>なぜ、人と人との人生に違いがあるのだろうか。一体何が違うのだろう。それは、人生の生き方の違いなのである。素晴らしい未来を実現する鍵は、自分にどのようなことができるかを知ることである。自分の望む生き方を実現するには、金のかかることが多い。しかし、金がいくらかかろうとも、できるだけ自分の望む人生を、目指すのである。なぜならば、精神面の向上ができれば、経済面の向上は、必ずついてくるものだからだ。また、金そのものについて考えることと、金の使用方法を考えることは、全くちがうことである。</p>
+        <p>海外旅行の夢をもっていたとしても、夢のまた夢で、自分には直接関係のないことだと思っている人が多い。旅行代理店に電話して、パンフレットぐらい送ってもらったらどうだろう。行ける、行けないは今、関係ないのだ。まず、旅行の計画ぐらいは立ててみることが、あなたには必要なことなのだ。</p>
+        <p>今より、もっと素晴らしい生き方、魅力ある人生を送りたいと思っている人は多いが、そのための行動を、おこす人は大変少ない。行動をおこすどころか、もう現実生活に妥協して、夫婦の会話すら、なくなってしまう。これが結婚して４、５年たち、子供の２、３人もできると、あたりまえになってしまう。日常生活から笑いがなくなり、夫は朝早く出かけ、仕事、接待と夜遅くまで帰ってこない。こんな生活が楽しいわけはない。しかし、どうだろう。この人たちの人生は一体あと、何年残っているのだろう。30年、40年、50年と残っているだろうか。いや、そうではない。たった30回、40回の夏だけしか残っていないのだ。あと30回、40回の誕生日を迎えれば、それで、あなたはもう、おしまいだということに気が付いていないのだ。これが現実なのだ。</p>
+        <p>自分の大切な人生を、ただぼう然と見送っているだけなので、時間はどんどん過ぎていく。あなたの人生が変わらないのは、生き方を変えようという、心構えや態度がなく、自分の潜在能力に気が付いていないか、または、自分には何もできないと、あきらめきっている人が多い。どんなに正直で働き者で、人に親切であろうと、自分のしたいことに、自分の能力を発揮できないならば、何にもならない。また、新しいこと、自分が経験していないことをするのを恐れる人が多い。「人から何か言われはしないか。」と心配し、あきらめて、また変化のない現状維持の生活を、いじけて続けなければならない。もっとすばらしい人生があるということにも、意欲すら持てなくなってしまう。しかし、あなたには、自分の希望するスタイルの人生を生きる権利がある。これは他人が何と言おうと、あきらめる必要はないのだ。</p>
+        <p>あなたにも、自分の希望する素晴らしい人生を生きる自由がある。学歴、年令、性別などは、全く関係ないのだ。あなたは、この権利を主張し、護らなければならない。もっと素晴らしい生き方を、自分のものにするためには、まず自分が、人生において、何を望んでいるかを、はっきりと認識しなくてはならない。自分が欲しい物を、はっきり決めると、それを手に入れることは、それほど難しくないという事に気がつく。</p>
+        <p>金持ちになるには、本当の金持ちのような考え方をしなくてはならない。まず頭の中に、お金を入れなければ、財布の中にお金が入らない。目先にとらわれず、自分の夢をえがいてみることが大切なのである。すばらしい人生を望むならば、あなたにとって、よりすばらしい生き方とは何かを、はっきりさせることである。自分がどんな人生を送りたいか、どんなものが欲しいかを、はっきり決めなければならない。</p>
+        <p>人生を、その日暮らしで済ませようなどと、いいかげんに考えてはならない。人生も、車の運転と同じように、いいかげんにやれば、必ず事故に遭うものなのだ。人生とは、人にとって一度しかなく、やり直そうと思っても、あとがないものなのだ。</p>
+        <p>では、どうしたら、より素晴らしい人生について、考えることができるだろう。まず、自分からそのような生き方に近づき、自分もそうなりたいと、心に火をつけることである。あなたが、何か素晴らしいものを、初めて見たときに、思わず「ホォ！」と声が出てしまうだろう。そして、自分も、これを手に入れようと心に誓う。こうして、自分の望む物を見て、欲望に火をつける。立派な家が欲しいのであれば、それがたくさんある所に行き、実際の家を目の前にして、欲望をかきたてることだ。高級車が欲しいのであれば、メルセデスベンツ、BMW、ポルシェが欲しければ、ディーラーへ出かけて行って、カタログをもらってくることだ。シートに座って、ハンドルにさわってみるのもいいだろう。自分が、本当に何が欲しいかを、はっきりと決め、実際に見たり、さわったりして、それに無我夢中になることだ。ただ、「欲しいナ」と思っているだけでは、ダメだ。まず、本当に、あなたが欲しい物を具体的に決めるのだ。</p>
+        <p>人間は、歩いたり、言葉を覚えたりするまでに、相当な年月がかかる。しかし、決心の仕方は、それ程の年月をかけて覚えることをしない。車の免許をとることや、マージャンの仕方などは、多くのお金と時間をかけて、練習することが、あたりまえだと考えている。決心の仕方など少しも学ぶ努力をしない。だから、自分のことなのに、他人の考えに左右されて、やりたいこともやれず、一生を終わらなければならない。あなたの人生を決めるのは、あなたの考え方である。だから、考え方によって、あなたの生き方が変わってくるのだ。だからこそ、頭の使い方にも、相当な努力と時間を費やさなければならない。</p>
+        <p>さて、ここであなたの人生の目標を決定し、実現する段階について、考えてみよう。まず第一に、欲望を明確にすることである。「お金が欲しいなあ。家が欲しいなあ。」といった希望的観測ではだめだ。あなたの目標を、実現するためには、まず、本当に欲しいものを、具体的に明確にしなければならない。例えば「今から１ヶ月以内に50万円稼ぐのだ。」というように、はっきりした欲望を持つことである。このように自分の欲望を１つ、１つ明確にしていくうちに、自分にとって、より素晴らしい人生とは、具体的に、どんなものかがわかってくる。また、そうした目標に達するためには、何をすればいいか、ということも、おのずから、明確になってくる。</p>
+        <p>普通、人間は、ごく日常的な決定しかしたことがない。例えば「車で行こうか。電車で行こうか。」「今日は映画にしようか。ボウリングにしようか。」このように小さな、簡単な決心しか、したことがないのである。だから、大きな決定をするには、努力や訓練が必要である。そこで、あなたの目標を実現するための第二の段階は、欲しい物を、具体的に紙に書くことである。よりすばらしい生活の内容となるべきものを、すべて書き、目標リストをつくるのだ。子供の夢のような大きいものでも、あるいは前から欲しいと思っていた物でも、何でもいいから書くのだ。物質的な目標だけではなく、精神的な目標も書くのだ。実際に書いてみると、自分が、本当は何が欲しいのかが、はっきりしてくるのである。だから時間をかけ、努力して自分の欲しい物を書き出さない限り、あなたの生活は、今までと全く変わらないのだ。自分の人生を本当に変えたいなら、まず自分自身を変えねばならぬということを思い出さねばならない。目標を具体的にする、ということは、いいかげんにやって、できるものではなく、また易しいことではないから、努力して、目標を書き出し、具体的に設計しなければならない。</p>
+        <p>自分の重要な将来設計を、成るがままにしている人が多い。仕事は、一生懸命になってするが、自分の将来の計画を、真剣に考えている人は、ほんのわずかの人々である。こういうことを言う人もいるだろう。「仕事が忙しいんだ。帰って食事をして、テレビを見ると、もう寝なければ、明日が大変だ。とても計画を立てる時間なんてない。」こんなことを言う人は、確かに、正直で、親切で、良く働く人間だろうが、将来を設計する人間としては、全くだめだ。だから、もちろん金もなければ、成功もしない。だから、目標の実現のため、将来設計をしっかりと、練る必要があるのだ。具体的にしっかり紙に書き出すのだ。自分を強くするためにも、書かなければならない。頭の中に入れておいても、消えてしまうのがおちだ。常に日記帳を利用する事だ。夜寝る時も、枕もとに置いておき、自分が考えついたこと、したいと思うこと、すべてを日記帳に書くのだ。大切なことは、毎日書くということである。</p>
+        <p>次に、こうして設定した目標は、物質的目標と、精神的目標の二つに分けられる。物質的目標とは、すなわち経済的目標であるから、十分に練って計画を作る必要がある。ところが、ほとんどの人が、人生の目標など、聞いたこともないのである。道で、通行人に「あなたの目標リストを、見せて下さい。」と聞けば「あなた、少しおかしいんじゃないですか。」と言われるくらいが、関の山だ。ほとんどの人が、経済的な目標の話をすれば、きっと否定的に言うだろう。「金銭は人を変える。悪の根源だ。金が増えれば、人間はケチになり、意地悪になる。」しかし、これはやはり、金を持った事のない人が言うことだ。金は決して人を変えない。ただ、その人の性格を、さらに強く表わすだけなのである。だから、ごう慢な人は、金によって、ますますごう慢になる。しかし、寛大な人はさらに、寛大になり、他人への思いやりが深くなる。多くの金持ちが、地域社会に貢献し、橋をかけたり、学校を造ったり、病院を造っている。金は正しく使えば、その人の性格を、生き方を、より生かすものになる。</p>
+        <p>また、精神的目標は、物質的目標と密接なつながりを持ち、自分が設計した目標を実現したときに、味わう達成感である。すなわち、喜びと誇りを現すものである。人生を心から楽しみ、幸福になれる。これこそ最高の精神的目標であり、また、人間の究極的な目的である。ここに、この両者が切り離せないものだということがわかる。</p>
+        <p>人間、思うだけで自分の生活が、良くなるのであれば、すべての人間が、成功しているはずである。しかし思うだけでは、何も変わるはずがないのである。欲望を燃やし、目標や計画を、紙に書き出し、それを実行することによって、人生は、はじめて大きく変わるのである。よく覚えておくがいい。計画を立てられない人間は、失敗するための計画を、一生懸命立てているのと同じだ。凡人と同じことをしていてはだめだ。自分は何もせず、「政治家が、何とかしてくれるだろう。」「組合が、銀行が何とかしてくれるだろう。」このように、あなたまかせで、ただ待っているだけではだめだ。自分が自分の一番の力になるのだ。あなた自身が、一番頼りになるということを、忘れてはならない。自分で、一生懸命に将来計画を設計しない限り、他人の言いなりになるだけだ。わずかな収入では、銀行預金もできないのだ。それで満足ならば、これ以上言う必要もない。しかし、不自由な人生がいやならば、自分自身で計画を立てねばならない。あなたが、どんなに一生懸命、働いているとしても、それだけでは、あなたの人生は、いっこうに、変わらないのだ。あなたは、もう決心した、必ず、素晴らしい人生を、築きあげることを。そして、あなたにとって、素晴らしい生き方の具体的内容も、目標リストに書かれている。大変、素晴らしいことだ。</p>
+        <p>素晴らしい人生を、実現するための、第三段階は、目標の大きさを決めることだ。目標の大きさが、その効果までも左右するから、大変重要なことである。あなたの目標の大きさが、あなたの風格を左右する。笑顔、話し方、態度、握手の仕方まで、影響を受けている。あなた自身も、常に自分が設定した目標に、直接影響を受けているのだ。多くの人々は、たしかに目標はもっているが、あまりにも小さいので、効果もやはり、小さくなってしまう。「１年間でこの借金を、返済できたらなあ。」こんな小さい目標では、自分自身も小さくなり、その効果はゼロに等しい。これでは目標があなたを、動機付けして、あなたが働きたくなるような効果を、発揮できないのだ。その目標は、働かなければならない原因でおわってしまうのである。小さな目標では、貧弱な効果しか、生まれないという事を、決して忘れてはならない。</p>
+        <p>素晴らしい人生を実現する、第四の段階は、目標の性格を決めることである。欲望に火をつけ、あなた自身を、行動にかり立てるような目標、すなわち、これがあなたの目標の性格なのだ。考えただけでも、エキサイトするようなもの。やるぞ。と言う気を起こさせるものでなければならない。あなたの目標が、このようなものでないのなら、目標を変えなければならない。目標が変わることにより、人生までも、大きく変わってくるのだ。視野が狭いと、人間は小さくなってしまう。エキサイトするような、目標や計画がなければ、その人は、死人同然だ。あなたをエキサイトさせ、行動にかり立てるような、夢と目標を持て。</p>
+        <p>次に、欲望・信念を高め、目標を確実に達成させるために、あなたの目標を、長期のものと、短期のものに、区別することが大切である。長期的目標の設定とは、現在より、１年、３年、５年、10年、20年後の目標であり、この目標の設定は、極めて大切な事だから、あなただけの目標ではなく、ともに人生を過ごす人、全員で設定する必要がある。同時に、短期的な目標の設定も、行わなければならない。短期的な目標は、明日、今週、今月、ここ２、３ヶ月の間に達成することだから、大変、大切なのである。短期の物質的目標と、精神的目標の設定に力を入れていくと、突然、あなたの長期的目標が実現する。短期的な目標がはっきりしないと、何もできない。</p>
+        <p>「成功したなあ。」と漠然と思いながらも、明日、やるべきことが、はっきりしていない人が多い。こういう人間に、決して成功者はいない。貧しい生活を送ることは、簡単で、努力はいらない。しかしこれでは、あなたの人生は台なしになってしまう。毎日、この基本的なことを、確実に実行すれば、決して貧乏になる事はない。そこで、日記帳を活用することが大切である。日記帳に、毎日の目標リストをつくり、毎夜、実行できたかどうかを、チェックする。そしてその日、できなかった事を、翌日の計画に書き込む。これだけのことが終わってから寝るのだ。これが確実に向上する一つの方法である。すなわち、毎日、成功達成を積み重ねることだ。小さなことでも、それができれば、成功だ。自分が欲しいものを明確にせよ。そして、それを手に入れるには、どうすれば良いかを、はっきりさせよ。この習慣が身につけば、自分が成長している、ということを、はっきりと実感できるようになる。すなわち、あなたは自分で立てた、目標に到達できるようになったのであり、目標を、大きくしていけるようになったのだ。そうなると、マイホーム、車、海外旅行といった目標を書いて、その実現が期待できるようになる。</p>
+        <p>より素晴らしい人生を、実現するための第五段階は、目標を見ること、触れることである。例えば、家を建てたいと思うのであれば、いろいろな家の見本を見に出かけていくことだ。そして、環境、設備、デザイン、建築の具合を良く見て検討し、さらに、値段の方も考えてみるのだ。その家を建てた建設会社に、出かけて行き、何日ぐらいかかるのか、いくらぐらい、かかるのかなど、いろいろな質問をしてみるのだ。そうすれば、建設会社の人は、親切に教えてくれるだろう。そして、その家について、細かく具体的に考えはじめるがいい。どれぐらいの予算、どこに建てるのか。いつから工事を始めるか。どこの建設会社に設計させようか、などと、どんどん計画をすすめていく。このようにして、家を手に入れるための、行動計画を具体的に進めていかなければならない。こうすることによって、漠然とした夢が具体化し、現実に、行動に移せる詳細な計画にまで、発展してくる。こうなることで、エキサイトに満ちた毎日になってくる。</p>
+        <p>さて、より素晴らしい人生を、実現するための、第六段階は、障害克服の方法を身につけることだ。まず、第一に、「自分の進む道にある障害を、必ず克服する。」という、強い決意をすることである。「どんな事が起ころうとも、私はやり遂げる。」と決心すると、もう結果について、くよくよ考える必要はなくなるのだ。考えなければならないことは、目前の障害克服の方法である。徹底的にこれを、考えることだ。障害を克服するには、とにかく行動することだ。そのつど、一番いいと思える方法で前進するのだ。あなたの障害のほとんどが、心理的なものだということ、すなわち、心の中にあるということを、よく知っておかねばならない。あなたの障害は、だれかが、心の中に植えつけたものかもしれないし、また、外部よりの刺激で生まれたものかもしれない。しかし、あなたの目標を実現する固い決心さえあれば、その決心の力により、あなたは外部よりの障害を、打ち破ることができる。</p>
+        <p>何度も述べるように、まず、自分の欲しいものを、子供のような気持ちになって、大きいことであれ、小さいことであれ、書き出すのだ。そして、それに到達するためになすべき計画も真剣に書くのだ。私は絶対にその目標を実現することができると、確信しなければならない。明確に書き出すことにより、あなたの夢が、現実へと動きはじめる。だから、どうやって手に入れるかということは、あまり心配するべきではない。第一の問題は、「何が欲しいか。」ということだ。何故ならば、欲望が大きければ、大きいほど、また、強ければ強いほど、手に入れるということが易しくなる。するべき事柄さえ大きければ、欲望や熱意も大きくなり、あなたは想像もできないような、大変なことを成し遂げることができるのだ。</p>
+        <p>さあ、あなたの目標に向かって、スタートせよ。目標はまず、小さい物から始め、次第に大きくしていくのだ。明日からではなく、今日から始めよう。あなたの人生にとって大切な人、みんなでやるのだ。職場でも、家庭でも、それぞれの人が、目標リストを持ち、それを達成していくのだ。毎日、そのことを、全員で話し合い、すばらしい結果をもたらすようにするのだ。子供でも、目標を持ち、それを達成することができるのだ。目標実現への鍵は「求める」という言葉だ。実現することを決意し、意欲を燃やし、徹底的に求めるという態度に身につけなければならない。あなたの目標を実現するために、これ程重要な言葉はない。求めるという事は、欲しい物を手に入れるための、良い計画を造るということだ。自分の欲しいものを求め続ければ、いつしか、それを手に入れるチャンスを、つかむことができるのだ。当然のことである。"求めよ、さらば与えられん。"</p>
+        <p>求めてまわるような時間などない、と言う人がいるかも知れない。しかし、考えてみると、求めない人は、結局欲しい物が手に入らないのである。いかによく働いたとしても、求めない人は、貧乏生活の計画しかできない人であり、その人の人生は一生、変わることはない。世の中には、求めて得られる物はたくさんあるから、あなたが欲しいだけもってくれば、よいのである。どれだけ取っても減ることはない。海水だって、スプーンを持って行くより、バケツを持って行く方が、たくさん汲めるのは、あたりまえである。小さい計画では、欲望に火がつかない。だから、求めに求めるのだ！</p>
+        <p>あなたが欲しい物を求めるには、求め方が二つある。第一に、はっきり具体的に求めるのだ。でなければ、何も手に入るわけがない。自分が欲しい物を、明確にするのだ。具体的に求めるということは、広さ、高さ、量、期間、サイズ等についても、はっきりしている、ということだ。それがはっきりしないようであれば、もう少し、細かい目標に変えなければならない。例えば、あなたが、建設会社を呼んで、計画も設計図もなしで、ただ、大きい家を建ててくれ、と言っても、家が建つことはない。あなたの計画が、そんな程度のものであれば、まず家というものは建たない。綿密な設計図があればこそ、家は建つのだ。自分の将来が、あまりにも漠然としている人が多い。行き先もわからず、どうやって、たどり着くのか。第二には、信念を持って求めることだ。子供のように、自分が欲しい物は必ず、手に入ると、固く信じて求めるのだ。計画を立てる時は、大人のように、信じる時は、子供のようになるのだ。そうすれば、必ず、目標は達成できる。この子供の信念と、大人の計画性を合わせると、どんな目標にも、必ず到達することが可能になる。</p>
+        <p>もう一つ大切なことがある。あなたが求める物すべてが、手に入ると信じなければならない。しかし、努力の結果、手に入らないものも出てくる。目標リストを作っても、すべてが手に入らないと分かると、全部諦めてしまう人が、非常に多い。これもだめだ。人生を野球に例えてみよう。プロ野球史上の最高打率は、なんと、たった４割だ。10回バッターボックスに立ち、６回はアウトなのだ。それでも、最高のプレーヤーなのだ。だから、あなたの目標が、すべて手に入らなくても、決して敗北者ではないのだ。だから計画を立て、どんな物でも、手に入るという信念を持ち続け、進まなければならない。決して、卑下する必要はない。人生はすなわち、成功への冒険なのである。その冒険にいどむには、全部、勝つ必要はない。ただし、２つの重要なことがある。</p>
+        <p>第一は、ゲームに参加することだ。常にバッターボックスに立ち、どんなに暑い夏でも、雨が降ろうとも、立ってバットを全力で振るのだ。一日たりとも、ゲームから抜けてはだめだ。常に、あなたのゲームである、明日の目標リストを持つことである。明日の目標を持っていなければ、勝ったのか、負けたのか分からない。それでは、勝敗のない、平凡な、くだらない日々を過ごすことになる。だから、毎日目標を設定し、達成するように努力することだ。毎日ゲームに参加し、毎日得点を得るように、努力するのだ。第二は、いつも勝てると信じるのだ。いつも勝てるはずがないと、言う人もいるだろう。しかし、いつも勝てると信じなければ、一度も勝てないのだ。成功者は、いつも勝てる、いつも、自分にはできると信じているのだ。もう一度繰り返すが、第一に、いつもゲームに、参加すること。第二に、いつも勝てると信じること。負けることは罪ではない。しかし、試みないことこそ、罪である。試合が終わったとき、あなたの戦績は、三振もあれば、ホームランもあるかも知れない。しかし、どんな事があろうとも、ゲームに参加しないときより、必ず、あなたの成績はよくなっている。</p>
+        <p>自分の将来の生き方、すなわち、ライフスタイルということを考えよ。過去の事を弁解しようなどとしないことだ。過去は関係ない、ということが分かると、あなたの人生は、必ず、成功の人生に導くことができるのだ。あなたは、達成したい目標を、もう書き記したはずだ。そのリストをよく見よ。そこには、経済的目標と、精神的目標が記されており、短期的目標と、長期的目標に分けられている。それを実現するには、何をすればいいのか。それも、そこに書かれている。あとは、その計画に従い、常に努力を積み重ね、成功できると自ら確信するのだ。まず、短期的な目標に、集中することだ。そうすれば、あなたの心にえがいている、長期的目標の実現に、やがて通じる。このように、いつもゲームに参加し、いつも勝てると信じていれば、驚く程のことを、成し遂げることが、できるようになるのだ。</p>
+        <p>自分を変え、目標を設定し、計画をつくることは、あなたが素晴らしい人生を、実現しようと強い決意をしたときから、案外簡単なものとなり、いろいろな目標も達成されるようになるのだ。あなたにとって、本当の幸せを、心の中に感じるようになり、あなたの生活の中に、落ち着きと満足感を、取りもどすことが、できるようになるのである。</p>
+      </div>
+      <footer><p class="pagemark">ー 第三章 終 ー</p></footer>
+    </div>
+  </div><!-- /rawview -->
+</article>
+
+</main>
+
+<script>
+(function(){
+  var ham=document.getElementById('ham');
+  var drawer=document.getElementById('drawer');
+  var overlay=document.getElementById('overlay');
+  var barTitle=document.getElementById('barTitle');
+  var chapters={'1':{el:document.getElementById('ch1'),title:'第一章 学び方'},
+                '2':{el:document.getElementById('ch2'),title:'第二章 成功のステップ'},
+                '3':{el:document.getElementById('ch3'),title:'第三章 目標の大切さ'}};
+
+  function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');ham.classList.add('open');ham.setAttribute('aria-expanded','true');}
+  function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');ham.classList.remove('open');ham.setAttribute('aria-expanded','false');}
+  ham.addEventListener('click',function(){drawer.classList.contains('open')?closeDrawer():openDrawer();});
+  overlay.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
+
+  function showChapter(ch){
+    Object.keys(chapters).forEach(function(k){chapters[k].el.classList.toggle('active',k===ch);});
+    document.querySelectorAll('#chaplist button').forEach(function(b){b.classList.toggle('active',b.dataset.ch===ch);});
+    barTitle.innerHTML='<small>成功の原理を学ぶコース</small>'+chapters[ch].title;
+    setView(chapters[ch].el,'fig'); // 章を変えたら図解版に戻す
+    window.scrollTo({top:0,behavior:'auto'});
+    runMarkers();
+  }
+
+  // 図解版／原文の切り替え
+  function setView(article,mode){
+    article.classList.toggle('rawmode',mode==='raw');
+    article.querySelectorAll('.vt-fig').forEach(function(b){b.classList.toggle('on',mode==='fig');});
+    article.querySelectorAll('.vt-raw').forEach(function(b){b.classList.toggle('on',mode==='raw');});
+  }
+  document.querySelectorAll('.viewtoggle button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var article=b.closest('.chapter');
+      setView(article,b.dataset.view);
+      if(b.dataset.view==='fig')runMarkers();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  // ドロワー内の章ボタン
+  document.querySelectorAll('#chaplist button').forEach(function(b){
+    b.addEventListener('click',function(){showChapter(b.dataset.ch);closeDrawer();});
+  });
+  // 章送りナビ
+  document.querySelectorAll('.chapnav button[data-ch]').forEach(function(b){
+    b.addEventListener('click',function(){showChapter(b.dataset.ch);});
+  });
+  // 目次内ジャンプ
+  document.querySelectorAll('[data-jump]').forEach(function(a){
+    a.addEventListener('click',function(){var t=document.getElementById(a.dataset.jump);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});
+  });
+
+  // 文字サイズ調整
+  var fsWrap=document.getElementById('fontsize');
+  fsWrap.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.documentElement.setAttribute('data-fs',b.dataset.fs);
+      fsWrap.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+    });
+  });
+  document.documentElement.setAttribute('data-fs','m');
+
+  // 蛍光ペン
+  var io=null;
+  function runMarkers(){
+    var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var marks=document.querySelectorAll('.chapter.active .mk');
+    if(reduce||!('IntersectionObserver'in window)){marks.forEach(function(m){m.classList.add('on');});return;}
+    if(io)io.disconnect();
+    io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
+    },{threshold:0.6});
+    marks.forEach(function(m){m.classList.remove('on');io.observe(m);});
+  }
+  runMarkers();
+})();
+</script>
+</body>
+</html>
