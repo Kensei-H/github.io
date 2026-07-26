@@ -92,6 +92,19 @@ strong{font-weight:700}
 .viewtoggle button.on{background:var(--indigo);color:#fff;font-weight:700}
 .viewtoggle .vt-label{font-size:.74rem;letter-spacing:.14em;color:var(--muted);margin-right:.2rem}
 
+
+/* 言語切替 */
+.langswitch{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.13);border-radius:999px;padding:3px;flex:none}
+.langswitch button{border:none;background:transparent;color:#C7D5E6;cursor:pointer;font-family:var(--gothic);font-size:.78rem;line-height:1;border-radius:999px;padding:.4rem .7rem;transition:.2s;white-space:nowrap}
+.langswitch button:hover{color:#fff}
+.langswitch button.on{background:#fff;color:var(--indigo);font-weight:700}
+.lang-block{display:none}
+html[data-lang="ja"] .lang-ja-block{display:block}
+html[data-lang="zh"] .lang-zh-block{display:block}
+html[data-lang="ja"] span.lang-ja-block{display:inline}
+html[data-lang="zh"] span.lang-zh-block{display:inline}
+html[data-lang="zh"] .raw-body{font-family:"Noto Serif TC","Songti TC","PMingLiU",serif}
+
 /* ===== 原文表示 ===== */
 .rawview{display:none}
 .chapter.rawmode .figview{display:none}
@@ -223,9 +236,11 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   html[data-fs="s"]{font-size:14px}
   html[data-fs="m"]{font-size:16px}
   html[data-fs="l"]{font-size:19px}
-  .topbar{gap:.4rem;padding:0 .5rem}
-  .topbar-title{font-size:.95rem}
-  .fontsize button{padding:.35rem .42rem}
+  .topbar{gap:.35rem;padding:0 .45rem}
+  .topbar-title{font-size:.82rem}
+  .topbar-title small{display:none}
+  .fontsize button{padding:.35rem .38rem}
+  .langswitch button{padding:.4rem .5rem;font-size:.72rem}
   .chain{flex-direction:column}.chain-arrow{transform:rotate(90deg)}
   .compare,.timeline{grid-template-columns:1fr}
   .pillars{grid-template-columns:1fr}
@@ -244,6 +259,10 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
     <span></span><span></span><span></span>
   </button>
   <div class="topbar-title" id="barTitle"><small>成功の原理を学ぶコース</small>第一章 学び方</div>
+  <div class="langswitch" id="langswitch" role="group" aria-label="言語 / 語言">
+    <button class="lang-ja on" data-lang="ja">日本語</button>
+    <button class="lang-zh" data-lang="zh">中文</button>
+  </div>
   <div class="fontsize" id="fontsize" role="group" aria-label="文字サイズ">
     <button class="s" data-fs="s" aria-label="文字を小さく"><span class="fs-a">あ</span></button>
     <button class="m on" data-fs="m" aria-label="文字を標準の大きさに"><span class="fs-a">あ</span></button>
@@ -255,13 +274,13 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
 <div class="overlay" id="overlay"></div>
 <nav class="drawer" id="drawer" aria-label="章の一覧">
   <div class="drawer-head">
-    <h2>目次</h2>
+    <h2><span class="lang-block lang-ja-block">目次</span><span class="lang-block lang-zh-block">目次</span></h2>
     <p>CHAPTERS</p>
   </div>
   <ul class="chaplist" id="chaplist">
-    <li><button data-ch="1" class="active"><span class="num">第一章</span><span>学び方<span class="sub">成功の原理と学び方のルール</span></span></button></li>
-    <li><button data-ch="2"><span class="num">第二章</span><span>成功のステップ<span class="sub">自分が変わる、六つのステップ</span></span></button></li>
-    <li><button data-ch="3"><span class="num">第三章</span><span>目標の大切さ<span class="sub">欲望を明確にし、計画を紙に書く</span></span></button></li>
+    <li><button data-ch="1" class="active"><span class="num"><span class="lang-block lang-ja-block">第一章</span><span class="lang-block lang-zh-block">第一章</span></span><span><span class="lang-block lang-ja-block">学び方<span class="sub">成功の原理と学び方のルール</span></span><span class="lang-block lang-zh-block">學習方法<span class="sub">成功的原理與學習規則</span></span></span></button></li>
+    <li><button data-ch="2"><span class="num"><span class="lang-block lang-ja-block">第二章</span><span class="lang-block lang-zh-block">第二章</span></span><span><span class="lang-block lang-ja-block">成功のステップ<span class="sub">自分が変わる、六つのステップ</span></span><span class="lang-block lang-zh-block">成功的步驟<span class="sub">自己改變的六個步驟</span></span></span></button></li>
+    <li><button data-ch="3"><span class="num"><span class="lang-block lang-ja-block">第三章</span><span class="lang-block lang-zh-block">第三章</span></span><span><span class="lang-block lang-ja-block">目標の大切さ<span class="sub">欲望を明確にし、計画を紙に書く</span></span><span class="lang-block lang-zh-block">目標的重要<span class="sub">明確慾望，把計畫寫在紙上</span></span></span></button></li>
   </ul>
 </nav>
 
@@ -272,23 +291,31 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <header class="hero">
     <div class="hero-in">
       <span class="eyebrow">第一章</span>
-      <h1>学び方</h1>
+      <h1 class="lang-block lang-ja-block" style="margin-bottom:.9rem">学び方</h1>
+      <h1 class="lang-block lang-zh-block" style="margin-bottom:.9rem">學習方法</h1>
       <div class="rules"></div>
-      <p class="hero-q">世の中には成功する人がいる一方で、そうでない人がいます。<br>それは、いったいなぜなのでしょうか。</p>
-      <p class="hero-a">この章では、その原理を学びます。</p>
+      <div class="lang-block lang-ja-block">
+        <p class="hero-q">世の中には成功する人がいる一方で、そうでない人がいます。<br>それは、いったいなぜなのでしょうか。</p>
+        <p class="hero-a">この章では、その原理を学びます。</p>
+      </div>
+      <div class="lang-block lang-zh-block">
+        <p class="hero-q">世上有人成功，也有人不成功。<br>這究竟是為什麼呢？</p>
+        <p class="hero-a">本章將學習其中的原理。</p>
+      </div>
     </div>
   </header>
 
   <div class="viewtoggle">
-    <span class="vt-label">表示</span>
+    <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
     <div class="seg">
-      <button class="vt-fig on" data-view="fig">図解でわかる版</button>
-      <button class="vt-raw" data-view="raw">原文のまま</button>
+      <button class="vt-fig on" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
     </div>
   </div>
 
   <div class="figview">
   <div class="wrap">
+  <div class="lang-block lang-ja-block">
     <nav class="toc" aria-label="この章の内容">
       <h4>この章で学ぶこと</h4>
       <ol>
@@ -500,11 +527,227 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
       </nav>
     </section>
     <footer><p class="pagemark">ー 第一章 終 ー</p></footer>
+  </div><!-- /lang-ja-block -->
+
+  <div class="lang-block lang-zh-block">
+    <nav class="toc" aria-label="本章內容">
+      <h4>本章學習內容</h4>
+      <ol>
+        <li><a data-jump="c1s1">首先，問問自己</a></li>
+        <li><a data-jump="c1s2">改變，要從自己開始</a></li>
+        <li><a data-jump="c1s3">捷徑，是向成功者學習</a></li>
+        <li><a data-jump="c1s4">三件重要的事</a></li>
+        <li><a data-jump="c1s5">反覆之後，不必思考也能做到</a></li>
+        <li><a data-jump="c1s6">學習方法的規則</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec">
+      <span class="eyebrow">前言</span>
+      <h2>首先，問問自己</h2>
+      <p class="lede">許多人甚至忘了向自己提出「為什麼有人成功、有人不成功」這個問題。學習，就從把這個問題朝向自己開始。</p>
+      <p>在此，請你問自己兩件事。</p>
+      <div class="fig">
+        <p class="fig-cap">圖1　作為起點的兩個提問</p>
+        <div class="compare">
+          <div class="card"><h4>提問①</h4><p>你是否真的下定決心，要靠自己的力量開創新的人生？</p></div>
+          <div class="card"><h4>提問②</h4><p>你是否在心中發誓，不再重複和至今相同的人生？</p></div>
+        </div>
+        <p class="fig-note">為了找出答案，請回顧自己的過去。那是理想的人生嗎？是值得自豪的人生嗎？如果不是，除非此刻就下定決心，否則同樣的人生仍會繼續下去。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">原則</span>
+      <h2>改變，要從自己開始</h2>
+      <p>你所嚮往的美好人生，你也能親手打造。只是這有先後順序。為此，首先必須<span class="mk">改變你自己</span>。自己不變，什麼都不會變。</p>
+      <p>想提升生活，就要先提升自己。這就是順序。</p>
+      <div class="fig">
+        <p class="fig-cap">圖2　改變的順序</p>
+        <div class="chain">
+          <div class="chain-item"><b>自己</b><span>想法與行動改變</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>生活</b><span>每天的模式改變</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>人生</b><span>結果改變</span></div>
+        </div>
+        <p class="fig-note">順序無法逆行。只想改變生活或結果，若自己還是原樣，終究會回到原點。</p>
+      </div>
+      <p>掌握本教材的內容，你便能將各領域<span class="mk">成功者智慧的精髓</span>化為己有。那就是抓住改變人生契機的<strong>關鍵</strong>。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">捷徑</span>
+      <h2>捷徑，是向成功者學習</h2>
+      <p>人生是有限的。無法凡事都親自知曉、體驗。因此<span class="mk">通往成功的捷徑，就是向成功者學習</span>。</p>
+      <div class="fig">
+        <p class="fig-cap">圖3　「該向誰學習」的思考方式</p>
+        <table class="pairs">
+          <tr><th>想學會的事</th><th>學習的對象</th></tr>
+          <tr><td>想把高爾夫打好</td><td>一流的職業高爾夫選手</td></tr>
+          <tr><td>想學中文</td><td>中文老師</td></tr>
+          <tr><td>你想成功的領域</td><td>在該領域有所成就的人</td></tr>
+        </table>
+        <p class="fig-note">在此重要的是，<strong>成功與年齡沒有直接關係</strong>。不要看年齡或頭銜，而要看那個人實際成就了什麼。</p>
+      </div>
+      <p>本章所寫的，只有引導你走向成功的<span class="mk">原則</span>。原則不是流行，而是建立美好人生所不可動搖的<ruby>真理<rt>しんり</rt></ruby>。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">本章核心</span>
+      <h2>三件重要的事</h2>
+      <p>在此，你要學習三件非常重要的事。</p>
+      <div class="fig">
+        <p class="fig-cap">圖4　支撐成功的三根支柱</p>
+        <div class="beam">成 功</div>
+        <div class="pillars">
+          <div class="pillar"><em>一</em><b>理解失敗</b><span>了解失敗是什麼</span></div>
+          <div class="pillar"><em>二</em><b>正確的生活模式</b><span>建立每天的型態</span></div>
+          <div class="pillar"><em>三</em><b>能力的開發</b><span>伸展自己的力量</span></div>
+        </div>
+        <p class="fig-note">三根支柱只要缺一根，上面的板子就會傾斜。讓我們依序來看。</p>
+      </div>
+
+      <h3><span class="kanji-no">一</span>理解失敗</h3>
+      <p><span class="mk">無法達成最初的目標</span>，這就是失敗。</p>
+      <div class="fig">
+        <p class="fig-cap">圖5　為什麼要從「失敗」學習</p>
+        <div class="compare">
+          <div class="card"><h4>成功</h4><p>難以說明、難以理解。因人而異，形態也不同。</p></div>
+          <div class="card accent"><h4>失敗</h4><p>容易理解。「為什麼做不好」看得很清楚。</p></div>
+        </div>
+        <div class="conclusion">因此，學會「如何才能不失敗」，<br>就成為理解成功的關鍵</div>
+        <p class="fig-note">只要你下定決心改變人生，失敗便與你無關了。</p>
+      </div>
+
+      <h3><span class="kanji-no">二</span>正確的生活模式</h3>
+      <p>建立接近成功的生活模式非常重要。<strong>日常生活模式的差異，就是失敗者與成功者的差異</strong>。</p>
+      <div class="fig">
+        <p class="fig-cap">圖6　每天的模式決定去向</p>
+        <svg viewBox="0 0 420 200" role="img" aria-label="每天的模式正確就通往成功，錯誤就通往失敗的岔路圖">
+          <line x1="20" y1="100" x2="170" y2="100" stroke="#21456E" stroke-width="6" stroke-linecap="round"/>
+          <path d="M170 100 L400 40" stroke="#21456E" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M170 100 L400 165" stroke="#6A7078" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="10 8"/>
+          <circle cx="170" cy="100" r="9" fill="#C0453B"/>
+          <text x="20" y="128" font-size="15" fill="#6A7078" font-family="sans-serif">今天</text>
+          <text x="300" y="30" font-size="18" fill="#21456E" font-family="sans-serif" font-weight="bold">成 功</text>
+          <text x="300" y="190" font-size="18" fill="#6A7078" font-family="sans-serif" font-weight="bold">失 敗</text>
+          <text x="196" y="62" font-size="14" fill="#21456E" font-family="sans-serif">正確的模式</text>
+          <text x="196" y="150" font-size="14" fill="#6A7078" font-family="sans-serif">錯誤的模式</text>
+        </svg>
+        <p class="fig-note">模式正確就必定成功，錯誤就以失敗的人生告終。想改變未來，就要建立正確的生活模式並加以遵循。</p>
+      </div>
+      <p>此時要留意的是，<strong>不被一時的情緒或一時的慾望所左右</strong>。不憑當下心情，而以優秀的想法組建生活模式。</p>
+      <p>重要的是，時時努力習得優秀的想法與行動。要達成這一點，需要<span class="mk">「投注全力，必定貫徹到底」</span>的堅定決心。</p>
+
+      <h3><span class="kanji-no">三</span>能力的開發</h3>
+      <p>要開發自己的能力，需要三件基本的事。</p>
+      <div class="fig">
+        <p class="fig-cap">圖7　開發能力的三個步驟</p>
+        <div class="chain">
+          <div class="chain-item"><b>注意力</b><span>留意周遭一切，並從中認識</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>應用</b><span>把所知套用到日常生活</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>反覆</b><span>把心態與行動反覆多次</span></div>
+        </div>
+        <p class="fig-note">簡單的話語中也蘊含著深意與真理。只要用心傾聽，那些也能輕易理解。</p>
+      </div>
+      <div class="fig">
+        <p class="fig-cap">圖8　注意力，就是三種「用心」</p>
+        <div class="circles">
+          <div class="circle"><b>眼到</b><span>仔細看</span></div>
+          <div class="circle"><b>心到</b><span>先察覺</span></div>
+          <div class="circle"><b>情到</b><span>為對方著想</span></div>
+        </div>
+        <p class="fig-note">這三者齊備，能從同樣的每一天接收到的資訊量便會改變。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">機制</span>
+      <h2>反覆之後，不必思考也能做到</h2>
+      <p>將習得的心態與行動反覆實行多次。這對本課程的所有章節都適用。</p>
+      <div class="fig">
+        <p class="fig-cap">圖9　反覆滲入身心的過程</p>
+        <div class="layers">
+          <div class="layer l1"><b>起初</b><span>刻意地、努力地去做</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>持續一段時間後</b><span>自然被接受，成為日常的一部分</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>終究</b><span>正確的決定與行動，不必刻意也能做到</span></div>
+        </div>
+        <p class="fig-note">要把這些教導的一切，全都烙印進你的<ruby>潛意識<rt>せんざいいしき</rt></ruby>之中。這就是目標。</p>
+      </div>
+      <p>越是行動，越會覺得遵循正確的生活模式是件快樂的事。不安會消失，新的生活模式會作為人類自然的慾望——<span class="mk">「樂趣」</span>，在心中扎根。</p>
+      <p>現在，你已經下定決心。切換到新的生活，就能過著充滿變化、充滿美好體驗的每一天。你絕不會對這個選擇有絲毫後悔。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">實踐</span>
+      <h2>學習方法的規則</h2>
+      <p>那麼，該怎麼做才能辦到呢？那是極為簡單的事。請依循以下規則使用教材。</p>
+      <div class="fig">
+        <p class="fig-cap">圖10　一天的節奏 ── 早晚各聽一次</p>
+        <div class="timeline">
+          <div class="slot">
+            <svg viewBox="0 0 60 60" width="44" height="44" aria-hidden="true">
+              <circle cx="30" cy="34" r="12" fill="#F7E96B" stroke="#C0453B" stroke-width="2"/>
+              <g stroke="#C0453B" stroke-width="2" stroke-linecap="round"><line x1="30" y1="10" x2="30" y2="17"/><line x1="12" y1="16" x2="17" y2="21"/><line x1="48" y1="16" x2="43" y2="21"/><line x1="6" y1="34" x2="13" y2="34"/><line x1="54" y1="34" x2="47" y2="34"/></g>
+            </svg>
+            <b>早晨</b><span>起床後，先聽一次</span>
+          </div>
+          <div class="slot">
+            <svg viewBox="0 0 60 60" width="44" height="44" aria-hidden="true">
+              <path d="M38 12a18 18 0 1 0 12 30A20 20 0 0 1 38 12z" fill="#E7EDF4" stroke="#21456E" stroke-width="2"/>
+              <circle cx="16" cy="16" r="2" fill="#21456E"/><circle cx="24" cy="9" r="1.5" fill="#21456E"/>
+            </svg>
+            <b>夜晚</b><span>就寢前，再聽一次</span>
+          </div>
+        </div>
+      </div>
+      <div class="fig">
+        <p class="fig-cap">圖11　一章聽三十天 → 進入下一章</p>
+        <div class="days" aria-label="三十天的日曆">
+          <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i>
+          <i>11</i><i>12</i><i>13</i><i>14</i><i>15</i><i>16</i><i>17</i><i>18</i><i>19</i><i>20</i>
+          <i>21</i><i>22</i><i>23</i><i>24</i><i>25</i><i>26</i><i>27</i><i>28</i><i>29</i><i class="last">30</i>
+        </div>
+        <p class="fig-note">同一章連續聽三十天。做到後再進入下一章，下一章同樣反覆三十天。要遵守的，就只有這些。</p>
+      </div>
+      <p>你聽教材的那<strong>短短時間</strong>，會打造出新的生活模式，引導你走向成功。</p>
+      <p>不過，<strong>即使覺得內容簡單，也切勿輕忽看待。</strong>請用心把內容全部吸收進心中。珍惜每一天，遵守規則。那一天，是無法挽回的一天。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">本章總結</span>
+      <h2>來吧，開始吧</h2>
+      <p>每一章只記載著成功者的教導。請用心去習得那份精髓。</p>
+      <div class="pledge">
+        <h3>從今天起的第一步</h3>
+        <ul>
+          <li>下定決心改變自己、改變生活方式</li>
+          <li>發誓自我改善，每天實行</li>
+          <li>不讓<ruby>誘惑<rt>ゆうわく</rt></ruby>動搖內心，有意識地提升自己</li>
+          <li>早晚各一次，同一章連續聽三十天</li>
+        </ul>
+      </div>
+      <p style="margin-top:1.4rem">你已經打開了通往成功之門的鑰匙，開始一步一步前進了。</p>
+      <div class="finale">你已經決定要成為出色的人。<br>多數人無法實現的成功，終將成為你的，<br>你將集眾人的尊敬與信賴於一身。</div>
+
+      <nav class="chapnav">
+        <button disabled><small>沒有上一章</small></button>
+        <button class="next" data-ch="2"><small>下一章 ▶</small><b>第二章 成功的步驟</b></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 第一章　完 ー</p></footer>
+  </div><!-- /lang-zh-block -->
   </div>
   </div><!-- /figview -->
 
   <div class="rawview">
     <div class="raw-wrap">
+      <div class="lang-block lang-ja-block">
       <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
       <h3 class="raw-title">第一章　学び方</h3>
       <div class="raw-rule"></div>
@@ -527,6 +770,32 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
         <p>この各章には成功した人々の教えだけが記されている。この極意を身につけるべく心がけることが非常に大切である。さあ、自分を変え、生き方を変えよう。そのために自己改善を誓おう。毎日実行しよう。もうあなたは成功への扉の鍵をあけ、一歩一歩と進みはじめたのだ。誘惑に心を許さず、意識的に自分を向上させよう。あなたは立派な人物になろうと決めたのだ。多くの人々に実現できない成功が、将来あなたのものになり、人々の尊敬と信頼を、一身に集めるようになるのである。そのための極意が記されている。</p>
       </div>
       <footer><p class="pagemark">ー 第一章 終 ー</p></footer>
+      </div>
+
+      <div class="lang-block lang-zh-block">
+      <p class="raw-intro">這是將您提供的原文原封不動刊載的版本，未加入圖解或改寫。</p>
+      <h3 class="raw-title">第一章　學習方法</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>世上為什麼有人成功、有人卻不成功呢？而且，連對自己提出這樣的疑問都忘了的人，是不是太多了呢？透過接下來要學習的這套課程，你就能明白其中的原理。</p>
+        <p>首先，你必須在此自問：我是否真的下定決心，要親手開創新的人生？我是否在心中發誓，不再重複至今為止的人生？是否需要改變自己的人生，只要回顧自己的過去便能明白。那是你理想中的人生嗎？是值得自豪的人生嗎？如果不是，若不在此刻下定決心，往後也只會過著和至今相同的人生。你所嚮往的美好人生，你自己也能親手打造。為此，首先必須改變你自己。不改變自己，什麼也不會改變。因為，想要提升生活，就必須先提升自己。透過掌握這套CD的內容，你能習得各領域成功者智慧的精髓。如此一來，你便能抓住改變人生的契機。這就是關鍵。</p>
+        <p>我們的人生是有限的。無法凡事都親自去知曉、去體驗。因此，通往成功的捷徑，就是向成功者學習。然而在此重要的是，成功與年齡並沒有直接的關係。最重要的，在於那個人究竟成就了什麼。</p>
+        <p>例如，若想把高爾夫打好，就該向一流的職業高爾夫選手學習。又如果你想學中文，向中文老師學習，才能正確地學到手。像這樣，向你想成功的領域中的成功者，也就是有所成就的人學習，才是捷徑。</p>
+        <p>那麼，該怎麼做才能成功呢？為了不再繼續失敗的人生，究竟該如何是好？答案很簡單。只要掌握這套課程，你也必定能成功。正是這套課程，會為你揭開通往成功的祕訣。</p>
+        <p>本章只記載了引導你走向成功的原則性內容。然而正是這些原則，才是建立美好人生所不可動搖的真理。在此，你必須學習三件極為重要的事。</p>
+        <p>第一，理解失敗。第二，正確的生活模式。第三，能力的開發。</p>
+        <p>首先，第一，無法達成最初的目標，這即是失敗。成功難以說明、難以理解，但失敗卻很容易理解。因此，學會如何才能不失敗，正是理解成功的關鍵。只要你下定決心改變人生，失敗便與你無關了。</p>
+        <p>接著第二，建立起接近成功的生活模式非常重要。日常生活模式的差異，正是失敗者與成功者的差異。生活模式正確就必定成功，錯誤就必定以失敗的人生告終。因此，要改變你的未來，就要建立正確的生活模式並加以遵循。不被一時的情緒或一時的慾望所左右，要以優秀的想法打造正確的生活模式。</p>
+        <p>那麼，要形成正確的生活模式，該怎麼做呢？重要的是，時時努力去習得優秀的想法與優秀的行動。要達成這一點，就要下定「投注全力，必定貫徹到底」的堅定決心。留心真正去改變自己的生活，這才是最重要的關鍵。</p>
+        <p>接著第三，是開發自己的能力。要開發能力，需要三件基本的事。首先第一，是發揮注意力。留意自己周遭的一切，並用心從中去認識各種事物。例如，簡單的話語中也蘊含著深意與真理，只要用心傾聽，那些也應當能輕易理解。第二，是發揮注意力，將自己所知的事應用到日常生活中。這種態度成為根本，依循此根本做出決斷，把生活模式改正為正確的樣子。第三，將習得的心態與行動反覆實行多次。</p>
+        <p>這一點對本課程的所有章節都適用。持續反覆下去，那套模式便會漸漸自然地為你所接受，成為日常生活的一部分，正確的決定、正確的行動，無需刻意意識也能做到。你必須把這些教導的一切，全都烙印在你的潛意識之中。</p>
+        <p>那麼，要怎麼做才能辦到呢？那是極為簡單的事。依循接下來要學的規則，善用CD即可。首先第一，將CD的每一章連續聽三十天。早上起床時先聽一次，晚上就寢前再聽一次。</p>
+        <p>只要遵守這些規則就非常重要。做到這些之後，再進到下一章的CD。下一章也同樣地反覆三十天。每天聽CD，就能獲得有價值的東西，這將成為你建立正確生活模式的重要元素。每天從CD學到的內容，會逐漸成為你自己的想法，也成為你的夢想。這是多麼美好的事。在各種場合中，你也能做出正確的判斷與行動。當然，不安也會消失無蹤。如此一來，新的生活模式便會成形，行動也變得輕鬆。越是行動，越會覺得遵循正確的生活模式是件快樂的事。而新的生活模式，會作為人類自然的慾望——「樂趣」，牢牢地在心中扎根。</p>
+        <p>現在，你已經下定決心。切換到新的生活，過著充滿變化、充滿美好體驗的每一天，你絕不會有絲毫後悔。珍惜每一天，遵守規則吧。別忘了，那一天是無法挽回的一天，請務必細心留意。你聽CD的那短短時間，會打造出新的生活模式，引導你走向成功。然而，切勿因為覺得CD內容簡單就輕忽看待。應當努力用心，把內容全部吸收進心中。</p>
+        <p>每一章只記載著成功者的教導。用心去習得這份精髓，是非常重要的。來吧，改變自己，改變生活方式。為此，發誓要自我改善，每天實行。你已經打開了通往成功之門的鑰匙，開始一步一步前進了。別讓誘惑動搖內心，有意識地提升自己。你已經決定要成為出色的人。多數人無法實現的成功，將來會成為你的，你將集眾人的尊敬與信賴於一身。為此的精髓，就記載於此。</p>
+      </div>
+      <footer><p class="pagemark">ー 第一章　完 ー</p></footer>
+      </div>
     </div>
   </div><!-- /rawview -->
 </article>
@@ -536,23 +805,31 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <header class="hero">
     <div class="hero-in">
       <span class="eyebrow">第二章</span>
-      <h1>成功のステップ</h1>
+      <h1 class="lang-block lang-ja-block" style="margin-bottom:.9rem">成功のステップ</h1>
+      <h1 class="lang-block lang-zh-block" style="margin-bottom:.9rem">成功的步驟</h1>
       <div class="rules"></div>
-      <p class="hero-q">人生を好転させる方法は、たった一つ。<br>それは、あなた自身が変わることです。</p>
-      <p class="hero-a">この章では、そのための六つのステップを学びます。</p>
+      <div class="lang-block lang-ja-block">
+        <p class="hero-q">人生を好転させる方法は、たった一つ。<br>それは、あなた自身が変わることです。</p>
+        <p class="hero-a">この章では、そのための六つのステップを学びます。</p>
+      </div>
+      <div class="lang-block lang-zh-block">
+        <p class="hero-q">讓人生好轉的方法，只有一個。<br>那就是，你自己改變。</p>
+        <p class="hero-a">本章將學習為此的六個步驟。</p>
+      </div>
     </div>
   </header>
 
   <div class="viewtoggle">
-    <span class="vt-label">表示</span>
+    <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
     <div class="seg">
-      <button class="vt-fig on" data-view="fig">図解でわかる版</button>
-      <button class="vt-raw" data-view="raw">原文のまま</button>
+      <button class="vt-fig on" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
     </div>
   </div>
 
   <div class="figview">
   <div class="wrap">
+  <div class="lang-block lang-ja-block">
     <nav class="toc" aria-label="この章の内容">
       <h4>この章で学ぶこと</h4>
       <ol>
@@ -699,11 +976,162 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
       </nav>
     </section>
     <footer><p class="pagemark">ー 第二章 終 ー</p></footer>
+  </div><!-- /lang-ja-block -->
+
+  <div class="lang-block lang-zh-block">
+    <nav class="toc" aria-label="本章內容">
+      <h4>本章學習內容</h4>
+      <ol>
+        <li><a data-jump="c2s1">察覺沉睡的「潛在能力」</a></li>
+        <li><a data-jump="c2s2">拓展視野，傾聽他人</a></li>
+        <li><a data-jump="c2s3">「受夠了」就是起點</a></li>
+        <li><a data-jump="c2s4">成長或退化──人必往其一</a></li>
+        <li><a data-jump="c2s5">改變人生的六個步驟</a></li>
+        <li><a data-jump="c2s6">拚命下定決心，會察覺的兩件事</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec">
+      <span class="eyebrow">前言</span>
+      <h2>察覺沉睡的「潛在能力」</h2>
+      <p class="lede">要改變自己的人生，首先要明確定下未來。為此，有一些必須知道的原理與原則。</p>
+      <p>決定所求的未來，改變態度與行動，懷抱熱情朝那個方向前進，人生就能徹底改變。因為人類擁有<span class="mk">潛在能力</span>這份美好的力量。</p>
+      <div class="fig">
+        <p class="fig-cap">圖1　許多人未動用力量便走完一生</p>
+        <div class="compare">
+          <div class="card"><h4>多數人</h4><p>沒察覺潛在能力，也不去運用。因此什麼都無法達成，也嚐不到真正的喜悅。</p></div>
+          <div class="card accent"><h4>能改變的人</h4><p>明確定下未來，把自己的成功、自豪、幸福化為己有。</p></div>
+        </div>
+        <p class="fig-note">能夠活用機會的能力，不是別人，正在你自己身上。</p>
+      </div>
+      <p>把過去的經驗、或只屬於自己的想法，無論怎麼延伸，都幾乎不可能在其上找到新的人生。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">心態</span>
+      <h2>拓展視野，傾聽他人</h2>
+      <p>真正理解「常識」的人不多。每個人都在不同環境中，擁有從經驗而生的常識。不去考量這點，只憑自己的常識去判斷他人與事物的人很多。</p>
+      <div class="fig">
+        <p class="fig-cap">圖2　意見的不同，源自「視野的差異」</p>
+        <svg viewBox="0 0 420 150" role="img" aria-label="視野狹窄時可見範圍小，視野寬廣時可見範圍大">
+          <circle cx="105" cy="75" r="30" fill="none" stroke="#6A7078" stroke-width="2" stroke-dasharray="5 5"/>
+          <circle cx="105" cy="75" r="7" fill="#6A7078"/>
+          <text x="105" y="128" font-size="13" fill="#6A7078" font-family="sans-serif" text-anchor="middle">狹窄的視野</text>
+          <circle cx="300" cy="75" r="60" fill="none" stroke="#21456E" stroke-width="2.5"/>
+          <circle cx="300" cy="75" r="7" fill="#C0453B"/>
+          <text x="300" y="128" font-size="13" fill="#21456E" font-family="sans-serif" text-anchor="middle" font-weight="bold">寬廣的視野</text>
+        </svg>
+        <p class="fig-note">人類美好的能力之一，就是能傾聽他人的話語。留意經驗豐富者的意見，把他們優秀的想法多多納入自己之中，視野就會拓展。</p>
+      </div>
+      <div class="callout">
+        <p style="margin:0"><b>「要改變自己的人生，首先必須改變自己。」</b>把這個想法付諸行動，就能確實抓住將來造訪的機會。能改變你人生的，只有你自己。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">轉機</span>
+      <h2>「受夠了」就是起點</h2>
+      <p>只是茫然地想「真想成功」，卻不知成功為何物的人很多。因為不努力改變自己，所以不知道該怎麼做才能成功。</p>
+      <div class="fig">
+        <p class="fig-cap">圖3　「等待的人」永遠不會改變</p>
+        <table class="pairs">
+          <tr><th>空洞的期待・藉口</th><th>真正的答案</th></tr>
+          <tr><td>彩券・賭博・遺產繼承</td><td rowspan="2" style="background:#FFFDF0;font-weight:700;vertical-align:middle;text-align:center">機會到來之時，<br>就是「你自己改變之時」</td></tr>
+          <tr><td>怪景氣・政治・稅金・學歷・環境</td></tr>
+        </table>
+        <p class="fig-note">無論多麼正直、勤勞，把責任推給別人的人無法成功。讓人生好轉的唯一方法，就是你自己改變。</p>
+      </div>
+      <p>任誰都有感到「不行了」而走投無路的時候。金錢的煩惱、遲遲不來的升遷、意外的開銷——然而<span class="mk">正是在感到「我受夠這種人生了」的時候</span>，那個人的人生才開始大幅改變。</p>
+      <div class="callout">
+        <p style="margin:0">收入少、還款遲了、失敗過好幾次——那些都不重要。<b>重要的是，你接下來要做什麼。</b>你完全不需要去想別人怎麼看。這就是提升生活方式的第一步。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">原則</span>
+      <h2>成長或退化──人必往其一</h2>
+      <p>同樣的事發生在兩個人身上，一人成功、一人不變。差別在於，對那件事如何應對。</p>
+      <div class="fig">
+        <p class="fig-cap">圖4　人總是朝著某一方移動</p>
+        <svg viewBox="0 0 420 120" role="img" aria-label="前進或後退，向上與向下的兩個箭頭">
+          <path d="M60 90 L360 30" stroke="#21456E" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <polygon points="360,30 344,30 352,44" fill="#21456E"/>
+          <text x="150" y="45" font-size="15" fill="#21456E" font-family="sans-serif" font-weight="bold">成長・前進</text>
+          <path d="M60 40 L360 100" stroke="#6A7078" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="9 7"/>
+          <polygon points="360,100 344,100 352,86" fill="#6A7078"/>
+          <text x="150" y="105" font-size="15" fill="#6A7078" font-family="sans-serif">退化・後退</text>
+        </svg>
+        <p class="fig-note">無法永遠停在同一狀態。今天比昨天好或壞、有沒有向上、前進還是後退。因此，依自己的期望決定生活方式很重要。</p>
+      </div>
+      <div class="quote">下定決心的痛苦越大，<br>越會努力守住那個決心</div>
+      <p>做出決定生活方式的重大決心，是非常痛苦的。然而<strong>下定決心才是最難的</strong>，真正下定的決心要貫徹到底，反而出乎意料地簡單。因此，把全力投注在「下定決心」上，會讓成功變得容易。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">本章核心</span>
+      <h2>改變人生的六個步驟</h2>
+      <p>要成功，首先要有「我要成功給你看」的強烈意欲。在此之上，踏出以下六個步驟。</p>
+      <ol class="steps">
+        <li><b>抓住契機。</b>對現在的生活感到厭煩——那就是起點。正因厭煩，才會想改變方向。</li>
+        <li><b>下定改變的決心。</b>明確決定要改變人生的方向。這個決心是通往成功的第二步。</li>
+        <li><b>懷抱燃燒般的意欲。</b>意欲由內在深處而生，但也可能因書、人、家人、聽到的話等外部刺激而點燃。若沒有，就去尋找。</li>
+        <li><b>建立明確的態度。</b>命令你「去或不去」的，是你的心態。強烈的態度決定人生的方向。</li>
+        <li><b>大膽行動。</b>「稍微試試，不行就放棄」是不行的。無論做什麼都全力以赴，投入百分之百，大膽去做。</li>
+        <li><b>做出決斷。</b>「我來做，交給我。」能說出這句話，才能成為受人信賴、責任感強的人。</li>
+      </ol>
+      <div class="fig">
+        <p class="fig-cap">圖5　六個步驟是一道流程</p>
+        <div class="layers">
+          <div class="layer l1"><b>① 契機</b><span>「受夠了」的心情</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>②〜④ 打造內在</b><span>決心 → 意欲 → 態度</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>⑤⑥ 動起來</b><span>大膽行動 → 做出決斷</span></div>
+        </div>
+        <p class="fig-note">心態與態度，讓你看見、理解事物，並驅使身體行動。因此通往成功的關鍵，就在於打造強而明確的態度。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">總結</span>
+      <h2>拚命下定決心，會察覺的兩件事</h2>
+      <p>別人也許會說「你辦不到」。即便如此，只要抱著「自己做到，否則就是死」這般覺悟去決斷，就會察覺兩件美好的事。</p>
+      <div class="fig">
+        <p class="fig-cap">圖6　決斷所教會的兩件事</p>
+        <div class="compare">
+          <div class="card"><h4>① 挑戰的刺激</h4><p>挑戰事物的刺激，美好得無可比擬。</p></div>
+          <div class="card"><h4>② 人沒那麼容易死</h4><p>拚命決斷，周圍反而會讓你放手去做，沒人能阻止。</p></div>
+        </div>
+        <p class="fig-note">透過拚命下定決心，你必定能實現自己的慾望。</p>
+      </div>
+      <div class="callout">
+        <p style="margin:0">要實現慾望，<b>訓練</b>很重要。聽CD、把教材讀完。每天有意識地持續努力。訓練的辛苦，<b>比起沒做而後悔的痛苦，根本不算什麼。</b></p>
+      </div>
+      <p>「好，我來做」「交給我」——把這些小事，每天有意識地累積。當這變得自然而然，再大的事也沒問題了。</p>
+      <div class="pledge">
+        <h3>你已經具備了</h3>
+        <ul>
+          <li>對自己感到厭煩，並下定改變人生的決心</li>
+          <li>打造了強烈的意欲與強烈的態度</li>
+          <li>帶著決斷去行動，也已成為習慣</li>
+          <li>再大的事，也能勇敢面對</li>
+        </ul>
+      </div>
+      <div class="finale">首先，要相信自己的能力。<br>你能做到連自己都難以置信的事。<br>你已經能把人生，變成美好的樣子了。</div>
+
+      <nav class="chapnav">
+        <button data-ch="1"><small>◀ 上一章</small><b>第一章 學習方法</b></button>
+        <button class="next" data-ch="3"><small>下一章 ▶</small><b>第三章 目標的重要</b></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 第二章　完 ー</p></footer>
+  </div><!-- /lang-zh-block -->
   </div>
   </div><!-- /figview -->
 
   <div class="rawview">
     <div class="raw-wrap">
+      <div class="lang-block lang-ja-block">
       <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
       <h3 class="raw-title">第二章　成功のステップ</h3>
       <div class="raw-rule"></div>
@@ -731,6 +1159,37 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
         <p>「はい、私がやります。」「はい、私が行きます。」「そのことは私に任せて下さい。」こういう小さいことを毎日、意識的に積み重ねるのだ。それが自然にできるようになれば、大きい事でも、もう大丈夫だ。あなたは自分にうんざりしたことも経験している。人生を変えようという決心もしている。強い意欲、強い態度も作り上げ、決断をもって行動することも、もう身についている。どんなことに出会っても、それがどんなに大きいことでも、うまく立ち向かえるようになっている。今後はどんなことにも、あなたはどう対処すればいいか、もう知っているのだ。あなたには素晴らしい能力があるのだ。あなたは自分でも信じられない程のことができるのだ。まず自分の能力を信じることだ。女性でも、あるいは子供でも悪条件の中で、想像もつかないようなことを成し遂げることができる。あなたは人生を、あなたの生き方をすばらしいものにすることができるようになったのだ。</p>
       </div>
       <footer><p class="pagemark">ー 第二章 終 ー</p></footer>
+      </div>
+
+      <div class="lang-block lang-zh-block">
+      <p class="raw-intro">這是將您提供的原文原封不動刊載的版本，未加入圖解或改寫。</p>
+      <h3 class="raw-title">第二章　成功的步驟</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>要改變自己的人生，就必須明確地定下自己的未來。在那時，有一些必須知道的原理與原則。第二章將先認識原理與原則，並學習如何定下自己的未來。</p>
+        <p>決定自己所求的未來，改變自己的態度與行動，懷抱熱情朝那個方向前進，就能徹底改變人生。為什麼呢？因為人類擁有潛在能力這份美好的能力。然而許多人沒察覺到這份能力，結果絲毫不去運用。這樣什麼也無法達成，也無法嚐到人生真正的喜悅。因此要明確定下未來，把自己的成功、自豪、幸福化為己有。</p>
+        <p>你或許會想：我能改變自己的人生嗎？能成功嗎？能變得富足嗎？更美好的人生，究竟是怎樣的人生呢？許多人只把目光放在自己的想法與經驗上，度過一生。把過去的經驗、或只屬於自己的想法無論怎麼延伸，都幾乎不可能在其上找到新的人生。</p>
+        <p>例如，真正理解「常識」的人不多。每個人在不同的環境中，都擁有從經驗而生的常識，不去考量這點，只憑自己的常識去判斷他人與事物的人很多。在人類美好的能力之中，有一項就是能傾聽他人的話語。人各有意見分歧，是源於彼此視野的差異，也就是對他人不懂之事理解到什麼程度。為了拓展自己的視野，必須時時留意經驗豐富者的話語與意見並加以傾聽。把他們優秀的想法，多多納入自己的思考之中，這很重要。</p>
+        <p>「要改變自己的人生，首先必須改變自己。」把這個想法實際付諸行動，就能確實抓住往後造訪的機會，結果你的人生必定為之一變。也就是說，能改變你人生的，正是你自己。是的，為了自己、為了家人，擁有能活用機會之能力的，只有你。只要你真心認真地想成功、真心想改變人生、想學習成功者的思考方式，並將這想法付諸實行，你也必定能把人生朝美好的方向改變。</p>
+        <p>只是茫然地想「真想成功」，卻不知成功為何物的人太多了。因為不努力改變自己，所以不知道該怎麼做才能成功。許多人把人生賭在空洞的期待上——彩券、賭博、遺產繼承，然而始終不會變好。「機會究竟何時才來？何時生活才會輕鬆？」答案非常簡單。那就是「你自己改變之時」。再說一次，這件事務必牢記。讓人生好轉的唯一方法，就是你自己改變。</p>
+        <p>有些人等著事情順其自然地好轉。「雨要是停了就好。」「再暖和一點就好。」「景氣再好一點就好。」「能找到更好的工作就好。」也有人把自己無法成功的理由，一味歸咎於自己以外。怪政治、怪稅金、怪學歷、怪自己的環境。總之有些人相信，自己收入少、無法成功，都是別人的錯。這種人無論多正直、多勤勞，都無法成功。更別說，那個人的人生也不可能變好。所以總是為錢煩惱。發薪日前總是沒錢。連喜慶這種快樂的話題，也只掛心著開銷。</p>
+        <p>回鄉時，對號座滿了，付不起特等車廂的費用，只能在自由座站著三、四個小時回去。對錢過度執著雖不好，但對許多人而言，錢就是這麼一回事。孩子高中畢業時，父親卻沒有能送孩子上大學的積蓄。就算是任職十年的中堅員工，也還看不到升遷的希望。也有家庭因意外的高額醫療費堆積，而喘不過氣。</p>
+        <p>任誰都有感到「不行了」而生活走投無路的時候。真想對自己說：「我已經對這種人生厭倦透了。」有時還款遲了而失去信用。有時十萬圓的捐款，只能用一千圓草草了事。正是在感到「我受夠這種人生了」的時候，那個人的人生才開始大幅改變。當發覺自己是個平凡的人，或在自己眼中、家人眼中，自己都不像個成功者時，就會想「夠了」。不只是面對成堆帳單的時候。無論何種狀況，正是在感到「夠了」的時候，那個人的人生才開始改變。大幅改變未來的方法，就是抓住改變自己的契機。這就是提升生活方式的第一步。</p>
+        <p>不執著於過去，坦率地問自己：「這個狀態，究竟該怎麼辦？」收入少、還款遲了、失敗過好幾次——那些都不重要。這些事一點也不必在意。重要的是，你接下來要怎麼做。去想別人怎麼看，對你而言完全沒有必要。此外，發生在某人身上的事，也會發生在他人身上。然後一人成功、一人毫無改變。究竟為什麼？那取決於面對發生的事，如何應對。重要的是「你接下來要做什麼」。用自己期望的方式，過自己的人生就好。無論選擇何種生活方式，都不必羞愧。對自己期望的生活方式懷抱自豪，一路前進就好。</p>
+        <p>人這種生物，總是朝某一方移動。不是成長，就是退化。無法永遠停在同一狀態。今天是比昨天心情好，還是壞。自己是努力向上，還是沒有。前進，還是後退，二者其一。因此，依自己的期望決定生活方式很重要。做出決定生活方式這種重大決心時，果然非常痛苦。決心的痛苦越大，越不想再嚐一次那份痛苦，就越會拚命守住所下的決心。</p>
+        <p>人這種生物，日常都被決心所逼。下定決心不是容易的事，所以必須忍耐決心的痛苦。也可能痛苦到胃痛。但即使如此，也必須下定決心。真正下定的決心要貫徹到底，其實出乎意料地簡單。因為下定決心才是最難的，所以把全力投注在下定決心上，會讓成功變得容易。要成功，首先要有「我要成功給你看」的強烈意欲。必須清楚知道自己究竟想要什麼。你人生中最重要的要素，就是你自己。</p>
+        <p>例如，假設你對現在的生活感到厭煩。那就是契機。因為厭煩，才會下定決心改變人生的方向。也就是說，這個決心正是通往成功的第二步。第三步是懷抱燃燒般的意欲。意欲從你的內在深處而生。然而，也有人是因外部的刺激——讀過的書、遇見的人、自己的妻子與家人、聽到的話——而讓慾望點燃。要具體說明意欲如何高漲很難，但若你沒有燃燒般的意欲，就必須去尋找。必須持續努力，讓自己的意欲變大。</p>
+        <p>為什麼要為了改變人生的方向，付出那麼多努力？最大的理由是，既然生而為人，就要把被賦予的能力發揮到極致，過你所期望的人生，也就是「在活著的時候，做想做的事」。除此之外，還有什麼呢？人生只有一次。只要活著，無論好事壞事，都必須不斷做些什麼。這寶貴的人生，許多人卻讓別人替自己決定，或任其偶然地擱著。為什麼不自己打造充滿成功的人生呢？你必須用自己的意欲去創造它。對成功而言最重要的要素，就是你自己。</p>
+        <p>關於自己、關於自己的人生目標，你是怎麼想的？那份心情，就是所謂的態度或心態。建立積極而明確的態度，是改變人生方向的第四步。要改變人生，就必須改變你自己。這是人生成功的出發點。你自己的心態，決定你人生的方向。你的想法、感受，也取決於你的心態。你知道自己是怎麼感受的嗎？對自己所知的事，你有什麼感受？那由你的態度決定。</p>
+        <p>「去，還是不去？」「做，還是不做？」下這種命令的，是你的心態與態度。讓成功的階段變得清晰、讓你看見、意識、理解事物並驅使身體行動、在你下決心時引導你的，也都是你的態度。因此，通往成功的關鍵，就是打造強而明確的態度。並把你的態度，打造成人生精神與物質的資產。若能擁有這樣的態度，你的行動就會為你和家人創造出美好的未來。</p>
+        <p>接著第五步，是充分理解自己的慾望，並為實現它而行動。要改變人生的方向，需要強大的行動力。無論做什麼，都要大膽地做。「稍微試試看吧」或「稍微試試，不行就放棄吧」，這種意志薄弱的人不行。「自己能不能做業務，先試著跑兩三家看看」或「看看這份工作自己能不能做」，這種軟弱的人不行。這種人是落伍者，一輩子都無法成功。無論做什麼，都全心投入，總之要大膽地做。「好，百分之百全力以赴！」必要時，花再多時間也要向自己的人生挑戰。只顧眼前，人生不會好轉。若說沒時間，那正是此刻要擁有更大的行動力，打造有意義的人生。</p>
+        <p>第六步，是決斷。決斷，就是這樣告訴自己：「我來做，交給我。」能說出這句話，你才能成為受人信用、信賴，責任感強、積極的人去行動。無法決斷的人，是無聊而軟弱的人。永遠只想著借款而非存款，是個無趣的人。來吧，命令自己：「我絕對要完成給你看。」你要做什麼、要貫徹到什麼程度，都由你決定。為實現你的慾望而努力吧。</p>
+        <p>別人也許會說「你辦不到」。但既然你決定要實現，就必須下定必定完成的決心。告訴自己：「我必定完成。」當你以「自己完成，否則就是死」去決斷，會察覺兩件美好的事。首先第一，是挑戰的刺激。挑戰事物的刺激，美好得無可比擬。第二，是察覺人其實沒那麼容易死。拚命決斷時，多數人反而會讓你隨心所欲地去做，沒人能阻止。透過拚命決斷，你必定能實現自己的慾望。</p>
+        <p>要實現慾望，訓練很重要。朝你美好的未來，必須自己有意識地付出真正的努力。你做好聽CD、把教材讀完的覺悟了嗎？做好每天當作自己的訓練、有意識地持續努力的覺悟了嗎？能徹底貫徹到底嗎？加諸自己的訓練，比起沒做而後悔的痛苦，並不算太苦。為了不嚐到日後後悔的痛苦，也必須做好無論如何都要忍耐訓練之苦的覺悟。既然要改變自己的人生，即使是小事，也必須全心投入完成。</p>
+        <p>「好，我來做。」「好，我去。」「那件事交給我。」把這些小事，每天有意識地累積。當這變得自然而然，再大的事也沒問題了。你也經歷過對自己感到厭煩。也下定了改變人生的決心。強烈的意欲、強烈的態度也已打造，帶著決斷去行動，也已成為習慣。無論遇到什麼，即使再大的事，也能好好面對了。往後無論碰到什麼，你已經知道該如何應對了。你擁有美好的能力。你能做到連自己都難以置信的事。首先，要相信自己的能力。就算是女性、就算是孩子，在惡劣的條件中，也能成就令人難以想像的事。你已經能把人生、把自己的生活方式，變得美好了。</p>
+      </div>
+      <footer><p class="pagemark">ー 第二章　完 ー</p></footer>
+      </div>
     </div>
   </div><!-- /rawview -->
 </article>
@@ -740,23 +1199,31 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <header class="hero">
     <div class="hero-in">
       <span class="eyebrow">第三章</span>
-      <h1>目標の大切さ</h1>
+      <h1 class="lang-block lang-ja-block" style="margin-bottom:.9rem">目標の大切さ</h1>
+      <h1 class="lang-block lang-zh-block" style="margin-bottom:.9rem">目標的重要</h1>
       <div class="rules"></div>
-      <p class="hero-q">あなたが本当に何を目指すか。<br>これで、すべてが決まり、すべてがスタートします。</p>
-      <p class="hero-a">これからの人生は、すべてあなた自身にかかっています。</p>
+      <div class="lang-block lang-ja-block">
+        <p class="hero-q">あなたが本当に何を目指すか。<br>これで、すべてが決まり、すべてがスタートします。</p>
+        <p class="hero-a">これからの人生は、すべてあなた自身にかかっています。</p>
+      </div>
+      <div class="lang-block lang-zh-block">
+        <p class="hero-q">你真正想追求什麼。<br>這決定一切，也啟動一切。</p>
+        <p class="hero-a">往後的人生，全繫於你自己。</p>
+      </div>
     </div>
   </header>
 
   <div class="viewtoggle">
-    <span class="vt-label">表示</span>
+    <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
     <div class="seg">
-      <button class="vt-fig on" data-view="fig">図解でわかる版</button>
-      <button class="vt-raw" data-view="raw">原文のまま</button>
+      <button class="vt-fig on" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
     </div>
   </div>
 
   <div class="figview">
   <div class="wrap">
+  <div class="lang-block lang-ja-block">
     <nav class="toc" aria-label="この章の内容">
       <h4>この章で学ぶこと</h4>
       <ol>
@@ -947,11 +1414,206 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
       </nav>
     </section>
     <footer><p class="pagemark">ー 第三章 終 ー</p></footer>
+  </div><!-- /lang-ja-block -->
+
+  <div class="lang-block lang-zh-block">
+    <nav class="toc" aria-label="本章內容">
+      <h4>本章學習內容</h4>
+      <ol>
+        <li><a data-jump="c3s1">所追求的目標，決定一切</a></li>
+        <li><a data-jump="c3s2">還剩下幾個夏天</a></li>
+        <li><a data-jump="c3s3">首先，點燃慾望</a></li>
+        <li><a data-jump="c3s4">實現目標的六個階段</a></li>
+        <li><a data-jump="c3s5">物質的目標與精神的目標</a></li>
+        <li><a data-jump="c3s6">人生，是通往成功的冒險</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec">
+      <span class="eyebrow">前言</span>
+      <h2>所追求的目標，決定一切</h2>
+      <p class="lede">人與人的人生之所以有差異，不是能力的差距，而是<span class="mk">生活方式的不同</span>。實現美好未來的關鍵，在於了解自己能做什麼。</p>
+      <p>要實現所嚮往的生活方式，往往要花錢。即使如此，也請盡量朝自己所嚮往的人生前進。</p>
+      <div class="fig">
+        <p class="fig-cap">圖1　精神在先，經濟隨後而來</p>
+        <div class="chain">
+          <div class="chain-item"><b>精神面的提升</b><span>想法與目標確立</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>經濟面的提升</b><span>必定隨後而來</span></div>
+        </div>
+        <p class="fig-note">思考「金錢本身」與思考「金錢的用法」，是完全不同的兩件事。</p>
+      </div>
+      <p>例如出國旅行的夢想。許多人覺得「與我無關」，但不妨先向旅行社索取簡介。<strong>去得成或去不成，現在無關緊要。</strong>試著擬定計畫，才是你需要的。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">覺察</span>
+      <h2>還剩下幾個夏天</h2>
+      <p>想過更美好人生的人很多，但為此付諸行動的人卻很少。向日常生活妥協，不知不覺間，笑容從每一天消失——這樣的人不在少數。</p>
+      <div class="callout">
+        <p>這些人的人生，還剩下幾年呢？三十年、四十年？——不，並非如此。</p>
+        <p style="margin:0"><b>剩下的，只有區區三十次、四十次的「夏天」</b>。再迎接三十、四十次生日，就結束了。這就是現實。</p>
+      </div>
+      <p>人生之所以不變，是因為沒有想改變生活方式的心態，沒察覺自己的<ruby>潛在能力<rt>せんざいのうりょく</rt></ruby>，或是抱著「我什麼都做不到」而放棄。</p>
+      <div class="fig">
+        <p class="fig-cap">圖2　讓行動停下的，是「心中的牆」</p>
+        <div class="compare">
+          <div class="card accent"><h4>成為煞車的想法</h4><p>擔心「別人會不會說什麼」，而停留在毫無變化的現狀。</p></div>
+          <div class="card"><h4>真正的事實</h4><p>過自己所期望生活方式的權利，就在你身上。學歷、年齡、性別都無關。</p></div>
+        </div>
+        <p class="fig-note">這份權利，無論別人怎麼說，都不必放棄。這是你要主張、要守護的。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">起點</span>
+      <h2>首先，點燃慾望</h2>
+      <p>要把更美好的生活方式化為己有，首先要清楚認識<strong>自己在人生中想要什麼</strong>。一旦具體決定想要的東西，就會發現，得到它並沒有想像中那麼難。</p>
+      <div class="quote">「不先把錢放進腦袋裡，<br>錢就不會進到錢包裡」</div>
+      <p>要成為有錢人，就要有有錢人般的思考方式。不拘泥於眼前，試著<ruby>描繪<rt>えが</rt></ruby>自己的夢想，這很重要。</p>
+      <div class="fig">
+        <p class="fig-cap">圖3　「看見・觸摸」來點燃慾望</p>
+        <div class="chain">
+          <div class="chain-item"><b>去看</b><span>前往想要的房子、車子的所在</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>觸摸</b><span>坐上座椅，摸摸方向盤</span></div>
+          <div class="chain-arrow" aria-hidden="true">▶</div>
+          <div class="chain-item"><b>點燃</b><span>在心中發誓「我要得到它」</span></div>
+        </div>
+        <p class="fig-note">只是想著「好想要」是不行的。實際去看、去摸、全神投入。要具體決定真正想要的東西。</p>
+      </div>
+      <div class="callout">
+        <p style="margin:0">人要花好幾年學會走路與說話，考駕照、學才藝也都花錢花時間練習。然而<b>唯獨「下決心的方法」，人卻絲毫不去學。</b>因此被他人的想法左右，連想做的事都做不成，就走完一生。決定你人生的，是你的想法。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">本章核心</span>
+      <h2>實現目標的六個階段</h2>
+      <p>接下來，我們依序來看決定並實現人生目標的階段。</p>
+      <ol class="steps">
+        <li><b>明確慾望。</b>「好想要錢」只是空想。要有像「從現在起一個月內賺五十萬圓」這般明確的慾望。</li>
+        <li><b>寫在紙上。</b>把想要的東西全部寫下，做成目標清單。像孩子夢想般遠大的也無妨。寫下來，才會看見真正想要的東西。</li>
+        <li><b>決定大小。</b>目標小，效果也小。「能還清債務就好」這種程度，不會成為推動你的力量。</li>
+        <li><b>決定性質。</b>要讓目標光是想就令人興奮，激起「來做吧」的心情。若非如此，就更換目標。</li>
+        <li><b>看見・觸摸。</b>想要房子，就去看樣品屋，向建設公司詢問預算與工期。茫然的夢想，會變成具體的行動計畫。</li>
+        <li><b>學會克服障礙的方法。</b>只要下定「必定克服」的決心，就不會為結果煩惱，能只專注於眼前障礙的跨越之道。</li>
+      </ol>
+      <div class="fig">
+        <p class="fig-cap">圖4　目標分為「長期」與「短期」</p>
+        <div class="compare">
+          <div class="card"><h4>長期目標</h4><p>一年、三年、五年、十年、二十年後的目標。與共度人生的人，全員一起設定。</p></div>
+          <div class="card accent"><h4>短期目標</h4><p>明天、本週、本月、兩三個月內要達成的事。先專注於此。</p></div>
+        </div>
+        <div class="conclusion">不斷累積短期目標，<br>長期目標終將突然實現</div>
+      </div>
+      <div class="fig">
+        <p class="fig-cap">圖5　用日記本累積「每天的成功」</p>
+        <div class="layers">
+          <div class="layer l1"><b>早晨</b><span>把當天的目標清單寫進日記本</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>夜晚</b><span>檢查是否做到</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>就寢前</b><span>把沒做到的，寫進隔天的計畫</span></div>
+        </div>
+        <p class="fig-note">即使是小事，做到就是成功。每天持續這樣累積，就能實際感受到自己在成長。把日記本放在枕邊，把想到的都寫下來吧。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">兩種目標</span>
+      <h2>物質的目標與精神的目標</h2>
+      <p>所設定的目標，可分為兩種。</p>
+      <div class="fig">
+        <p class="fig-cap">圖6　兩種目標無法切割</p>
+        <div class="compare">
+          <div class="card"><h4>物質目標</h4><p>也就是經濟目標。要充分推敲、擬定計畫。</p></div>
+          <div class="card"><h4>精神目標</h4><p>實現目標時所嚐到的成就感。喜悅與自豪。</p></div>
+        </div>
+        <div class="conclusion">打從心底享受人生、獲得幸福——<br>這是最高的精神目標，也是人類的終極目的</div>
+      </div>
+      <div class="callout">
+        <p style="margin:0"><b>「金錢會改變人」，是沒擁有過錢的人說的話。</b>錢不會改變人，只會把那個人的性格表現得更強烈。<ruby>傲慢<rt>ごうまん</rt></ruby>的人更傲慢，寬大的人更寬大。所以許多有錢人架橋、蓋學校與醫院，貢獻地方。錢只要用得正確，就會讓那個人的生活方式更加發光。</p>
+      </div>
+      <p>若光憑想就能讓生活變好，那所有人都該成功了。點燃慾望，把目標與計畫寫在紙上，並加以實行，人生才第一次大幅改變。</p>
+      <div class="quote">無法擬定計畫的人，<br>等於在拚命擬定失敗的計畫</div>
+      <p>政治家、工會、銀行——別把事情推給別人、乾等著。<strong>你自己，才是最可靠的。</strong>請別忘了這一點。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">總結</span>
+      <h2>人生，是通往成功的冒險</h2>
+      <p>實現目標的關鍵，是<span class="mk">「追求」</span>這個詞。下定實現的決心，燃燒意欲，徹底地追求。追求，就是打造得到想要之物的好計畫。</p>
+      <div class="quote">祈求，就必得著</div>
+      <div class="fig">
+        <p class="fig-cap">圖7　追求的方式有兩種</p>
+        <div class="compare">
+          <div class="card"><h4>① 具體地追求</h4><p>把大小、高度、數量、期間、尺寸都弄清楚。有設計圖，房子才蓋得起來。</p></div>
+          <div class="card"><h4>② 帶著信念追求</h4><p>擬計畫時像大人，相信時像孩子。堅信必定能得到。</p></div>
+        </div>
+        <p class="fig-note">把這份「孩子的信念」與「大人的計畫性」結合，任何目標都能達到。</p>
+      </div>
+
+      <h3>就算無法全部得到，也不是失敗者</h3>
+      <p>目標清單未必全部都能得到。一發現得不到就全盤放棄的人很多，但那也不行。讓我們把人生比作棒球。</p>
+      <div class="fig">
+        <p class="fig-cap">圖8　就算是最強打者，十次也有六次出局</p>
+        <svg viewBox="0 0 420 90" role="img" aria-label="十個打席中四支安打、六次出局的圖">
+          <g>
+            <rect x="10" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="50" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="90" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="130" y="30" width="34" height="34" rx="4" fill="#21456E"/>
+            <rect x="170" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="210" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="250" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="290" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="330" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+            <rect x="370" y="30" width="34" height="34" rx="4" fill="#fff" stroke="#D9D5CB" stroke-width="2"/>
+          </g>
+          <text x="10" y="20" font-size="13" fill="#21456E" font-family="sans-serif" font-weight="bold">安打 4</text>
+          <text x="300" y="20" font-size="13" fill="#6A7078" font-family="sans-serif">出局 6</text>
+          <text x="10" y="82" font-size="12" fill="#6A7078" font-family="sans-serif">最高打擊率 4成 ＝ 依然是史上最強打者</text>
+        </svg>
+        <p class="fig-note">就算目標無法全部得到，你也絕不是失敗者。持續懷抱信念前進，才是重要的。</p>
+      </div>
+
+      <div class="fig">
+        <p class="fig-cap">圖9　挑戰冒險的兩件要事</p>
+        <div class="compare">
+          <div class="card"><h4>① 參加比賽</h4><p>炎夏或下雨，每天都站上打擊區揮棒。每天，都握有明天的目標清單。</p></div>
+          <div class="card"><h4>② 始終相信會贏</h4><p>不相信會贏，就一次也贏不了。成功者相信「我做得到」。</p></div>
+        </div>
+        <div class="conclusion">輸不是罪。<br>不去嘗試，才是罪</div>
+      </div>
+      <p>過去無關緊要。明白這點，你的人生必定能導向成功。先專注於短期目標。那會通往你心中所描繪的長期目標的實現。</p>
+
+      <div class="pledge">
+        <h3>從今天開始</h3>
+        <ul>
+          <li>具體決定想要的東西，寫在紙上</li>
+          <li>把目標訂得遠大、令人興奮</li>
+          <li>分成長期與短期，先專注於短期</li>
+          <li>用日記本檢查每天的目標</li>
+          <li>不是從明天，而是從今天開始</li>
+        </ul>
+      </div>
+      <p style="margin-top:1.4rem">無論職場或家庭，各自握有目標清單，每天討論、逐一達成。就算是孩子，也能懷抱目標並加以達成。</p>
+      <div class="finale">你將能在心中感受到真正的幸福，<br>並在生活中，<br>重新找回沉穩與滿足。</div>
+
+      <nav class="chapnav">
+        <button data-ch="2"><small>◀ 上一章</small><b>第二章 成功的步驟</b></button>
+        <button class="next" disabled><small>下一章準備中</small></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 第三章　完 ー</p></footer>
+  </div><!-- /lang-zh-block -->
   </div>
   </div><!-- /figview -->
 
   <div class="rawview">
     <div class="raw-wrap">
+      <div class="lang-block lang-ja-block">
       <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
       <h3 class="raw-title">第三章　目標の大切さ</h3>
       <div class="raw-rule"></div>
@@ -988,6 +1650,46 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
         <p>自分を変え、目標を設定し、計画をつくることは、あなたが素晴らしい人生を、実現しようと強い決意をしたときから、案外簡単なものとなり、いろいろな目標も達成されるようになるのだ。あなたにとって、本当の幸せを、心の中に感じるようになり、あなたの生活の中に、落ち着きと満足感を、取りもどすことが、できるようになるのである。</p>
       </div>
       <footer><p class="pagemark">ー 第三章 終 ー</p></footer>
+      </div>
+
+      <div class="lang-block lang-zh-block">
+      <p class="raw-intro">這是將您提供的原文原封不動刊載的版本，未加入圖解或改寫。</p>
+      <h3 class="raw-title">第三章　目標的重要</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>你真正想追求什麼，這將決定一切、啟動一切。往後的人生，全繫於你自己。在這個時代，有讓你提升生活、過上所嚮往人生的機會。因此，你所追求的目標，就變得極為重要。</p>
+        <p>為什麼人與人的人生會有差異？究竟哪裡不同？那是人生生活方式的不同。實現美好未來的關鍵，在於了解自己能做什麼。要實現自己嚮往的生活方式，往往要花錢。然而不論要花多少錢，都要盡量朝自己嚮往的人生前進。因為只要精神面能提升，經濟面的提升就必定隨後而來。此外，思考金錢本身，與思考金錢的用法，是完全不同的兩件事。</p>
+        <p>即使懷有出國旅行的夢想，許多人也覺得那是遙不可及、與自己毫不相干的事。何不打電話給旅行社，請他們寄份簡介來呢？去得成或去不成，現在無關緊要。首先，試著擬定旅行計畫，就是你所需要的。</p>
+        <p>想過比現在更美好、更有魅力人生的人很多，但為此付諸行動的人卻很少。別說行動，許多人早已向現實生活妥協，連夫妻間的對話都沒了。結婚四、五年，有了兩三個孩子後，這就變得理所當然。日常生活中笑聲消失，丈夫一早出門，工作、應酬到深夜才回家。這樣的生活不可能快樂。然而，想想看，這些人的人生究竟還剩幾年？還剩三十年、四十年、五十年嗎？不，並非如此。只剩下區區三十次、四十次的夏天而已。再迎接三十、四十次生日，你就結束了——人們卻沒察覺這點。這就是現實。</p>
+        <p>只是茫然地目送自己寶貴的人生，時間就不斷流逝。你的人生之所以不變，是因為許多人沒有想改變生活方式的心態與態度，沒察覺自己的潛在能力，或是抱著「我什麼都做不到」而徹底放棄。無論多正直、勤勞、待人親切，若無法在自己想做的事上發揮能力，也是枉然。此外，害怕做新的事、做自己沒經驗過之事的人很多。擔心「別人會不會說什麼」，於是放棄，又畏縮地繼續著毫無變化、維持現狀的生活。連對「有更美好人生」這件事，都提不起意欲。然而，你擁有過自己所嚮往生活方式的權利。這無論別人怎麼說，都不必放棄。</p>
+        <p>你也擁有過自己所嚮往美好人生的自由。學歷、年齡、性別，完全無關。你必須主張並守護這份權利。要把更美好的生活方式化為己有，首先你必須清楚認識，自己在人生中想要什麼。一旦清楚決定自己想要的東西，就會發現，得到它並沒有那麼難。</p>
+        <p>要成為有錢人，就必須有真正有錢人般的思考方式。不先把錢放進腦袋裡，錢就不會進到錢包裡。不拘泥於眼前，試著描繪自己的夢想，這很重要。若嚮往美好的人生，就要弄清楚，對你而言更美好的生活方式是什麼。自己想過怎樣的人生、想要怎樣的東西，都必須清楚決定。</p>
+        <p>切勿隨便地想著把人生得過且過。人生就和開車一樣，隨便亂來，就必定會出事故。人生對人而言只有一次，就算想重來，也沒有下一次。</p>
+        <p>那麼，要怎樣才能思考更美好的人生呢？首先，是自己去接近那樣的生活方式，在心中點火，讓自己也想成為那樣。當你第一次看到某樣美好的東西，會不由得發出「哦！」的一聲。然後在心中發誓，自己也要得到它。就這樣，看著自己嚮往的東西，點燃慾望。若想要氣派的房子，就到那種房子很多的地方去，親眼面對實際的房子，激起慾望。若想要高級車，想要賓士、BMW、保時捷，就到經銷商那裡，索取型錄回來。坐上座椅、摸摸方向盤也不錯。清楚決定自己真正想要什麼，實際去看、去摸，全神投入其中。只是想著「好想要」是不行的。首先，要具體決定你真正想要的東西。</p>
+        <p>人要花上相當長的歲月，才學會走路、學會說話。然而，下決心的方法，人卻不花那樣的歲月去學。考駕照、學麻將等，人們認為花很多錢和時間去練習是理所當然的。下決心的方法卻絲毫不去努力學習。因此，明明是自己的事，卻被他人的想法左右，連想做的事都做不成，就得走完一生。決定你人生的，是你的想法。因此，想法一變，你的生活方式也會隨之改變。正因如此，在動腦的方式上，也必須花費相當的努力與時間。</p>
+        <p>那麼，在此就來思考決定並實現人生目標的階段。首先第一，是明確慾望。「好想要錢啊、好想要房子啊」這種空想是不行的。要實現你的目標，首先必須把真正想要的東西具體明確化。例如「從現在起一個月內賺五十萬圓」，要有這般明確的慾望。像這樣一個一個地明確自己的慾望，漸漸地，對你而言更美好的人生具體是什麼樣子，就會明朗起來。而且，為了達到那樣的目標該做什麼，也會自然而然變得清晰。</p>
+        <p>一般來說，人只做過極日常的決定。例如「開車去，還是搭電車去？」「今天看電影，還是打保齡球？」只做過這種小而簡單的決心。因此，要做大的決定，需要努力與訓練。於是，實現你目標的第二階段，是把想要的東西具體寫在紙上。把該成為更美好生活內容的一切都寫下，做成目標清單。像孩子夢想般遠大的也好，或是一直以來想要的東西也好，什麼都好，就寫下來。不只物質目標，精神目標也寫下。實際寫寫看，就會清楚自己真正想要什麼。因此，除非花時間、努力把想要的東西寫出來，你的生活就會和至今完全一樣。若真想改變自己的人生，就必須想起：首先要改變自己。把目標具體化，不是隨便做就做得到的，也不是容易的事，所以要努力把目標寫出來、具體設計。</p>
+        <p>把自己重要的未來規劃任其自然的人很多。工作會拚命去做，但認真思考自己未來計畫的人，只有極少數。也有人會這麼說：「工作很忙。回家吃飯、看電視，就得睡了，不然明天很慘。哪有時間擬計畫。」說這種話的人，的確是正直、親切、勤勞的人，但作為規劃未來的人，卻完全不行。所以當然沒錢，也不會成功。因此，為了實現目標，必須好好推敲未來規劃。要具體確實地寫在紙上。為了讓自己變強，也必須寫下來。只放在腦袋裡，終究會消失。要時常運用日記本。晚上睡覺時，也放在枕邊，把自己想到的、想做的，全都寫進日記本。重要的是，每天都寫。</p>
+        <p>其次，這樣設定的目標，可分為物質目標與精神目標兩種。物質目標，也就是經濟目標，需要充分推敲、擬定計畫。然而，幾乎所有人都沒聽過人生目標這回事。在路上向行人問「請給我看看你的目標清單」，頂多被說「你是不是有點怪怪的」。幾乎所有人一談到經濟目標，一定會否定地說：「金錢會改變人，是萬惡之源。錢一多，人就變得吝嗇、壞心。」然而，這終究是沒擁有過錢的人說的話。錢絕不會改變人，只會把那個人的性格表現得更強烈。所以，傲慢的人會因錢而更傲慢。但寬大的人會更寬大，對他人的體貼更深。許多有錢人貢獻地方社會，架橋、蓋學校、蓋醫院。錢只要用得正確，就會讓那個人的性格、生活方式更加發光。</p>
+        <p>另外，精神目標與物質目標有著密切的連結，是實現自己所設計的目標時，所嚐到的成就感。也就是展現喜悅與自豪。打從心底享受人生、獲得幸福。這正是最高的精神目標，也是人類終極的目的。由此可知，這兩者是無法切割的。</p>
+        <p>人若光憑想就能讓生活變好，那所有人都該成功了。但光憑想，什麼都不會變。點燃慾望，把目標與計畫寫在紙上，並加以實行，人生才第一次大幅改變。要好好記住。無法擬定計畫的人，等於在拚命擬定失敗的計畫。不能做和凡人一樣的事。自己什麼都不做，「政治家會想辦法吧」「工會、銀行會想辦法吧」，像這樣把事情推給別人、只是乾等著，是不行的。你自己要成為自己最大的力量。別忘了，你自己才是最可靠的。除非自己拚命去設計未來計畫，否則只會任人擺布。收入微薄，連銀行存款都做不到。若那樣就滿足，那也不必多說了。但若討厭不自由的人生，就必須自己擬定計畫。無論你多麼拚命工作，光憑那樣，你的人生也絲毫不會改變。你已經下定決心，必定要建立美好的人生。而對你而言，美好生活方式的具體內容，也已寫在目標清單上。這是非常美好的事。</p>
+        <p>實現美好人生的第三階段，是決定目標的大小。目標的大小連效果都會左右，因此非常重要。你目標的大小，左右你的風範。連笑容、說話方式、態度、握手的方式，都受其影響。你自己也時時刻刻，直接受到自己所設定目標的影響。許多人的確有目標，但因為太小，效果也一樣小。「這一年能還清這筆債就好。」這麼小的目標，會讓自己也變小，效果幾近於零。這樣一來，目標就無法激勵你、無法發揮讓你想去努力的效果。那個目標，只會淪為不得不工作的原因。切莫忘記，小目標只會產生貧弱的效果。</p>
+        <p>實現美好人生的第四階段，是決定目標的性質。點燃慾望、驅使你自己去行動的目標，這就是你目標的性質。要是光想就令人興奮、激起「來做吧」心情的東西。若你的目標並非如此，就必須更換目標。目標一變，連人生都會大幅改變。視野狹窄，人就會變小。若沒有令人興奮的目標與計畫，那個人就形同死人。要擁有能讓你興奮、驅使你行動的夢想與目標。</p>
+        <p>其次，為了提高慾望與信念、確實達成目標，把你的目標區分為長期與短期很重要。長期目標的設定，是從現在起一年、三年、五年、十年、二十年後的目標。這目標的設定極為重要，因此不只是你一個人的目標，需要與共度人生的人全員一起設定。同時，也必須進行短期目標的設定。短期目標，是明天、本週、本月、這兩三個月內要達成的事，因此非常重要。用心設定短期的物質目標與精神目標，你的長期目標就會突然實現。短期目標若不清楚，什麼都做不成。</p>
+        <p>茫然地想著「真想成功」，卻不清楚明天該做什麼的人很多。這種人之中，絕沒有成功者。過貧困的生活很簡單，不需要努力。但這樣一來，你的人生就毀了。每天確實實行這些基本的事，就絕不會變窮。於是，活用日記本很重要。在日記本上做每天的目標清單，每晚檢查是否做到。然後把那天沒做到的，寫進隔天的計畫。做完這些才睡。這是確實提升的一個方法。也就是說，每天累積成功的達成。即使是小事，做到了就是成功。明確自己想要的東西。然後，弄清楚要得到它該怎麼做。養成這個習慣，就能清楚實際感受到自己在成長。也就是說，你變得能達到自己所訂的目標，也變得能把目標做大。這樣一來，就能寫下自住宅、車子、出國旅行這些目標，並期待它們的實現。</p>
+        <p>實現更美好人生的第五階段，是看見目標、觸摸目標。例如，若想蓋房子，就出門去看各種房子的樣品。仔細查看並檢討環境、設備、設計、建築的狀況，還要考慮價格。到蓋那房子的建設公司去，問問大概要幾天、大概要多少錢等各種問題。這樣一來，建設公司的人就會親切地告訴你。然後，開始就那房子細細地、具體地思考。多少預算、蓋在哪裡、何時開工、讓哪家建設公司設計，像這樣不斷推進計畫。就這樣，必須具體推進得到房子的行動計畫。透過這麼做，茫然的夢想會具體化，發展成能實際付諸行動的詳細計畫。如此一來，每天就充滿興奮。</p>
+        <p>接著，實現更美好人生的第六階段，是學會克服障礙的方法。首先第一，是下定「必定克服自己前進道路上的障礙」這般堅定的決意。一旦下定「無論發生什麼，我都要完成」的決心，就不必再為結果煩惱了。必須思考的，是眼前障礙的克服方法。徹底地思考這一點。要克服障礙，總之就是行動。每一次，都以自認最好的方法前進。你必須清楚知道，你的障礙大多是心理性的，也就是存在於心中。你的障礙，也許是某人植入你心中的，也許是外部刺激所生的。然而，只要有實現目標的堅定決心，憑那決心的力量，你就能打破來自外部的障礙。</p>
+        <p>如同一再所述，首先，懷著孩子般的心情，無論大事小事，把自己想要的東西寫出來。然後，也認真寫下為達到它該做的計畫。必須堅信，我絕對能實現那個目標。透過清楚寫出來，你的夢想就會開始朝現實移動。因此，該怎麼得到它，不必太擔心。第一個問題，是「想要什麼」。因為慾望越大、越強，得到就越容易。只要該做的事夠大，慾望與熱情也會變大，你就能成就連自己都無法想像的大事。</p>
+        <p>來吧，朝你的目標出發。目標先從小的開始，逐漸做大。不是從明天，而是從今天開始。對你人生重要的人，大家一起做。無論職場或家庭，每個人都握有目標清單，逐一達成。每天，全員一起討論這件事，讓它帶來美好的結果。就算是孩子，也能懷抱目標並加以達成。實現目標的關鍵，是「追求」這個詞。必須養成下定實現的決心、燃燒意欲、徹底追求的態度。為了實現你的目標，沒有比這更重要的詞了。追求，就是打造得到想要之物的好計畫。只要持續追求自己想要的東西，總有一天就能抓住得到它的機會。這是理所當然的。「祈求，就必得著。」</p>
+        <p>也許有人會說，哪有時間到處追求。然而仔細想想，不追求的人，結果得不到想要的東西。無論多麼勤勞，不追求的人，就是只會擬定貧困生活計畫的人，那個人的人生一輩子都不會改變。世上能靠追求而得到的東西很多，所以你想要多少，就拿多少來。無論拿多少都不會減少。就連海水，比起拿湯匙去，拿水桶去能舀更多，是理所當然的。計畫小，慾望就點不著火。所以，要追求再追求！</p>
+        <p>追求你想要的東西，有兩種方式。第一，要清楚具體地追求。否則什麼都得不到。要明確自己想要的東西。具體地追求，就是連大小、高度、數量、期間、尺寸等都要清楚。若那些不清楚，就必須改成更細的目標。例如，你叫來建設公司，沒有計畫也沒有設計圖，只說「蓋間大房子給我」，房子是蓋不起來的。你的計畫若只是那種程度，房子首先就蓋不成。正因有縝密的設計圖，房子才蓋得起來。自己的未來太過茫然的人很多。連要去哪都不知道，又怎麼抵達呢。第二，要帶著信念追求。像孩子一樣，堅信自己想要的東西必定能得到而去追求。擬計畫時像大人，相信時像孩子。這樣一來，目標必定能達成。把這份孩子的信念與大人的計畫性結合，任何目標都必定能到達。</p>
+        <p>還有一件重要的事。你必須相信，自己所追求的一切都能得到。然而努力的結果，也會有得不到的。做了目標清單，一發現無法全部得到，就全盤放棄的人非常多。這也不行。讓我們把人生比作棒球。職棒史上最高打擊率，竟然只有四成。十次站上打擊區，六次是出局。即使如此，仍是最強的選手。所以，就算你的目標無法全部得到，也絕不是失敗者。因此要擬定計畫，持續懷抱「任何東西都能得到」的信念前進。絕不必自卑。人生，就是通往成功的冒險。要挑戰這場冒險，不必全部都贏。不過，有兩件重要的事。</p>
+        <p>第一，是參加比賽。始終站上打擊區，無論多炎熱的夏天、無論下雨，都站著全力揮棒。一天都不能從比賽中缺席。要時時握有屬於你的比賽——明天的目標清單。若沒有明天的目標，就不知道是贏是輸。那樣一來，就會過著沒有勝負、平凡而無聊的日子。所以，要每天設定目標，努力去達成。每天參加比賽，努力每天都得分。第二，是始終相信會贏。也許有人會說，不可能一直贏。然而，不相信會贏，就一次也贏不了。成功者始終相信自己會贏、始終相信自己做得到。再重複一次，第一，始終參加比賽。第二，始終相信會贏。輸不是罪。但不去嘗試，才是罪。比賽結束時，你的戰績也許有三振，也可能有全壘打。然而無論如何，都必定會比不參加比賽時，成績更好。</p>
+        <p>思考自己未來的生活方式，也就是生活風格。別想著為過去的事辯解。一旦明白過去無關緊要，你的人生就必定能導向成功的人生。你應該已經寫下想達成的目標了。好好看那份清單。上面記著經濟目標與精神目標，並分成短期目標與長期目標。要實現它們該做什麼，那也寫在上面。剩下的，就是依循那份計畫，不斷累積努力，並自己堅信能夠成功。首先，專注於短期目標。這樣一來，就會通往你心中所描繪的長期目標的實現。像這樣，始終參加比賽、始終相信會贏，就能成就令人驚訝的事。</p>
+        <p>改變自己、設定目標、擬定計畫，從你下定要實現美好人生的堅定決意那一刻起，就會出乎意料地變得簡單，各種目標也會逐漸達成。你將能在心中感受到真正的幸福，並能在生活中重新找回沉穩與滿足。</p>
+      </div>
+      <footer><p class="pagemark">ー 第三章　完 ー</p></footer>
+      </div>
     </div>
   </div><!-- /rawview -->
 </article>
@@ -1000,9 +1702,10 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   var drawer=document.getElementById('drawer');
   var overlay=document.getElementById('overlay');
   var barTitle=document.getElementById('barTitle');
-  var chapters={'1':{el:document.getElementById('ch1'),title:'第一章 学び方'},
-                '2':{el:document.getElementById('ch2'),title:'第二章 成功のステップ'},
-                '3':{el:document.getElementById('ch3'),title:'第三章 目標の大切さ'}};
+  var chapters={'1':{el:document.getElementById('ch1'),title:'第一章 学び方',title_zh:'第一章 學習方法'},
+                '2':{el:document.getElementById('ch2'),title:'第二章 成功のステップ',title_zh:'第二章 成功的步驟'},
+                '3':{el:document.getElementById('ch3'),title:'第三章 目標の大切さ',title_zh:'第三章 目標的重要'}};
+  var currentCh='1';
 
   function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');ham.classList.add('open');ham.setAttribute('aria-expanded','true');}
   function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');ham.classList.remove('open');ham.setAttribute('aria-expanded','false');}
@@ -1010,10 +1713,17 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   overlay.addEventListener('click',closeDrawer);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
 
+  function updateBarTitle(){
+    var lang=document.documentElement.getAttribute('data-lang')||'ja';
+    var sub=lang==='zh'?'成功原理學習課程':'成功の原理を学ぶコース';
+    var t=lang==='zh'?chapters[currentCh].title_zh:chapters[currentCh].title;
+    barTitle.innerHTML='<small>'+sub+'</small>'+t;
+  }
   function showChapter(ch){
+    currentCh=ch;
     Object.keys(chapters).forEach(function(k){chapters[k].el.classList.toggle('active',k===ch);});
     document.querySelectorAll('#chaplist button').forEach(function(b){b.classList.toggle('active',b.dataset.ch===ch);});
-    barTitle.innerHTML='<small>成功の原理を学ぶコース</small>'+chapters[ch].title;
+    updateBarTitle();
     setView(chapters[ch].el,'fig'); // 章を変えたら図解版に戻す
     window.scrollTo({top:0,behavior:'auto'});
     runMarkers();
@@ -1056,6 +1766,19 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
     });
   });
   document.documentElement.setAttribute('data-fs','m');
+
+  // 言語切替
+  var langWrap=document.getElementById('langswitch');
+  langWrap.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.documentElement.setAttribute('data-lang',b.dataset.lang);
+      document.documentElement.setAttribute('lang',b.dataset.lang==='zh'?'zh-Hant':'ja');
+      langWrap.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+      updateBarTitle();
+      runMarkers();
+    });
+  });
+  document.documentElement.setAttribute('data-lang','ja');
 
   // 蛍光ペン
   var io=null;
