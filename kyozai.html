@@ -131,6 +131,21 @@ html[data-lang="zh"] .raw-body{font-family:"Noto Serif TC","Songti TC","PMingLiU
 .audio-fallback a{color:var(--vermilion)}
 @media print{.audio-box{display:none}}
 
+/* ===== トップへ戻るボタン ===== */
+#toTop{
+  position:fixed;right:1rem;bottom:1rem;z-index:40;
+  width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--indigo);color:#fff;
+  box-shadow:0 4px 14px rgba(33,69,110,.35);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transform:translateY(10px);
+  transition:opacity .25s,transform .25s,visibility .25s
+}
+#toTop.show{opacity:1;visibility:visible;transform:translateY(0)}
+#toTop:hover{background:var(--indigo-2)}
+#toTop:active{transform:scale(.94)}
+@media print{#toTop{display:none}}
+
 /* ===== 原文表示 ===== */
 .rawview{display:none}
 .chapter.rawmode .figview{display:none}
@@ -301,7 +316,7 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <button class="hamburger" id="ham" aria-label="章を選ぶ" aria-expanded="false" aria-controls="drawer">
     <span></span><span></span><span></span>
   </button>
-  <div class="topbar-title" id="barTitle"><small>成功の原理を学ぶコース</small>第一章 学び方</div>
+  <div class="topbar-title" id="barTitle"><small>成功の原理を学ぶコース</small>基本の章</div>
   <div class="langswitch" id="langswitch" role="group" aria-label="言語 / 語言">
     <button class="lang-ja on" data-lang="ja">日本語</button>
     <button class="lang-zh" data-lang="zh">中文</button>
@@ -321,7 +336,8 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
     <p>CHAPTERS</p>
   </div>
   <ul class="chaplist" id="chaplist">
-    <li><button data-ch="1" class="active"><span class="num"><span class="lang-block lang-ja-block">第一章</span><span class="lang-block lang-zh-block">第一章</span></span><span><span class="lang-block lang-ja-block">学び方<span class="sub">成功の原理と学び方のルール</span></span><span class="lang-block lang-zh-block">學習方法<span class="sub">成功的原理與學習規則</span></span></span></button></li>
+    <li><button data-ch="0" class="active"><span class="num"><span class="lang-block lang-ja-block">基本</span><span class="lang-block lang-zh-block">基礎</span></span><span><span class="lang-block lang-ja-block">基本の章<span class="sub">成功の基本と、三つの約束</span></span><span class="lang-block lang-zh-block">基礎篇<span class="sub">成功的基礎與三個約定</span></span></span></button></li>
+    <li><button data-ch="1"><span class="num"><span class="lang-block lang-ja-block">第一章</span><span class="lang-block lang-zh-block">第一章</span></span><span><span class="lang-block lang-ja-block">学び方<span class="sub">成功の原理と学び方のルール</span></span><span class="lang-block lang-zh-block">學習方法<span class="sub">成功的原理與學習規則</span></span></span></button></li>
     <li><button data-ch="2"><span class="num"><span class="lang-block lang-ja-block">第二章</span><span class="lang-block lang-zh-block">第二章</span></span><span><span class="lang-block lang-ja-block">成功のステップ<span class="sub">自分が変わる、六つのステップ</span></span><span class="lang-block lang-zh-block">成功的步驟<span class="sub">自己改變的六個步驟</span></span></span></button></li>
     <li><button data-ch="3"><span class="num"><span class="lang-block lang-ja-block">第三章</span><span class="lang-block lang-zh-block">第三章</span></span><span><span class="lang-block lang-ja-block">目標の大切さ<span class="sub">欲望を明確にし、計画を紙に書く</span></span><span class="lang-block lang-zh-block">目標的重要<span class="sub">明確慾望，把計畫寫在紙上</span></span></span></button></li>
   </ul>
@@ -336,7 +352,362 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
 <main>
 
 <!-- ============ 第一章 ============ -->
-<article class="chapter active" id="ch1">
+<!-- ============ 基本の章 ============ -->
+<article class="chapter active rawmode" id="ch0">
+  <header class="hero">
+    <div class="hero-in">
+      <span class="eyebrow">はじめに</span>
+      <h1 class="lang-block lang-ja-block" style="margin-bottom:.9rem">基本の章</h1>
+      <h1 class="lang-block lang-zh-block" style="margin-bottom:.9rem">基礎篇</h1>
+      <div class="rules"></div>
+      <div class="lang-block lang-ja-block">
+        <p class="hero-q">成功しようと決意した——<br>その真剣さこそ、最も大切な素質です。</p>
+        <p class="hero-a">この章では、コース全体の土台となる「成功の基本」を学びます。</p>
+      </div>
+      <div class="lang-block lang-zh-block">
+        <p class="hero-q">下定決心要成功——<br>那份認真，正是最重要的素質。</p>
+        <p class="hero-a">本章將學習作為整套課程根基的「成功的基礎」。</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="viewtoggle">
+    <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
+    <div class="seg">
+      <button class="vt-fig" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw on" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
+    </div>
+  </div>
+
+  <div class="audio-box">
+    <div class="audio-head">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#21456E"/><path d="M16 8.5a4 4 0 0 1 0 7" fill="none" stroke="#C0453B" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <b><span class="lang-block lang-ja-block">基本の章の音声</span><span class="lang-block lang-zh-block">基礎篇 語音</span></b>
+      <span><span class="lang-block lang-ja-block">朝と夜に聞きましょう</span><span class="lang-block lang-zh-block">早晚各聽一次</span></span>
+    </div>
+    <audio controls preload="none" src="audio96/basic.m4a">
+      <p class="audio-fallback">お使いの環境では音声を再生できません。<a href="audio96/basic.m4a">こちらから音声ファイルを開く</a>ことができます。</p>
+    </audio>
+  </div>
+
+  <div class="figview">
+  <div class="wrap">
+  <div class="lang-block lang-ja-block">
+    <nav class="toc" aria-label="この章の内容">
+      <h4>この章で学ぶこと</h4>
+      <ol>
+        <li><a data-jump="c0s1">まず、決意したあなたへ</a></li>
+        <li><a data-jump="c0s2">成功は、川の流れのように</a></li>
+        <li><a data-jump="c0s3">人生には、三つの生き方がある</a></li>
+        <li><a data-jump="c0s4">だれもが登る、成功への四つの段階</a></li>
+        <li><a data-jump="c0s5">人を引きつける、四つの魅力</a></li>
+        <li><a data-jump="c0s6">学ぶときの、三つの約束</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec" id="c0s1">
+      <span class="eyebrow">はじめに</span>
+      <h2>まず、決意したあなたへ</h2>
+      <p class="lede">人生で成功をおさめようと決意したこと、おめでとうございます。自分を向上させたいと考え、率先して実行に移した——それこそが、<span class="mk">成功者となる最も重要な素質</span>が、すでにあなたに備わっているしるしです。</p>
+      <p>このコースで説明することは、机上の空論ではありません。歴史に名を残した成功者が、実際に応用し、証明した原則です。すでに何万人もの役に立ってきた、あなたにもあてはまる原則です。</p>
+      <div class="callout">
+        <p style="margin:0">あなたにとって最も大切なのは、<b>「どんな犠牲をはらってでも成功を求める」という強い決心</b>ができ、それを行動に移した真剣さです。もうその第一歩を踏み出しています。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c0s2">
+      <span class="eyebrow">成功とは</span>
+      <h2>成功は、川の流れのように</h2>
+      <p>成功にたどり着くとは、どういうことか。それは、浮き沈みのある人生を通して、<strong>毎日、努力を続けていくこと</strong>です。</p>
+      <div class="fig">
+        <p class="fig-cap">図1　川は、流れることをやめない</p>
+        <svg viewBox="0 0 420 130" role="img" aria-label="山奥の小さな源から始まり、曲がりくねって大きくなり海に注ぐ川">
+          <path d="M30 30 Q90 40 80 60 Q70 85 130 90 Q190 95 180 110 Q175 120 240 118 Q320 116 390 118" fill="none" stroke="#3D6797" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="30" cy="30" r="6" fill="#C0453B"/>
+          <text x="12" y="22" font-size="12" fill="#6A7078" font-family="sans-serif">源（小さな始まり）</text>
+          <path d="M370 110 q10 8 20 0 q10 -8 20 0" fill="none" stroke="#21456E" stroke-width="3"/>
+          <text x="350" y="105" font-size="13" fill="#21456E" font-family="sans-serif" font-weight="bold">海</text>
+        </svg>
+        <p class="fig-note">始まりは小さく、曲がりくねり、速い時も遅い時も、狭い時も広い時もある。それでも流れをやめず、次第に大きくなって海に注ぐ。成功も同じ、毎日、努力を怠らず続けることです。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c0s3">
+      <span class="eyebrow">選択</span>
+      <h2>人生には、三つの生き方がある</h2>
+      <p>人の生き方は三通り。だれでも自由に選べます。あなたは、どれを選びますか。</p>
+      <div class="fig">
+        <p class="fig-cap">図2　三つの生き方</p>
+        <div class="compare">
+          <div class="card"><h4>① 平凡</h4><p>現状を維持するだけの努力をして、平凡な生活を営む人生。</p></div>
+          <div class="card"><h4>② 怠惰</h4><p>努力をほとんどせず、何の希望も持てない人生。</p></div>
+          <div class="card accent"><h4>③ 成功</h4><p>人並み以上の、想像もできない大きな価値をつかむ、成功の人生。</p></div>
+        </div>
+        <p class="fig-note">もちろん、あなたに選ぶ道は③しかありません。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c0s4">
+      <span class="eyebrow">この章の核心（前半）</span>
+      <h2>だれもが登る、成功への四つの段階</h2>
+      <p>どんな成功者でも、必ず登る段階があります。<strong>学歴・経験・年齢・性別は関係ありません。</strong>すべての人にとって、成功の段階は同じです。</p>
+      <ol class="steps">
+        <li><b>強い決心。</b>「もしそうなったらなあ」という他人任せの夢（希望的観測）ではなく、自分の夢を実現させると決めること。そして、その決心をさらに固くする。</li>
+        <li><b>計画を立てる。</b>欲望を実現するための計画。ポイントは二つ——「楽しみながら実行できる」こと、「あいた時間に自分のペースでできる」こと。</li>
+        <li><b>働く。</b>働かずに成功した人はいない。ただし全力投球すること。中途半端にやれば、結果も中途半端に終わる。</li>
+        <li><b>人間的魅力を身につける。</b>人を引きつける力。これは特に重要なので、次で詳しく見ていく。</li>
+      </ol>
+      <div class="fig">
+        <p class="fig-cap">図3　一段ずつ登り、達成したら次へ</p>
+        <div class="layers">
+          <div class="layer l1"><b>① 強い決心</b><span>夢を実現すると決める</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>② 計画 → ③ 働く</b><span>楽しめる計画を、全力で</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>④ 人間的魅力</b><span>人を引きつける力を身につける</span></div>
+        </div>
+        <p class="fig-note">いつ登りはじめるかは問題ではありません。今から一つずつ身につけ、達成したら次へ進む決心をします。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="c0s5">
+      <span class="eyebrow">この章の核心（後半）</span>
+      <h2>人を引きつける、四つの魅力</h2>
+      <p>人格の力を持つ人は、人生を心から楽しみ、幸せになり、凡人にできないことを達成しています。その魅力には四つのポイントがあります。</p>
+      <ol class="steps">
+        <li><b>ダイナミックにふるまう。</b>力強い行動が魅力を生む。コソコソ動いては魅力を感じない。堂々と、積極的に、大きく行動する。</li>
+        <li><b>信賞必罰ができる。</b>決めたことを成し遂げたら「よくやった！」と自分をほめる。できなかったら「だめだったぞ」と自分を叱り、失敗を素直に認めて「今度こそ成功するぞ」と誓う。</li>
+        <li><b>責任感を持つ。</b>成功で得たお金には責任が伴う。家族や周囲に対し、正しく使う。<span class="mk">金は人を変えず、性格を強く表すだけ</span>——貪欲な人はより貪欲に、寛大な人はより寛大になる。</li>
+        <li><b>良い協力者を選ぶ。</b>これが人生を大きく左右する。人は自分だけのためでなく、最愛の人々に受け入れられようとして、一生懸命に働くもの。</li>
+      </ol>
+      <div class="quote">はじめは、だれもが<br>意志の弱い、言われたことしかできない人間だった</div>
+      <p>今の成功者も、最初からうまくいったわけではありません。うまくできなくても放っておかず、強い決意で最大の努力をし、失敗したら「二度と同じ失敗はしない」と自分に厳しく誓った。現実から目をそらさず自分に厳しくすることで、人は成長できるのです。</p>
+    </section>
+
+    <section class="sec" id="c0s6">
+      <span class="eyebrow">約束</span>
+      <h2>学ぶときの、三つの約束</h2>
+      <p>各章は連続しているので、順番どおりに学びます。第一章は全体の学び方、第二章からは態度・習慣・行動の面から成功へ導く秘訣、最後の第八章で成功の真の極意が明らかにされます。学ぶときに守る約束が三つあります。</p>
+      <div class="fig">
+        <p class="fig-cap">図4　三つの約束</p>
+        <div class="compare">
+          <div class="card"><h4>約束①　従う</h4><p>第一章に記されたやり方に、必ず従うと誓う。誓って実行しなければ、努力は空回りしてしまう。</p></div>
+          <div class="card"><h4>約束②　伝える</h4><p>真剣に成功を求める人が来たら、その人にも各章の原則を伝える。人を助ける奉仕の心・使命感を持つ。</p></div>
+          <div class="card"><h4>約束③　選ぶ</h4><p>いいかげんな気持ちで挑戦したい人には、一章たりとも伝えない。伝えても無駄になってしまう。</p></div>
+        </div>
+        <p class="fig-note">「自分さえよければ」という気持ちが、すべてを台なしにします。</p>
+      </div>
+      <div class="pledge">
+        <h3>学び方の心構え</h3>
+        <ul>
+          <li>第一章を完全に自分のものにするまで、何度も学ぶ</li>
+          <li>それから第二章へ。各章を徹底的に学ぶ</li>
+          <li>学んだことは、日常生活の中で毎日、意欲的に実行する</li>
+        </ul>
+      </div>
+      <p style="margin-top:1.4rem">このコースは、時代・民族・文明をも超えた、成功への基本原則です。大変古くから伝えられ、今の時代にも完全に生きています。</p>
+      <div class="finale">今、あなたの目の前に、<br>成功へと導く秘訣があります。<br>さあ、第一章に移りましょう。</div>
+
+      <nav class="chapnav">
+        <button disabled><small>前の章はありません</small></button>
+        <button class="next" data-ch="1"><small>次の章 ▶</small><b>第一章 学び方</b></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 基本の章 終 ー</p></footer>
+  </div><!-- /lang-ja-block -->
+
+  <div class="lang-block lang-zh-block">
+    <nav class="toc" aria-label="本章內容">
+      <h4>本章學習內容</h4>
+      <ol>
+        <li><a data-jump="c0s1">致下定決心的你</a></li>
+        <li><a data-jump="c0s2">成功，如河水流動</a></li>
+        <li><a data-jump="c0s3">人生有三種活法</a></li>
+        <li><a data-jump="c0s4">人人都要登的四個成功階段</a></li>
+        <li><a data-jump="c0s5">吸引人的四種魅力</a></li>
+        <li><a data-jump="c0s6">學習時的三個約定</a></li>
+      </ol>
+    </nav>
+
+    <section class="sec">
+      <span class="eyebrow">前言</span>
+      <h2>致下定決心的你</h2>
+      <p class="lede">恭喜你下定決心，要在人生中獲得成功。想提升自己，並率先付諸行動——這正是<span class="mk">成為成功者最重要的素質</span>已具備於你身上的證明。</p>
+      <p>本課程所講的，不是紙上空談，而是留名歷史的成功者實際應用並證明過的原則。這些原則已幫助過數萬人，對你同樣適用。</p>
+      <div class="callout">
+        <p style="margin:0">對你而言最重要的，是能下定<b>「不惜任何代價都要追求成功」的堅定決心</b>，並將它付諸行動的認真。你已經踏出了那第一步。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">何謂成功</span>
+      <h2>成功，如河水流動</h2>
+      <p>抵達成功是什麼意思？那就是穿越有起有落的人生，<strong>每天持續努力</strong>。</p>
+      <div class="fig">
+        <p class="fig-cap">圖1　河水，從不停止流動</p>
+        <svg viewBox="0 0 420 130" role="img" aria-label="從山中細小源頭開始、蜿蜒變大流入大海的河">
+          <path d="M30 30 Q90 40 80 60 Q70 85 130 90 Q190 95 180 110 Q175 120 240 118 Q320 116 390 118" fill="none" stroke="#3D6797" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="30" cy="30" r="6" fill="#C0453B"/>
+          <text x="12" y="22" font-size="12" fill="#6A7078" font-family="sans-serif">源頭（微小的開始）</text>
+          <path d="M370 110 q10 8 20 0 q10 -8 20 0" fill="none" stroke="#21456E" stroke-width="3"/>
+          <text x="350" y="105" font-size="13" fill="#21456E" font-family="sans-serif" font-weight="bold">海</text>
+        </svg>
+        <p class="fig-note">開始很小，蜿蜒曲折，有快有慢、有窄有寬。即使如此也不停止流動，逐漸變大，注入大海。成功也一樣，就是每天不懈地持續努力。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">選擇</span>
+      <h2>人生有三種活法</h2>
+      <p>人的活法有三種，誰都能自由選擇。你，要選哪一種？</p>
+      <div class="fig">
+        <p class="fig-cap">圖2　三種活法</p>
+        <div class="compare">
+          <div class="card"><h4>① 平凡</h4><p>只付出維持現狀的努力，過平凡的生活。</p></div>
+          <div class="card"><h4>② 怠惰</h4><p>幾乎不努力，抱不了任何希望的人生。</p></div>
+          <div class="card accent"><h4>③ 成功</h4><p>抓住超越常人、大得難以想像之價值的成功人生。</p></div>
+        </div>
+        <p class="fig-note">當然，你能選的路只有③。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">本章核心（前半）</span>
+      <h2>人人都要登的四個成功階段</h2>
+      <p>任何成功者，都必定會登的階段。<strong>學歷、經驗、年齡、性別都無關。</strong>對所有人而言，成功的階段都相同。</p>
+      <ol class="steps">
+        <li><b>堅定的決心。</b>不是「若能那樣就好」這種任憑他人的夢（一廂情願的期待），而是決定要實現自己的夢。並讓那決心更加堅固。</li>
+        <li><b>擬定計畫。</b>實現慾望的計畫。要點有二——「能一邊享受一邊實行」、「能用空檔按自己的步調進行」。</li>
+        <li><b>工作。</b>沒有不工作而成功的人。但要全力以赴。半吊子地做，結果也只會半吊子收場。</li>
+        <li><b>培養人格魅力。</b>吸引人的力量。這特別重要，接下來詳細來看。</li>
+      </ol>
+      <div class="fig">
+        <p class="fig-cap">圖3　一階一階登，達成後再往上</p>
+        <div class="layers">
+          <div class="layer l1"><b>① 堅定決心</b><span>決定要實現夢想</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l2"><b>② 計畫 → ③ 工作</b><span>用能享受的計畫，全力去做</span></div>
+          <div class="down" aria-hidden="true">▼</div>
+          <div class="layer l3"><b>④ 人格魅力</b><span>培養吸引人的力量</span></div>
+        </div>
+        <p class="fig-note">何時開始登都無妨。從現在起一個一個習得，達成後就下定往上一階前進的決心。</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">本章核心（後半）</span>
+      <h2>吸引人的四種魅力</h2>
+      <p>擁有人格力量的人，打從心底享受人生、獲得幸福，成就凡人做不到的事。這份魅力有四個要點。</p>
+      <ol class="steps">
+        <li><b>行動要有魄力。</b>強而有力的行動才生魅力。畏畏縮縮不會讓人感到魅力。要堂堂正正、積極地、大膽地行動。</li>
+        <li><b>賞罰分明。</b>達成所決定的事，就對自己說「做得好！」來稱讚。做不到時，就「你不行啊」地斥責自己，坦率承認失敗，並發誓「這次一定成功」。</li>
+        <li><b>要有責任感。</b>成功所得的錢伴隨著責任。對家人與周遭，要正確地使用。<span class="mk">錢不會改變人，只會強烈表現其性格</span>——貪婪的人更貪婪，寬大的人更寬大。</li>
+        <li><b>選擇好的協力者。</b>這將大幅左右你的人生。人不是只為自己，而是為了被最愛的人接納，才拚命工作。</li>
+      </ol>
+      <div class="quote">起初，誰都是<br>意志薄弱、只會照吩咐做事的人</div>
+      <p>如今的成功者，起初也並非一帆風順。做不好也不放著不管，而是以堅定的決意付出最大的努力，失敗了就對自己嚴厲地發誓「絕不再犯同樣的錯」。不迴避現實、對自己嚴格，人才能成長。</p>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">約定</span>
+      <h2>學習時的三個約定</h2>
+      <p>各章是連續的，因此要依序學習。第一章是全體的學習方法，第二章起是從態度、習慣、行動的層面引導你走向成功的祕訣，最後的第八章會揭示成功真正的精髓。學習時，有三個要遵守的約定。</p>
+      <div class="fig">
+        <p class="fig-cap">圖4　三個約定</p>
+        <div class="compare">
+          <div class="card"><h4>約定①　遵循</h4><p>發誓必定遵循第一章所記的做法。不發誓去實行，努力就會空轉。</p></div>
+          <div class="card"><h4>約定②　傳遞</h4><p>當真心追求成功的人前來，也把各章的原則傳給他。要有助人的奉獻之心與使命感。</p></div>
+          <div class="card"><h4>約定③　選擇</h4><p>對只想隨便挑戰的人，一章都不可傳。即使傳了也只會白費。</p></div>
+        </div>
+        <p class="fig-note">「只要自己好就行」的心態，會毀掉一切。</p>
+      </div>
+      <div class="pledge">
+        <h3>學習的心態</h3>
+        <ul>
+          <li>反覆學習，直到把第一章完全化為己有</li>
+          <li>然後再進第二章。每一章都徹底地學</li>
+          <li>學到的，在日常生活中每天積極地實行</li>
+        </ul>
+      </div>
+      <p style="margin-top:1.4rem">這套課程，是超越時代、民族、文明的成功基本原則。自古流傳至今，在當今時代仍完全活著。</p>
+      <div class="finale">此刻，在你眼前，<br>就有引導你走向成功的祕訣。<br>來吧，進入第一章。</div>
+
+      <nav class="chapnav">
+        <button disabled><small>沒有上一章</small></button>
+        <button class="next" data-ch="1"><small>下一章 ▶</small><b>第一章 學習方法</b></button>
+      </nav>
+    </section>
+    <footer><p class="pagemark">ー 基礎篇　完 ー</p></footer>
+  </div><!-- /lang-zh-block -->
+  </div>
+  </div><!-- /figview -->
+
+  <div class="rawview">
+    <div class="raw-wrap">
+      <div class="lang-block lang-ja-block">
+      <p class="raw-intro">これは、いただいた原文をそのまま掲載したものです。図解や言いかえは加えていません。</p>
+      <h3 class="raw-title">基本の章</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>まず初めに、あなたが人生で、成功をおさめようと、決意されたことに対して、祝福の言葉を贈ります。あなたが、自分を向上させたいと考え、それを率先して、実行に移したということは、成功者となるための、最も重要な素質があなたの中に、すでにそなわっているしるしです。</p>
+        <p>このコースで、説明されることがらは、机上の空論ではありません。歴史に名を残した成功者が、実際に応用し、証明した原則なのです。これらの人間的、経済的成功達成の原則は、すでに何万人もの人々の、役に立っています。そして、これらの原則は、あなたにも、あてはまるものなのです。しかし、これらの原則を実行に移す前に、あなたは、先ず、それぞれのステップを、明確に理解しておかなければなりません。このコースは、あなたが、成功しようと、決意したことが何であれ、その達成のために、何をしなければならないかを、一つ一つ系統だてて、理解できるように、つくられています。</p>
+        <p>あなたは、これまでに、求めていたもの、また、それ以上のものすべてを達成しようとしています。このコースの原則と知識を完全に理解し、応用すれば、あなたは、成功が、運命によって選びぬかれた、ひと握りの人々や、たまたま運が良かった人々だけが、達成するものでないことに気づきます。成功とは、あなたが学びとり、応用できる、実行可能な計画と手順をふめば、容易に達成できるのです。間もなく、あなたは、世間が「幸運」と呼ぶ人々の、仲間入りをすることになるのです。ただし、あなた自身に成功に対する心構えがあれば、それが、本当に可能になるのです。</p>
+        <p>しかし、あなたは、疑問に思うかも知れない。「どのようにして、本当の成功を、手に入れることが、できるのだろうか。本当に、人生が一変するのだろうか。」この疑問に対する回答が、このコースで、明らかにされるのです。さあ、このコースで、自分の考え方を変え、生き方を変え、人間的にも、経済的にも向上しよう。</p>
+        <p>あなたは現在、生活に困っている訳でもなく、これといった、大した不満もなく、平々凡々とした毎日を、過ごしてはいないか。しかし、その同じことを、繰り返しているにすぎない人生には、何となく、満足を感じていないのではないだろうか。多くの、成功した人々が、そうであったように、あなた自身も、現在の生活が最高だとは、思っていなかったはずだ。だから、あなたは、欲しい物を手に入れ、今よりもっと大きく、人間的にも、経済的にも、向上するために、何かを始めなければと、真剣に考えて、強い決意をし、外部の、あるいは、心の中の困難を乗り越えて、このコースの出発点にたどり着き、成功へのスタートラインに並んだのである。</p>
+        <p>すなわち、あなたにとって、最も大切なことは、「どんな犠牲をはらってでも、成功を求める。」という強い決心ができ、それを行動に移した、真剣さなのである。何とすばらしいことだろう。では、このコースを学ぶための基礎、すなわち、成功するための基本について、述べることにしよう。</p>
+        <p>まず、成功するには、成功にたどり着く方法を知っていなければならない。では、成功にたどり着くとは、一体、どういうことであろう。例えば、川のように、浮き沈みのある人生を通して、毎日努力を続けていくことなのである。川は山の奥に源を持ち、流れの始まりは小さい。しかし、曲がりくねり、ある時は早く、ある時はゆっくりと、ある時は狭く、ある時は広々と流れ、次第に大きくなって、最後は海に注ぐのである。いかなる時でも、川は流れることをやめない。つまり、成功するには、毎日、努力を怠らず、続けて行くことなのである。</p>
+        <p>人間の生き方には、三通りある。だれでも自由に三つの中から、選ぶことができる。あなたは、どんな人生を選ぶのだろう。まず、第一に、現状を維持するだけの努力をして、平凡な生活を営む人生なのか。第二に、努力をほとんど必要としない、怠惰な生活を営むだけで、何の希望も持つことのできない人生なのか。第三に、人並以上の、想像もできないほど大きな価値のあるものをつかむ、成功の人生を選ぶのか。もちろん、あなたには、成功の人生しかないのだ。</p>
+        <p>では、一体どうすれば、成功の人生にたどり着くのだろう。成功にたどり着くまでは、一体、どんな段階を登っていかなければならないのだろう。実際、どんな成功者でも、必ず登る、成功の段階がある。成功に至るまでには、同じ成功の段階を登らなければならない。あなたも、成功したいのであれば、同じように、その成功への段階を、登らなければならない。いつ登りはじめるかは、問題ではない。学歴、経験、年齢、性別もすべて、問題ではない。全ての人々にとって、成功の段階というものは、同じものなのである。</p>
+        <p>第一の段階は、強い決心である。本当の決心とは、だれでもできるものではない。そんな簡単なものではないのだ。例えば、希望的観測と、意欲とは、全く違うものである。希望的観測とは「もし、そうなったらなあ。」というような、他人任せの夢にしかすぎない。意欲を持つということは、自分の夢を実現させようとする、決心をすることである。決心をして、その決心をさらに、固いものにすることを、考えなければならない。</p>
+        <p>第二の段階は、あなたの欲望を実現させるための、計画を立てることである。物質的な欲望だけでなく、精神的な欲望、さらに、それ以上の満足感を得るための欲望を、手に入れる計画である。欲望を実現させるための、計画を立てるには、二つのポイントがある。まず第一に、楽しみながら、実行できる計画であること。そして、第二に、自分のあいた時間に、マイペースでできるものであること。このポイントを基本にして、努力を重ねて、あなたの計画を見つけだすことが大切である。</p>
+        <p>そして、第三の段階は、働くことである。働かずして、成功した人は、一人もいない。しかし、ただ働けば、成功するというものではない。働き方によって、成功、失敗が決まってくる。すなわち、あなたが、やろうとしている目的に対して、全力投球しなければならない。中途半端でやった結果は、やはり中途半端に終るのである。こんな単純なことを、見落としたために、成功できなかった人が、たくさんいるのである。</p>
+        <p>第四段階は、特に重要なことだ。それは、人を引き付ける人間的魅力を身につけることである。この人格の力を持った人々は、人生を心から楽しみ、幸せになっており、凡人にできないことを、達成している。すなわち、成功者である。どうすれば、人間的魅力を、自分の物にすることができるのだろう。人間的魅力を身につけるためには、四つのポイントがある。</p>
+        <p>まず第一に、ダイナミックに、ふるまうことである。力強い行動が魅力を感じさせるものである。コソコソと動いてはまったく魅力を感じない。堂々とした、積極的な態度で大きく行動することである。</p>
+        <p>そして第二に、信賞必罰のできる、人間になることである。自分がやろうと決めたことを、成し遂げたときには、自分自身を誉めることだ。「よくやった、私は、すばらしい！」と自分自身に言い、自分を激励することだ。また、自分がやろうと決めたことが、できなかったときには、自分自身を叱ることだ。「お前は、だめだったのだ！」と自分に対して腹を立て、厳しい態度を取らなければならない。そして失敗を素直に認め、「今度こそ、成功するぞ!!」と自分に誓うことだ。成功しない原因は、自分ですると決めたことを、しないというところにあるのだ。しかし、これまでに成功をおさめてきた人々も、はじめは、自分で決心することのできない、意志の弱い、言われたことしかできない、人間だったのである。だれでも、最初から、うまく行くはずがないのだ。しかし、うまくできないからといって、放ってはおかなかった。だから、自分が立てた目標を、達成するように、強い決意をし、最大の努力をした。目標が達成しなかったときには、「もう、二度と同じ失敗はしないぞ。今度こそ、成功してみせる。」と、自分に厳しく誓った。これは決して、楽なことではないし、また、簡単なことでもないが、現実から目をそらさず、自分自身に厳しくすることで、人間としての成長をすることができる。</p>
+        <p>そして第三に、責任感を持つこと。人間的にも、経済的にも成功に近づくと、それによって得たお金には、責任が付いている。すなわち、自分の家族、周囲の人々に対し、あなたの責任に応じて、正しく使用しなければならない。金は人を変えない。金は持つ人の性格を、強く表現するにすぎないのである。貪欲な人は、さらに貪欲になるし、寛大な人は一層、寛大になるだけのことだ。あなたも、成功すればする程、他の人達の立場を考えられる、人間かどうかを、自分に問うてみることが大切になってくるのだ。</p>
+        <p>第四に、良い協力者を選ぶこと。これが、自分の人生を大きく左右する。人間とは、自分だけのために、働くのではなく、自分の最愛の人々に受け入れられようとするために、一生懸命に働くものである。</p>
+        <p>このように、成功への段階は、それ程、困難なものではない。だれにとっても同じ、この段階を、あなたも、今から一つずつ身につけ、目標を達成したら、次の段階へ進むための、強い決心をしなければならない。これが、成功するための、基本になるものである。ではそれを、具体的に、どのように身につけるか。それに対し、毎日、毎日何をすれば良いのだろう。この疑問に対する答えが、今から学ぶ、コースの各章で明らかにされるのである。まず第一章には、全体の学び方が記されている。次の第二章からは、態度、習慣、行動の面から、あなたを成功へ導く、秘訣が収録されている。最後の第八章では、あなたに、成功の真の極意を明らかにしてくれる。内容は、連続しているので、一つ一つ順番どおりに、学んでいかねばならない。</p>
+        <p>しかし、このコースを学ぶ時に、守らなければならない三つの約束がある。まず、あなたは、第一章に記されたやり方に、必ず従っていくと、誓わねばならない。そう誓って、やっていかなければ、せっかくの努力も、空回りしてしまい、あなたは、いっこうに良くならないだろう。第二に、あなたがこのコースによって、大きく変わり、人間的にも、精神的にも豊かになってくると、成功への冒険に挑戦しようとしている人が、やってくるだろう。その人が、真剣な心で、求めているのならば、その人にも、各章の原則を伝えてやらねばならない。すなわち、人を助けるという、奉仕の心、使命感を持たなければならない。自分さえよければ、という気持ちが、すべてを台なしにする。第三の約束は、いいかげんな気持ちで、挑戦したい、などという人には、決して、一章たりとも、原則を伝えてはならない。たとえ、伝えたとしても、それは、何の意味もないどころか、すべてが無駄になってしまう。</p>
+        <p>さあ、この三つの指示、使命、心構えを守り、まず、第一章だけを完全に自分のものにするまで、何度も何度も学び、そして第二章に移る。そして第二章も、徹底的に学ぶのだ。そして、学んだことは、日常生活の中で実行し、毎日、意欲的に活用するように心がけることが大切だ。このコースは、成功への基本原則である。時代、民族、文明をも超越したものであり、現在までに、多くの人々の苦労により、書き改められてきた。大変古くから、伝えられた原則であるが、今の時代においても、完全に生きているのである。</p>
+        <p>今、あなたの目の前に、あなたを成功へと導く秘訣があるのです。あなたも多くの成功者達と同じように、いろいろな困難を乗り越え、成功への冒険に挑戦をはじめたのです。それでは、第一章に移りましょう。今こそ、あなたの望むすばらしい人生を実現させる、絶好のチャンスが、あなたの目前に開かれたのです。</p>
+      </div>
+      <footer><p class="pagemark">ー 基本の章 終 ー</p></footer>
+      </div>
+
+      <div class="lang-block lang-zh-block">
+      <p class="raw-intro">這是將您提供的原文原封不動刊載的版本，未加入圖解或改寫。</p>
+      <h3 class="raw-title">基礎篇</h3>
+      <div class="raw-rule"></div>
+      <div class="raw-body">
+        <p>首先，對於你下定決心要在人生中獲得成功，獻上祝福的話語。你想提升自己，並率先付諸行動，這正是成為成功者最重要的素質，已經具備於你心中的證明。</p>
+        <p>本課程所說明的事項，並非紙上空談。而是留名歷史的成功者，實際應用並證明過的原則。這些人格上、經濟上達成成功的原則，已經幫助過數萬人。而且，這些原則對你同樣適用。然而，在將這些原則付諸行動之前，你首先必須清楚理解每一個步驟。這套課程的設計，是為了讓你能有系統地、一個一個地理解：無論你決心要成功的是什麼，為了達成它該做些什麼。</p>
+        <p>你正打算達成至今所追求的一切，甚至更多。只要完全理解並應用本課程的原則與知識，你就會發覺，成功並非只有被命運選中的少數人、或碰巧走運的人才能達成。所謂成功，只要踏出你能學會並應用的、可實行的計畫與步驟，就能輕易達成。不久，你就會加入世人所稱「幸運」的那些人的行列。不過，這要在你自己具備面對成功的心態時，才會真正成為可能。</p>
+        <p>然而，你或許會有疑問：「究竟要如何，才能得到真正的成功呢？人生真的會為之一變嗎？」對這個疑問的解答，會在本課程中揭曉。來吧，透過本課程，改變自己的想法、改變活法，在人格上與經濟上都獲得提升。</p>
+        <p>你現在，或許既不為生活所困，也沒什麼大不了的不滿，過著平平凡凡的每一天。但對於只是重複著同樣事情的人生，你是不是總覺得，沒有真正的滿足呢？如同許多成功的人一樣，你自己也不會認為現在的生活就是最好的。所以，你為了得到想要的東西、變得比現在更大，在人格與經濟上都獲得提升，認真地思考「必須開始做點什麼」，下定堅強的決意，跨越外在或內心的困難，抵達了這套課程的起點，站上了通往成功的起跑線。</p>
+        <p>也就是說，對你而言最重要的，是能下定「不惜任何代價都要追求成功」的堅強決心，並將它付諸行動的那份認真。這是多麼美好的事。那麼，就來談談學習本課程的基礎，也就是成功的基本吧。</p>
+        <p>首先，要成功，就必須知道抵達成功的方法。那麼，抵達成功究竟是怎麼一回事呢？比如說，就像河一樣，穿越有起有落的人生，每天持續努力。河的源頭在深山之中，起初的水流很小。然而它蜿蜒曲折，時而湍急、時而緩慢，時而狹窄、時而寬闊地流動，逐漸變大，最後注入大海。無論何時，河都不停止流動。也就是說，要成功，就是每天不懈怠地持續努力。</p>
+        <p>人的活法有三種。誰都能自由地從三者中選擇。你會選擇怎樣的人生呢？首先，第一，是只付出維持現狀的努力、過平凡生活的人生嗎？第二，是幾乎不需努力、只過著怠惰的生活、抱不了任何希望的人生嗎？第三，是選擇抓住超越常人、大得難以想像之價值的成功人生嗎？當然，對你來說，只有成功的人生這條路。</p>
+        <p>那麼，究竟該怎麼做，才能抵達成功的人生呢？在抵達成功之前，究竟要登上哪些階段呢？實際上，任何成功者，都必定會登上成功的階段。在抵達成功之前，都必須登上相同的成功階段。你若也想成功，就同樣必須登上那些通往成功的階段。何時開始登，不是問題。學歷、經驗、年齡、性別，全都不是問題。對所有人而言，成功的階段都是相同的。</p>
+        <p>第一個階段，是堅強的決心。真正的決心，並非人人都能做到。沒有那麼簡單。例如，一廂情願的期待與意欲，是完全不同的。一廂情願的期待，只是「若能那樣就好了」這種任憑他人的夢罷了。擁有意欲，是指下定要實現自己夢想的決心。要下定決心，並進一步思考如何讓那決心更加堅固。</p>
+        <p>第二個階段，是為實現你的慾望而擬定計畫。不只是物質的慾望，還有精神的慾望，以及為了獲得更進一步滿足感的慾望，都要納入計畫去實現。擬定實現慾望的計畫，有兩個要點。首先第一，是能一邊享受一邊實行的計畫。第二，是能在自己空檔的時間、按自己步調進行的計畫。以這些要點為基礎，不斷努力，找出屬於你的計畫，是很重要的。</p>
+        <p>接著，第三個階段，是工作。沒有不工作而成功的人。然而，並不是只要工作就能成功。成功或失敗，取決於工作的方式。也就是說，對於你想達成的目的，必須全力以赴。半吊子地做，結果也終究會半吊子收場。因為忽略了這麼單純的事，而無法成功的人，多得很。</p>
+        <p>第四個階段，是特別重要的事。那就是培養吸引人的人格魅力。擁有這份人格力量的人，打從心底享受人生、獲得幸福，成就凡人做不到的事。也就是成功者。要怎麼做，才能把人格魅力化為己有呢？要培養人格魅力，有四個要點。</p>
+        <p>首先第一，是行動要有魄力。強而有力的行動才讓人感到魅力。畏畏縮縮地行動，完全感受不到魅力。要以堂堂正正、積極的態度，大膽地行動。</p>
+        <p>接著第二，是成為能賞罰分明的人。當你達成了自己決定要做的事，就要稱讚自己。對自己說「做得好，我真棒！」來激勵自己。而當你決定要做的事沒能做到時，就要斥責自己。要對自己生氣、採取嚴厲的態度：「你不行啊！」然後坦率承認失敗，對自己發誓「這次一定要成功！」。無法成功的原因，就在於不去做自己決定要做的事。然而，至今獲得成功的人，起初也是無法自己下定決心、意志薄弱、只會照吩咐做事的人。誰都不可能一開始就順利。然而，他們不會因為做不好就放著不管。所以，為了達成自己所立的目標，下定堅強的決意，付出最大的努力。目標沒能達成時，就對自己嚴厲地發誓：「絕不再犯同樣的錯。這次一定成功給你看。」這絕不輕鬆，也不簡單，但不迴避現實、對自己嚴格，就能作為人而成長。</p>
+        <p>接著第三，是要有責任感。當你在人格與經濟上都接近成功，藉此所得的錢，是伴隨著責任的。也就是說，對自己的家人、周遭的人，必須依你的責任正確地使用。錢不會改變人。錢只是強烈地表現持有者的性格罷了。貪婪的人會更貪婪，寬大的人只會更寬大。你也是，越成功，就越要問問自己：我是不是一個能設身處地為他人著想的人。</p>
+        <p>第四，是選擇好的協力者。這將大幅左右自己的人生。人這種生物，不是只為自己工作，而是為了被自己最愛的人接納，才拚命工作。</p>
+        <p>像這樣，通往成功的階段，並沒有那麼困難。對誰都相同的這些階段，你也從現在起一個一個習得，達成目標後，就必須下定往下一階段前進的堅強決心。這就是成功的基礎。那麼，具體要如何習得它呢？為此，每天每天該做什麼才好呢？對這個疑問的解答，會在接下來要學的課程各章中揭曉。首先第一章，記載了全體的學習方法。接下來從第二章起，收錄了從態度、習慣、行動的層面，引導你走向成功的祕訣。最後的第八章，會為你揭示成功真正的精髓。內容是連續的，所以必須一個一個按順序學下去。</p>
+        <p>然而，學習這套課程時，有三個必須遵守的約定。首先，你必須發誓，一定會遵循第一章所記的做法。不那樣發誓去做，難得的努力也會空轉，你將完全不會變好。第二，當你藉由這套課程大幅改變，在人格與精神上都變得豐富，就會有想挑戰成功冒險的人前來。若那個人是以真摯的心在追求，就必須也把各章的原則傳給他。也就是說，必須擁有助人的奉獻之心與使命感。「只要自己好就行」的心態，會毀掉一切。第三個約定，是對於抱著隨便的心情、說想挑戰之類的人，絕不可傳授哪怕一章的原則。即使傳了，那不僅毫無意義，一切還會白費。</p>
+        <p>來吧，遵守這三個指示、使命、心態，首先反覆再三地學習，直到把第一章完全化為己有，然後再進到第二章。第二章也要徹底地學。而學到的東西，要在日常生活中實行，用心每天積極地活用，這很重要。這套課程，是通往成功的基本原則。它超越時代、民族、文明，至今經由許多人的辛勞，不斷被改寫。是自古流傳下來的原則，但在當今的時代，也完全活著。</p>
+        <p>此刻，在你的眼前，就有引導你走向成功的祕訣。你也和許多成功者一樣，跨越了種種困難，開始挑戰通往成功的冒險了。那麼，進入第一章吧。此刻，實現你所嚮往美好人生的絕佳機會，已在你眼前敞開。</p>
+      </div>
+      <footer><p class="pagemark">ー 基礎篇　完 ー</p></footer>
+      </div>
+    </div>
+  </div><!-- /rawview -->
+</article>
+
+<article class="chapter rawmode" id="ch1">
   <header class="hero">
     <div class="hero-in">
       <span class="eyebrow">第一章</span>
@@ -357,8 +728,8 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <div class="viewtoggle">
     <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
     <div class="seg">
-      <button class="vt-fig on" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
-      <button class="vt-raw" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
+      <button class="vt-fig" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw on" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
     </div>
   </div>
 
@@ -861,7 +1232,7 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
 </article>
 
 <!-- ============ 第二章 ============ -->
-<article class="chapter" id="ch2">
+<article class="chapter rawmode" id="ch2">
   <header class="hero">
     <div class="hero-in">
       <span class="eyebrow">第二章</span>
@@ -882,8 +1253,8 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <div class="viewtoggle">
     <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
     <div class="seg">
-      <button class="vt-fig on" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
-      <button class="vt-raw" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
+      <button class="vt-fig" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw on" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
     </div>
   </div>
 
@@ -1266,7 +1637,7 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
 </article>
 
 <!-- ============ 第三章 ============ -->
-<article class="chapter" id="ch3">
+<article class="chapter rawmode" id="ch3">
   <header class="hero">
     <div class="hero-in">
       <span class="eyebrow">第三章</span>
@@ -1287,8 +1658,8 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
   <div class="viewtoggle">
     <span class="vt-label"><span class="lang-block lang-ja-block">表示</span><span class="lang-block lang-zh-block">顯示</span></span>
     <div class="seg">
-      <button class="vt-fig on" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
-      <button class="vt-raw" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
+      <button class="vt-fig" data-view="fig"><span class="lang-block lang-ja-block">図解でわかる版</span><span class="lang-block lang-zh-block">圖解版</span></button>
+      <button class="vt-raw on" data-view="raw"><span class="lang-block lang-ja-block">原文のまま</span><span class="lang-block lang-zh-block">原文版</span></button>
     </div>
   </div>
 
@@ -1778,16 +2149,21 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
 
 </main>
 
+<button id="toTop" aria-label="ページの先頭へ戻る" title="先頭へ戻る">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6"/><path d="M6 12l6-6 6 6"/></svg>
+</button>
+
 <script>
 (function(){
   var ham=document.getElementById('ham');
   var drawer=document.getElementById('drawer');
   var overlay=document.getElementById('overlay');
   var barTitle=document.getElementById('barTitle');
-  var chapters={'1':{el:document.getElementById('ch1'),title:'第一章 学び方',title_zh:'第一章 學習方法'},
+  var chapters={'0':{el:document.getElementById('ch0'),title:'基本の章',title_zh:'基礎篇'},
+                '1':{el:document.getElementById('ch1'),title:'第一章 学び方',title_zh:'第一章 學習方法'},
                 '2':{el:document.getElementById('ch2'),title:'第二章 成功のステップ',title_zh:'第二章 成功的步驟'},
                 '3':{el:document.getElementById('ch3'),title:'第三章 目標の大切さ',title_zh:'第三章 目標的重要'}};
-  var currentCh='1';
+  var currentCh='0';
 
   function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');ham.classList.add('open');ham.setAttribute('aria-expanded','true');}
   function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');ham.classList.remove('open');ham.setAttribute('aria-expanded','false');}
@@ -1806,8 +2182,10 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
     Object.keys(chapters).forEach(function(k){chapters[k].el.classList.toggle('active',k===ch);});
     document.querySelectorAll('#chaplist button').forEach(function(b){b.classList.toggle('active',b.dataset.ch===ch);});
     updateBarTitle();
-    setView(chapters[ch].el,'fig'); // 章を変えたら図解版に戻す
-    window.scrollTo({top:0,behavior:'auto'});
+    setView(chapters[ch].el,'raw'); // 章を変えたら原文ままに戻す
+    // 描画が確定してから先頭へ（章の高さが変わるため2段階で確実に）
+    window.scrollTo(0,0);
+    requestAnimationFrame(function(){ window.scrollTo(0,0); });
     runMarkers();
   }
 
@@ -1861,6 +2239,7 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
     });
   });
   document.documentElement.setAttribute('data-lang','ja');
+  updateBarTitle();
 
   // 蛍光ペン
   var io=null;
@@ -1885,6 +2264,20 @@ footer{border-top:1px solid var(--rule);margin-top:1rem;padding:2rem 0 3rem;text
         localStorage.removeItem('kyozai_auth');
       }catch(e){}
       location.replace('index.html');
+    });
+  }
+
+  // トップへ戻るボタン
+  var toTop=document.getElementById('toTop');
+  if(toTop){
+    var onScroll=function(){
+      if(window.pageYOffset>400){ toTop.classList.add('show'); }
+      else{ toTop.classList.remove('show'); }
+    };
+    window.addEventListener('scroll',onScroll,{passive:true});
+    onScroll();
+    toTop.addEventListener('click',function(){
+      window.scrollTo({top:0,behavior:'smooth'});
     });
   }
 })();
